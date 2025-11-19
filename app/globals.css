@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.pc-Grid .container-fluid, .pc-Grid .container {
+    max-width: none !important
+}
+.container-fluid{
+    padding-right: 0px !important;
+    padding-left: 0px !important
+}
+
+.g-table__table{
+    width: 100% !important;
+}
+
+.g-label_size_m {
+    --_--height: 50px !important;
+    --_--border-radius: var(--g-border-radius-m);
+    --_--margin-inline: 12px;
+    --_--margin-addon-start: 32px;
+    --_--margin-addon-end: 32px;
+    .g-label__text {
+        font-size: 20px !important;
+    }
+  }
+  
+.g-date-calendar__controls{
+    display: flex;
+    scale: 0.8;
+} 
+
+.g-tabs_direction_horizontal .g-tabs__item_active,
+.g-tabs_direction_horizontal .g-tabs__item_active:hover,
+.g-tabs_direction_horizontal .g-tabs__item_active:focus-visible {
+  border-color: var(--g-color-line-brand);
+  background-color: var(--g-color-base-brandcolor) ;
+}
+
+.g-tabs_direction_horizontal .g-tabs__item {
+  color: var(--g-color-text-secondary);
+  transition: all 0.25s ease;
+  border-radius: 9999px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--g-tabs-item-height, var(--_--item-height));
+  border-block-end: var(--g-tabs-item-border-width, var(--_--item-border-width))
+    solid transparent;
+  padding-block-start: var(--_--item-border-width);
+}

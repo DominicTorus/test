@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ct003-tg1-uf-v8-ingress
+  namespace: ct003-tg1-uf-v8
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - tgadev.toruslowcode.com
+      secretName: ct003-tg1-uf-v8-tls
+  rules:
+    - host: tgadev.toruslowcode.com
+      http:
+        paths:
+          - path: /ct003/cg/tg1/v8
+            pathType: Prefix
+            backend:
+              service:
+                name: ct003-tg1-uf-generator
+                port:
+                  number: 443
