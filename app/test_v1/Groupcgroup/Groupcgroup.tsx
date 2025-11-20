@@ -13,8 +13,9 @@ import Textcname from './Textcname'
 import Buttonview from './Buttonview'
 import { useInfoMsg } from '@/app/components/infoMsgHandler'
 import { getCookie } from '@/app/components/cookieMgment'
-import '../../globals.css'
 import { TotalContext, TotalContextProps } from '@/app/globalContext'
+import { useGlobal } from '@/context/GlobalContext';
+import { getBorderRadiusClass } from '@/utils/branding';
 
 const Groupcgroup = ({
   lockedData = {},
@@ -34,6 +35,7 @@ const Groupcgroup = ({
   isFormOpen = false
 }: any) => {
   const token: string = getCookie('token')
+  const { theme, branding, direction, language } = useGlobal();
   const { refresh, setRefresh } = useContext(TotalContext) as TotalContextProps
   const { memoryVariables, setMemoryVariables } = useContext(
     TotalContext
@@ -44,6 +46,10 @@ const Groupcgroup = ({
   const { accessProfile, setAccessProfile } = useContext(
     TotalContext
   ) as TotalContextProps
+
+  const isDark = theme === "dark" || theme === "dark-hc";
+  const backgroundColor = isDark ? "#1F2937" : "#FFFFFF";
+  const textColor = isDark ? "#F9FAFB" : "#111827";
   let code: any = ``
   const encryptionFlagComp: boolean = encryptionFlagPageData?.flag || false
   let encryptionDpd: string = ''
@@ -211,6 +217,8 @@ const Groupcgroup = ({
               width: '200px', // Consistent card height
               breakInside: 'avoid' // Prevent cards from breaking
             }}
+                  className={`${getBorderRadiusClass(branding.borderRadius)} ${direction === 'RTL' ? 'rtl' : 'ltr'}`}
+                  dir={direction}
           >
             {allowedControls.includes('cname') ? (
              

@@ -50,3 +50,150 @@
     solid transparent;
   padding-block-start: var(--_--item-border-width);
 }
+
+/* ========================================
+   Global Theme Variables & Styles
+   ======================================== */
+
+:root {
+  /* CSS Variables set by GlobalContext */
+  /* --brand-color */
+  /* --selection-color */
+  /* --hover-color */
+  /* --border-radius */
+  /* --g--font-size */
+
+  /* Theme variables set by GlobalThemeWrapper */
+  /* --theme-bg-primary */
+  /* --theme-bg-secondary */
+  /* --theme-bg-tertiary */
+  /* --theme-text-primary */
+  /* --theme-text-secondary */
+  /* --theme-text-tertiary */
+  /* --theme-border */
+  /* --theme-hover-bg */
+}
+
+/* Light Theme */
+html.light {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #FFFFFF;
+  color: #111827;
+}
+
+/* Dark Theme */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #111827;
+  color: #F9FAFB;
+}
+
+/* High Contrast Dark Theme */
+html.dark-hc {
+  color-scheme: dark;
+}
+
+html.dark-hc body {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+/* High Contrast Light Theme */
+html.light-hc {
+  color-scheme: light;
+}
+
+html.light-hc body {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+/* RTL Support */
+html[dir="RTL"] {
+  direction: rtl;
+}
+
+html[dir="LTR"] {
+  direction: ltr;
+}
+
+/* Global Container Styles using Theme Variables */
+.theme-container {
+  background-color: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+}
+
+.theme-card {
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--border-radius);
+}
+
+.theme-hover:hover {
+  background-color: var(--theme-hover-bg);
+}
+
+/* Brand Color Utilities */
+.bg-brand {
+  background-color: var(--brand-color) !important;
+}
+
+.text-brand {
+  color: var(--brand-color) !important;
+}
+
+.border-brand {
+  border-color: var(--brand-color) !important;
+}
+
+.bg-selection {
+  background-color: var(--selection-color) !important;
+}
+
+.bg-hover {
+  background-color: var(--hover-color) !important;
+}
+
+/* Smooth transitions for theme changes */
+body,
+.theme-container,
+.theme-card {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Scrollbar theming */
+html.light ::-webkit-scrollbar-track {
+  background: #F3F4F6;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #4B5563;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-color);
+}

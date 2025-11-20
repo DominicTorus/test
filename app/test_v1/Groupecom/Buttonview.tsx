@@ -1,7 +1,5 @@
 'use client'
 import React, { useState,useEffect,useContext, useRef } from 'react';
-import axios from 'axios';
-import {Button,Container,Text } from '@gravity-ui/uikit';
 import i18n from '@/app/components/i18n';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
@@ -15,8 +13,8 @@ import { eventFunction } from '@/app/utils/eventFunction';
 import { useRouter } from 'next/navigation';
 import {Modal} from '@gravity-ui/uikit';
 import { eventBus } from '@/app/eventBus';
-import TorusButton from '@/app/TorusComponents/Button';
-import TorusIcon from '@/app/TorusComponents/Icon';
+import { Button } from '@/app/TAAIComponents/Button';
+import { Icon } from '@/app/TAAIComponents/Icon';
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import PageTimelinepage from '@/app/timeline_v1/timeline_v1page';
 
@@ -227,17 +225,17 @@ const Buttonview = ({mainData,setRefetch,encryptionFlagCompData}:any) => {
         </div>
         <PageTimelinepage/>
       </Modal>
-      <TorusButton 
+      <Button
         ref={buttonRef}
         className="w-full "
         onClick={handleClick}
         view='action'
-        size='s'           
+        size='s'
         disabled= {viewab0b7?.isDisabled ? true : false}
         pin='circle-circle'
       >
                 {keyset("view")}
-      </TorusButton>
+      </Button>
     </div>
   )
 }

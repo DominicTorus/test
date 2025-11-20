@@ -7,7 +7,7 @@
 
      
 import React, { useState,useContext,useEffect } from 'react'
-import { TorusTextInput } from '@/app/TorusComponents/TextInput';
+import { TextInput } from '@/app/TAAIComponents/TextInput';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { Button,Text } from "@gravity-ui/uikit";
@@ -198,7 +198,7 @@ const TextInputemail = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionF
     <div 
       style={{gridColumn: `10 / 12`,gridRow: `23 / 33`, gap:``, height: `100%`, overflow: 'auto'}} >
         {isRequredData && <span style={{ color: 'red' }}>*</span>}
-      <TorusTextInput
+      <TextInput
         require={isRequredData}
         className=""
         label={keyset("email")}
@@ -207,12 +207,12 @@ const TextInputemail = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionF
         type={dynamicStateandType.type}
         value={group2911c?.email||""}
          disabled= {emailda9f0?.isDisabled ? true : false}
-        pin='brick-brick'     
-        placeholder='type here....'      
+        pin='brick-brick'
+        placeholder='type here....'
         readOnly= {emailda9f0?.isDisabled ? true : false}
-        size='m'      
+        size='m'
         view='normal'
-        validationState={validate?.email ? "invalid" : undefined}
+        // validationState={validate?.email ? false : undefined}
         errorMessage={error}
       />
     </div> 

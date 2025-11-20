@@ -1,24 +1,7 @@
 'use client'
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import JsonView from "react18-json-view";
-import 'react18-json-view/src/style.css';
-import {
-  Col,
-  Flex,
-  Row,
-  Table,
-  TableDataItem,
-  TableProps,
-  withTableSettings,
-  WithTableSettingsProps,
-  withTableSorting,
-  withTableSelection,
-  WithTableSelectionProps,
-  RenderRowActionsProps,
-  withTableActions,
-  WithTableActionsProps
-} from '@gravity-ui/uikit';
-import { DatePicker } from '@gravity-ui/date-components';
+// import 'react18-json-view/src/style.css';
 import React, { useEffect, useState,useContext, useRef, useImperativeHandle } from 'react';
 import { AxiosService } from '@/app/components/axiosService';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
@@ -27,27 +10,13 @@ import { nullFilter } from '@/app/utils/nullDataFilter';
 import { codeExecution } from '@/app/utils/codeExecution'
 import { uf_fetchActionDetailsDto,uf_fetchRuleDetailsDto,te_refreshDto,api_paginationDto,uf_paginationDataFilterDto } from '@/app/interfaces/interfaces';
 import { useRouter } from 'next/navigation';
-import {Modal} from '@gravity-ui/uikit';
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps, getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import i18n from '@/app/components/i18n';
 
-import { Pagination, PaginationProps} from '@gravity-ui/uikit'
 import Buttonview  from './Buttonview'
+import { Table as TAAITable } from '@/app/TAAIComponents/Table'
 
-
-const MyTable: React.ComponentType<
-  TableProps<TableDataItem> &
-      WithTableSettingsProps &
-    WithTableSelectionProps<TableDataItem> &
-    WithTableActionsProps<TableDataItem>|any
-> =
-  withTableSettings
-(
-  withTableSorting(
-      withTableSelection
-  (withTableActions(Table)))
-)
 let colourIndicatorCols:any= [] ;
 let defaultColumns = [
   {
@@ -382,8 +351,7 @@ const Tableecom = ({ lockedData,setLockedData,primaryTableData, setPrimaryTableD
   const [selectedPaginationData, setSelectedPaginationData] = useState<any[]>(
       []
     )
-  const [settings, setSettings] = useState<any>();
-  const handleUpdate: PaginationProps['onUpdate'] = (page, pageSize) =>{
+  const handleUpdate = (page: number, pageSize: number) =>{
     let searchParams:any = nullFilter(SearchParams);
     setecom231c9Props((pre:any)=>({...pre, selectedIds:[]}))
     let checkedData: any = selectedPaginationData
@@ -603,7 +571,7 @@ const Tableecom = ({ lockedData,setLockedData,primaryTableData, setPrimaryTableD
       toast(err?.response?.data?.errorDetails?.message, 'danger')
     }
   }
-  const RowAction = ({item,index}: RenderRowActionsProps<any>) => {
+  const RowAction = ({item,index}:any) => {
     let filteredData:any={}
     if(allData.length!=0)
     {
@@ -716,36 +684,30 @@ const Tableecom = ({ lockedData,setLockedData,primaryTableData, setPrimaryTableD
     return <></>
   }
   return(
-    <div className="col-start-1 col-end-13 gap-">
-      <Row space={3}>
-        <Col>
-          <Flex direction='column' >
-            <MyTable
-            className=""
-              data={Array.isArray(allDataObject) && translatedColumns?.length ? allDataObject : []}
-              columns={translatedColumns}
-              edgePadding={true}
-              selectedIds={ecom231c9Props?.selectedIds}  
-              onSelectionChange={setLockMode} 
-              settings={settings}
-              updateSettings={setSettings}
-              renderRowActions={RowAction}
-              wordWrap={true}
-            />
-              {paginationData?.page != null && paginationData?.pageSize != null && paginationData?.total != null && Array.isArray(allDataObject) && allDataObject.length>0 ?
-              <Pagination
-              className='flex w-full items-center justify-center'
-              page={paginationData.page}
-              pageSize={paginationData.pageSize}
-              pageSizeOptions={[5, 10, 20, 50, 100]}
-              total={paginationData.total}
-              onUpdate={handleUpdate}
-              showInput={true}
-              size='l'
-            />:null}
-          </Flex>
-        </Col>
-      </Row>
+    <div className="col-start-1 col-end-13">
+      <div className="w-full">
+        <div className="flex flex-col gap-3">
+          <TAAITable
+            pagination={true}
+            externalPagination={true}
+            page={paginationData.page}
+            pageSize={paginationData.pageSize}
+            total={paginationData.total}
+            onPageChange={handleUpdate}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
+            data={Array.isArray(allDataObject) && translatedColumns?.length ? allDataObject : []}
+            columns={translatedColumns?.map((col: any) => col.name) || []}
+            search={true}
+            tableSelection={needLockingAndRule.lockMode === 'Single' || needLockingAndRule.lockMode === 'Multi'}
+            selectionMode={needLockingAndRule.lockMode === 'Single' ? 'single' : 'multi'}
+            selectedIds={ecom231c9Props?.selectedIds || []}
+            onSelectionChange={setLockMode}
+            tableSorting={true}
+            renderRowActions={RowAction}
+            className="w-full"
+          />
+        </div>
+      </div>
     </div>
   )
 }

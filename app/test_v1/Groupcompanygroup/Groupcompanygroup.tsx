@@ -13,14 +13,21 @@ import { eventBus } from '@/app/eventBus';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { getCookie } from "@/app/components/cookieMgment";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
+import { useGlobal } from '@/context/GlobalContext';
+import { getBorderRadiusClass } from '@/utils/branding';
 
 
 const Groupcompanygroup = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,paginationDetails,isFormOpen=false}:any)=> {
   const token:string = getCookie('token'); 
+  const { theme, branding, direction, language } = useGlobal();
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
+
+  const isDark = theme === "dark" || theme === "dark-hc";
+  const backgroundColor = isDark ? "#1F2937" : "#FFFFFF";
+  const textColor = isDark ? "#F9FAFB" : "#111827";
   let code:any = ``;
   const encryptionFlagComp: boolean = encryptionFlagPageData?.flag || false;
   let encryptionDpd: string = "";
@@ -148,7 +155,8 @@ const Groupcompanygroup = ({lockedData={},setLockedData,primaryTableData={}, set
         backgroundClip: '',
         backgroundBlendMode: ''
       }}
-      className=" rounded-md "
+       className={`${getBorderRadiusClass(branding.borderRadius)} ${direction === 'RTL' ? 'rtl' : 'ltr'}`}
+                        dir={direction}
     >
         {allowedComponent.includes("cgroup")  &&<Groupcgroup  
           lockedData={lockedData} 

@@ -7,7 +7,7 @@
 
      
 import React, { useState,useContext,useEffect } from 'react'
-import { TorusTextInput } from '@/app/TorusComponents/TextInput';
+import { TextInput } from '@/app/TAAIComponents/TextInput';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { Button,Text } from "@gravity-ui/uikit";
@@ -196,7 +196,7 @@ const TextInputphone = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionF
     <div 
       style={{gridColumn: `5 / 7`,gridRow: `5 / 15`, gap:``, height: `100%`, overflow: 'auto'}} >
         {isRequredData && <span style={{ color: 'red' }}>*</span>}
-      <TorusTextInput
+      <TextInput
         require={isRequredData}
         className=""
         label={keyset("phone")}
@@ -205,10 +205,10 @@ const TextInputphone = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionF
         type={dynamicStateandType.type}
         value={group2911c?.phone||""}
          disabled= {phonedeef3?.isDisabled ? true : false}
-        pin='brick-brick'     
-        placeholder='type here....'      
+        pin='brick-brick'
+        placeholder='type here....'
         readOnly= {phonedeef3?.isDisabled ? true : false}
-        size='m'      
+        size='m'
         view='normal'
         validationState={validate?.phone ? "invalid" : undefined}
         errorMessage={error}

@@ -1,7 +1,6 @@
 'use client'
 import React, { useState,useEffect,useContext, useRef } from 'react';
 import axios from 'axios';
-import {Button,Container,Text ,Icon} from '@gravity-ui/uikit';
 import i18n from '@/app/components/i18n';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
@@ -15,8 +14,8 @@ import { eventFunction } from '@/app/utils/eventFunction';
 import { useRouter } from 'next/navigation';
 import {Modal} from '@gravity-ui/uikit';
 import { eventBus } from '@/app/eventBus';
-import TorusButton from '@/app/TorusComponents/Button';
-import TorusIcon from '@/app/TorusComponents/Icon';
+import { Button } from '@/app/TAAIComponents/Button';
+import { Icon } from '@/app/TAAIComponents/Icon';
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { XMLParser } from 'fast-xml-parser'
 
@@ -207,17 +206,17 @@ const Buttonview = ({ lockedData,setLockedData,primaryTableData, setPrimaryTable
   return (
     <div 
       style={{gridColumn: `3 / 5`,gridRow: `32 / 42`, gap:``, height: `100%`, overflow: 'auto'}} >
-        <TorusButton 
+        <Button
           ref={buttonRef}
           className="w-full "
           onClick={handleClick}
           view='action'
-          size='s'           
+          size='s'
           disabled= {view155e3?.isDisabled ? true : false}
           pin='circle-circle'
         >
               {keyset("View Details")}
-        </TorusButton>
+        </Button>
       </div>
     
   )

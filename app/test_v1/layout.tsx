@@ -1,13 +1,15 @@
-
 import type { Metadata } from 'next'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css';
-import LogoutPage from "../components/logout";
-import { ThemeProvider } from "@gravity-ui/uikit";
-import { Grid } from "@gravity-ui/page-constructor";
+// import 'react-toastify/dist/ReactToastify.css';
+import LogoutPage from '../components/logout'
+import { ThemeProvider } from '@gravity-ui/uikit'
+import { Grid } from '@gravity-ui/page-constructor'
 import ThemeS from '../components/ThemeS'
-import { LanguageProvider } from '../components/languageContext';
-import LayoutDecider from '../components/LayoutDecider';
+import { LanguageProvider } from '../components/languageContext'
+import LayoutDecider from '../components/LayoutDecider'
+import { GlobalProvider } from '@/context/GlobalContext'
+import { EventBusProvider } from '@/context/EventBusContext'
+import { GlobalThemeWrapper } from '../components/GlobalThemeWrapper'
 
 export const metadata: Metadata = {
   title: 'TG1',
@@ -20,21 +22,27 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <LanguageProvider>
-      <ThemeS>
-        <div className=''>
-          <LayoutDecider 
-            mode='fluid' 
-            navigationStyles='vertical' 
-            sidebarStyle='condensed'
-            >
-           <div>
-              <main>{children}</main>    
-            </div>      
-              <ToastContainer />
-            </LayoutDecider>
-          </div>
-      </ThemeS>
-    </LanguageProvider>
+    <GlobalProvider>
+      <GlobalThemeWrapper>
+        <EventBusProvider>
+          <LanguageProvider>
+            {/* <ThemeS> */}
+            <div className=''>
+              <LayoutDecider
+                mode='fluid'
+                navigationStyles='vertical'
+                sidebarStyle='condensed'
+              >
+                <div>
+                  <main>{children}</main>
+                </div>
+                <ToastContainer />
+              </LayoutDecider>
+            </div>
+            {/* </ThemeS> */}
+          </LanguageProvider>
+        </EventBusProvider>
+      </GlobalThemeWrapper>
+    </GlobalProvider>
   )
 }

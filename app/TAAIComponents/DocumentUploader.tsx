@@ -102,7 +102,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
         />
 
         <div className="pointer-events-none">
-          <Icon name="cloud-arrow-up-in" size={48} />
+          <Icon name="refresh" size={48} />
 
           <p className={`mt-4 ${getFontSizeClass(branding.fontSize)} font-medium ${
             isDark ? "text-gray-200" : "text-gray-700"
@@ -131,7 +131,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                   isDark ? "text-gray-300" : "text-gray-600"
                 }`}
               >
-                <Icon name="file" size={16} />
+                <Icon name="menu" size={16} />
                 <span>{file.name}</span>
                 <span className="text-sm opacity-60">({(file.size / 1024).toFixed(2)} KB)</span>
               </li>

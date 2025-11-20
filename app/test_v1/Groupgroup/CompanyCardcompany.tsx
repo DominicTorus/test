@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useContext,useEffect,useRef,useState } from 'react' 
-import  TorusCompanyCard  from '@/app/TorusComponents/CompanyCard';
+import { CompanyCard } from '@/app/TAAIComponents/CompanyCard';
 import { Text } from '@gravity-ui/uikit';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { getCookie } from '@/app/components/cookieMgment';
@@ -155,7 +155,7 @@ return(
         {Array.isArray(companiesData) &&
           companiesData.map((company: any, index: number) => {
             return (
-              <TorusCompanyCard
+              <CompanyCard
                 key={company.id || `company-${index}`}
                 company={company}
                 onViewDetails={handleViewDetails}

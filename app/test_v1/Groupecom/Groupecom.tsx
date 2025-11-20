@@ -9,18 +9,26 @@ import { getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { Magnifier,Xmark } from '@gravity-ui/icons'
 import { Button, Icon, Modal } from '@gravity-ui/uikit'
 import { eventBus } from '@/app/eventBus';
-import Tableecom  from './Tableecom';  
+import Tableecom  from './Tableecom';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { getCookie } from "@/app/components/cookieMgment";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
+import { useGlobal } from '@/context/GlobalContext';
+import { getBorderRadiusClass } from '@/utils/branding';
 
 
 const Groupecom = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,paginationDetails,isFormOpen=false}:any)=> {
-  const token:string = getCookie('token'); 
+  const token:string = getCookie('token');
+  const { theme, branding, direction, language } = useGlobal();
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
+
+  // Theme-based styling
+  const isDark = theme === "dark" || theme === "dark-hc";
+  const backgroundColor = isDark ? "#1F2937" : "#FFFFFF";
+  const textColor = isDark ? "#F9FAFB" : "#111827";
   let code:any = ``;
   const encryptionFlagComp: boolean = encryptionFlagPageData?.flag || false;
   let encryptionDpd: string = "";
@@ -134,7 +142,7 @@ const Groupecom = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryT
   }, [ecom231c9Props?.refresh])
 
   return (
-    <div 
+    <div
       style={{
         gridAutoRows: '4px',
         columnGap: '0px',
@@ -146,7 +154,8 @@ const Groupecom = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryT
         gridRow: '195 / 271',
         height: '100%',
         overflow: 'auto',
-        backgroundColor:'',
+        backgroundColor: backgroundColor,
+        color: textColor,
         backgroundImage:'',
         backgroundPosition: '',
         backgroundSize: '',
@@ -155,7 +164,8 @@ const Groupecom = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryT
         backgroundClip: '',
         backgroundBlendMode: ''
       }}
-      className=" rounded-md "
+      className={`${getBorderRadiusClass(branding.borderRadius)} ${direction === 'RTL' ? 'rtl' : 'ltr'}`}
+      dir={direction}
     >
         {<Tableecom lockedData={lockedData} setLockedData={setLockedData}  primaryTableData={primaryTableData} setPrimaryTableData={setPrimaryTableData}  refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} paginationDetails={paginationDetails} open={open} setOpen={setOpen} ref={ecom231c9Ref}/>}
     </div>             
