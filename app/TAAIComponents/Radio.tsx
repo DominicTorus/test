@@ -18,6 +18,7 @@ interface RadioProps {
   value?: string;
   name?: string;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
 export const Radio: React.FC<RadioProps> = ({
@@ -32,6 +33,7 @@ export const Radio: React.FC<RadioProps> = ({
   value = "",
   name,
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
 
@@ -74,7 +76,7 @@ export const Radio: React.FC<RadioProps> = ({
 
   const radioElement = (
     <label
-      className={`inline-flex items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+      className={`inline-flex items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className}`}
     >
       <input
         type="radio"

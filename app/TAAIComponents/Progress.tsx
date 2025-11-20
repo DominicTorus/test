@@ -16,6 +16,7 @@ interface ProgressProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
+  className?: string;
 }
 
 export const Progress: React.FC<ProgressProps> = ({
@@ -28,6 +29,7 @@ export const Progress: React.FC<ProgressProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
 
@@ -63,7 +65,7 @@ export const Progress: React.FC<ProgressProps> = ({
   const clampedValue = Math.min(100, Math.max(0, value));
 
   const progressElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <div className="flex justify-between items-center mb-1">
         {text && (
           <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-200" : "text-gray-900"}`}>

@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { useGlobal } from "@/context/GlobalContext";
+import { useEventBus } from "@/context/EventBusContext";
 import { Icon } from "./Icon";
 import { Tooltip } from "./Tooltip";
 import {
@@ -11,11 +12,13 @@ import {
   IconDisplay,
   HeaderPosition,
   TooltipProps as TooltipPropsType,
+  ComponentEvents,
 } from "@/types/global";
 import { GravityIcon } from "@/types/icons";
 import { getFontSizeClass, getBorderRadiusClass, applyBrandColor, lightenColor, darkenColor } from "@/utils/branding";
 
 interface ButtonProps {
+  nodeId?: string;
   view: ButtonView;
   size: ButtonSize;
   icon?: GravityIcon;
@@ -29,9 +32,12 @@ interface ButtonProps {
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
   onClick?: () => void;
+  events?: ComponentEvents[];
+  className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
+  nodeId,
   view,
   size,
   icon,
@@ -45,10 +51,73 @@ export const Button: React.FC<ButtonProps> = ({
   headerPosition = "top",
   children,
   onClick,
-}) => {
+  events,
+  className = "",
+}, ref) => {
   const { theme, direction, branding } = useGlobal();
-  console.log("🚀 ~ Button ~ branding:", branding)
-  console.log("🚀 ~ Button ~ view:", view)
+  const eventBus = useEventBus();
+  const [isDisabled, setIsDisabled] = useState(disabled);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Handle onClick with event emission
+  const handleClick = () => {
+    onClick?.();
+
+    // Emit rise events when onClick occurs
+    const onClickEvent = events?.find(e => e.name === "onClick");
+    if (onClickEvent?.enabled && onClickEvent.rise && nodeId) {
+      onClickEvent.rise.forEach(riseEvent => {
+        eventBus.emit(riseEvent.key, {
+          nodeId,
+          data: {},
+        });
+      });
+    }
+  };
+
+  // Subscribe to riseListen events
+  useEffect(() => {
+    if (!nodeId || !events) return;
+
+    const unsubscribers: (() => void)[] = [];
+
+    events.forEach(event => {
+      if (event.enabled && event.riseListen) {
+        event.riseListen.forEach(listener => {
+          const subscribe = listener.listenerType === "type1"
+            ? eventBus.subscribeGlobal
+            : (key: string, cb: any) => eventBus.subscribe(key, nodeId, cb);
+
+          const unsubscribe = subscribe(listener.key, (payload) => {
+            // Handle different event types
+            switch (listener.key) {
+              case "hideElement":
+                setIsVisible(false);
+                break;
+              case "showElement":
+                setIsVisible(true);
+                break;
+              case "disableElement":
+                setIsDisabled(true);
+                break;
+              case "enableElement":
+                setIsDisabled(false);
+                break;
+              default:
+                // For custom events, just log them
+                console.log(`Button ${nodeId} received event: ${listener.key}`, payload);
+            }
+          });
+
+          unsubscribers.push(unsubscribe);
+        });
+      }
+    });
+
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
+  }, [nodeId, events, eventBus]);
 
   const getSizeClasses = () => {
     const baseFontSize = getFontSizeClass(branding.fontSize);
@@ -258,8 +327,9 @@ export const Button: React.FC<ButtonProps> = ({
 
   const buttonElement = (
     <button
-      onClick={onClick}
-      disabled={disabled}
+      ref={ref}
+      onClick={handleClick}
+      disabled={isDisabled}
       style={getButtonStyles()}
       className={`
         inline-flex items-center justify-center font-medium
@@ -267,17 +337,18 @@ export const Button: React.FC<ButtonProps> = ({
         ${getViewClasses()}
         ${getPinClasses()}
         ${getHoverStyles()}
-        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         ${isRecordLevel ? "relative overflow-hidden" : ""}
+        ${className}
       `}
       dir={direction}
       onMouseEnter={(e) => {
-        if (!disabled ) {
+        if (!isDisabled ) {
           e.currentTarget.style.backgroundColor = branding.hoverColor;
         }
       }}
       onMouseLeave={(e) => {
-        if (!disabled && (view === "outlined" || view === "flat")) {
+        if (!isDisabled && (view === "outlined" || view === "flat")) {
           e.currentTarget.style.backgroundColor = "transparent";
         }else if (view === "normal") {
           e.currentTarget.style.backgroundColor = branding.brandColor;
@@ -336,6 +407,11 @@ export const Button: React.FC<ButtonProps> = ({
 
   const finalElement = renderWithHeader(buttonElement);
 
+  // Don't render if hidden by event
+  if (!isVisible) {
+    return null;
+  }
+
   if (needTooltip && tooltipProps) {
     return (
       <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
@@ -345,6 +421,8 @@ export const Button: React.FC<ButtonProps> = ({
   }
 
   return <>{finalElement}</>;
-};
+});
+
+Button.displayName = "Button";
 
   

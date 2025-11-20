@@ -15,6 +15,7 @@ interface ImageProps {
   alt?: string;
   width?: string;
   height?: string;
+  className?: string;
 }
 
 export const Image: React.FC<ImageProps> = ({
@@ -26,6 +27,7 @@ export const Image: React.FC<ImageProps> = ({
   alt = "",
   width = "auto",
   height = "auto",
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -35,7 +37,7 @@ export const Image: React.FC<ImageProps> = ({
     <img
       src={url}
       alt={alt}
-      className={`${getBorderRadiusClass(branding.borderRadius)}`}
+      className={`${getBorderRadiusClass(branding.borderRadius)} ${className}`}
       style={{ width, height }}
     />
   );

@@ -16,6 +16,7 @@ interface QrCodeProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
+  className?: string;
 }
 
 export const QrCode: React.FC<QrCodeProps> = ({
@@ -28,6 +29,7 @@ export const QrCode: React.FC<QrCodeProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -72,7 +74,7 @@ export const QrCode: React.FC<QrCodeProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const qrCodeElement = (
-    <div className="flex flex-col items-center">
+    <div className={`flex flex-col items-center ${className}`}>
       {title && (
         <h3 className={`mb-2 ${getFontSizeClass(branding.fontSize)} font-semibold ${
           isDark ? "text-gray-200" : "text-gray-700"

@@ -11,6 +11,7 @@ interface TextToSpeechProps {
   topcontent?: boolean;
   value?: string;
   onChange?: (text: string) => void;
+  className?: string;
 }
 
 export const TextToSpeech: React.FC<TextToSpeechProps> = ({
@@ -19,6 +20,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
   topcontent = false,
   value = "",
   onChange,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [text, setText] = useState(value);
@@ -52,7 +54,7 @@ export const TextToSpeech: React.FC<TextToSpeechProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   return (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       {topcontent && (
         <label className={`block mb-2 ${getFontSizeClass(branding.fontSize)} font-medium ${
           isDark ? "text-gray-200" : "text-gray-900"

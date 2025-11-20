@@ -16,6 +16,7 @@ interface SpeechToTextProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onTranscript?: (text: string) => void;
+  className?: string;
 }
 
 export const SpeechToText: React.FC<SpeechToTextProps> = ({
@@ -27,6 +28,7 @@ export const SpeechToText: React.FC<SpeechToTextProps> = ({
   headerText,
   headerPosition = "top",
   onTranscript,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [isRecording, setIsRecording] = useState(false);
@@ -53,7 +55,7 @@ export const SpeechToText: React.FC<SpeechToTextProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const speechToTextElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       {topcontent && headerText && (
         <label className={`block mb-2 ${getFontSizeClass(branding.fontSize)} font-medium ${
           isDark ? "text-gray-200" : "text-gray-900"

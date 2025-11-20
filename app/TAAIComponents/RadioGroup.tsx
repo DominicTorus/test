@@ -23,6 +23,7 @@ interface RadioGroupProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
@@ -36,6 +37,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction: globalDirection, branding } = useGlobal();
   const [selectedValue, setSelectedValue] = useState(value);
@@ -50,7 +52,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
 
   const radioGroupElement = (
     <div
-      className={`flex ${direction === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-3"}`}
+      className={`flex ${direction === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-3"} ${className}`}
     >
       {items.map((item) => (
         <Radio

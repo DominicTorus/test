@@ -25,6 +25,7 @@ interface AvatarProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
+  className?: string;
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
@@ -45,6 +46,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -113,6 +115,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         overflow-hidden
         transition-all
         ${view === "outlined" ? "border-2" : ""}
+        ${className}
       `}
       style={{
         backgroundColor: imageUrl ? "transparent" : getBackgroundColor(),

@@ -29,6 +29,7 @@ interface TabsProps {
   headerPosition?: HeaderPosition;
   defaultActiveId?: string;
   onChange?: (id: string) => void;
+  className?: string;
 }
 
 export const Tabs: React.FC<TabsProps> = ({
@@ -41,6 +42,7 @@ export const Tabs: React.FC<TabsProps> = ({
   headerPosition = "top",
   defaultActiveId,
   onChange,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [activeTab, setActiveTab] = useState(defaultActiveId || items[0]?.id || "");
@@ -71,7 +73,7 @@ export const Tabs: React.FC<TabsProps> = ({
   const activeContent = items.find(item => item.id === activeTab)?.content;
 
   const tabsElement = (
-    <div className={`w-full ${direction === "vertical" ? "flex gap-4" : ""}`}>
+    <div className={`w-full ${direction === "vertical" ? "flex gap-4" : ""} ${className}`}>
       <div
         className={`
           flex

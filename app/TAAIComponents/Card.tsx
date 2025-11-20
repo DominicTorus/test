@@ -27,6 +27,7 @@ interface CardProps {
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
   onClick?: () => void;
+  className?: string;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -43,6 +44,7 @@ export const Card: React.FC<CardProps> = ({
   headerPosition = "top",
   children,
   onClick,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -102,6 +104,7 @@ export const Card: React.FC<CardProps> = ({
         ${view === "outlined" ? "border-2" : view === "raised" ? "shadow-lg" : ""}
         ${disabled ? "opacity-50 cursor-not-allowed" : onClick ? "cursor-pointer hover:shadow-md" : ""}
         transition-all
+        ${className}
       `}
       style={{
         backgroundColor: view === "filled" ? colors.bg : view === "clear" ? "transparent" : isDark ? "#1F2937" : "#FFFFFF",

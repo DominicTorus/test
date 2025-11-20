@@ -21,6 +21,7 @@ interface DocumentUploaderProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onFileUpload?: (files: File[]) => void;
+  className?: string;
 }
 
 export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
@@ -33,6 +34,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   headerText,
   headerPosition = "top",
   onFileUpload,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [files, setFiles] = useState<File[]>([]);
@@ -71,7 +73,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const uploaderElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <div
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}

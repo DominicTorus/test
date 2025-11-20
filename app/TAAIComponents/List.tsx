@@ -17,6 +17,7 @@ interface ListProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onItemClick?: (index: number, item: string) => void;
+  className?: string;
 }
 
 export const List: React.FC<ListProps> = ({
@@ -30,6 +31,7 @@ export const List: React.FC<ListProps> = ({
   headerText,
   headerPosition = "top",
   onItemClick,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [items, setItems] = useState(initialItems);
@@ -50,6 +52,7 @@ export const List: React.FC<ListProps> = ({
         ${isDark ? "bg-gray-800" : "bg-white"}
         border-2
         ${isDark ? "border-gray-600" : "border-gray-300"}
+        ${className}
       `}
       style={{ maxHeight: itemsheight ? `${itemsheight}px` : "auto" }}
     >

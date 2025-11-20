@@ -16,6 +16,7 @@ interface CompanyCardProps {
   location?: string;
   employees?: string;
   website?: string;
+  className?: string;
 }
 
 export const CompanyCard: React.FC<CompanyCardProps> = ({
@@ -27,6 +28,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
   location,
   employees,
   website,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -53,6 +55,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
         shadow-md
         transition-all
         hover:shadow-lg
+        ${className}
       `}
     >
       <div className="flex items-start gap-4">

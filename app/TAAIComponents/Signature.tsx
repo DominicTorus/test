@@ -16,6 +16,7 @@ interface SignatureProps {
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
   onChange?: (signature: string) => void;
+  className?: string;
 }
 
 export const Signature: React.FC<SignatureProps> = ({
@@ -28,6 +29,7 @@ export const Signature: React.FC<SignatureProps> = ({
   needTooltip = false,
   tooltipProps,
   onChange,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -99,7 +101,7 @@ export const Signature: React.FC<SignatureProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const signatureElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       {title && (
         <h3 className={`mb-2 ${getFontSizeClass(branding.fontSize)} font-semibold ${
           isDark ? "text-gray-200" : "text-gray-700"

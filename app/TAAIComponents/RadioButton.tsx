@@ -21,6 +21,7 @@ interface RadioButtonProps {
   headerPosition?: HeaderPosition;
   onChange?: (value: string) => void;
   defaultValue?: string;
+  className?: string;
 }
 
 export const RadioButton: React.FC<RadioButtonProps> = ({
@@ -33,6 +34,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   headerPosition = "top",
   onChange,
   defaultValue,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [selectedValue, setSelectedValue] = useState(defaultValue || items[0]?.value || "");
@@ -65,7 +67,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   const radioButtonElement = (
     <div className={`inline-flex ${getBorderRadiusClass(branding.borderRadius)} overflow-hidden ${
       isDark ? "bg-gray-800" : "bg-gray-100"
-    } p-1 ${direction === "RTL" ? "flex-row-reverse" : ""}`}>
+    } p-1 ${direction === "RTL" ? "flex-row-reverse" : ""} ${className}`}>
       {items.map((item) => {
         const isSelected = selectedValue === item.value;
         return (

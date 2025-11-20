@@ -8,12 +8,14 @@ interface TooltipProps {
   children: React.ReactNode;
   title: string;
   placement: TooltipPlacement;
+  className?: string;
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
   children,
   title,
   placement,
+  className = "",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -93,7 +95,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       {isVisible && (
         <div
           ref={tooltipRef}
-          className={`fixed z-50 px-3 py-2 text-sm rounded shadow-lg border ${getThemeClasses()} pointer-events-none`}
+          className={`fixed z-50 px-3 py-2 text-sm rounded shadow-lg border ${getThemeClasses()} pointer-events-none ${className}`}
           style={{
             top: `${position.top}px`,
             left: `${position.left}px`,

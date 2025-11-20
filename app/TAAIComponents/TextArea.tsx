@@ -20,6 +20,7 @@ interface TextAreaProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
 export const TextArea: React.FC<TextAreaProps> = ({
@@ -36,6 +37,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [internalValue, setInternalValue] = useState(value);
@@ -84,7 +86,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const textAreaElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <textarea
         value={internalValue}
         onChange={(e) => handleChange(e.target.value)}

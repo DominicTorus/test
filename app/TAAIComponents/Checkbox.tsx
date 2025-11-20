@@ -21,6 +21,7 @@ interface CheckboxProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (checked: boolean) => void;
+  className?: string;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
@@ -34,6 +35,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
 
@@ -80,7 +82,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     <label
       className={`inline-flex items-center ${
         disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-      }`}
+      } ${className}`}
     >
       <div className="relative">
         <input

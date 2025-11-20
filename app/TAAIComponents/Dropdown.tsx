@@ -20,6 +20,7 @@ interface DropdownProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (selected: string | string[]) => void;
+  className?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -35,6 +36,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
@@ -59,7 +61,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const dropdownElement = (
-    <div className="relative w-full" style={{ width }}>
+    <div className={`relative w-full ${className}`} style={{ width }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`

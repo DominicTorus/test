@@ -17,6 +17,7 @@ interface PinInputProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
 export const PinInput: React.FC<PinInputProps> = ({
@@ -30,6 +31,7 @@ export const PinInput: React.FC<PinInputProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [values, setValues] = useState<string[]>(Array(length).fill(""));
@@ -75,7 +77,7 @@ export const PinInput: React.FC<PinInputProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const pinInputElement = (
-    <div className={`flex gap-2 ${direction === "RTL" ? "flex-row-reverse" : ""}`}>
+    <div className={`flex gap-2 ${direction === "RTL" ? "flex-row-reverse" : ""} ${className}`}>
       {Array.from({ length }).map((_, index) => (
         <input
           key={index}

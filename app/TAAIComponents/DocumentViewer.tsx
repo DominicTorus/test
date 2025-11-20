@@ -15,6 +15,7 @@ interface DocumentViewerProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   url?: string;
+  className?: string;
 }
 
 export const DocumentViewer: React.FC<DocumentViewerProps> = ({
@@ -26,13 +27,14 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   headerText,
   headerPosition = "top",
   url,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const viewerElement = (
-    <div className="w-full" style={{ width }}>
+    <div className={`w-full ${className}`} style={{ width }}>
       {url ? (
         <iframe
           src={url}

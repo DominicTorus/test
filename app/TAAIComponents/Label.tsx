@@ -24,6 +24,7 @@ interface LabelProps {
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
   onClick?: () => void;
+  className?: string;
 }
 
 export const Label: React.FC<LabelProps> = ({
@@ -39,6 +40,7 @@ export const Label: React.FC<LabelProps> = ({
   headerPosition = "top",
   children,
   onClick,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -97,6 +99,7 @@ export const Label: React.FC<LabelProps> = ({
         font-medium
         ${disabled ? "opacity-50 cursor-not-allowed" : (interactive || copy || onClick) ? "cursor-pointer hover:opacity-80" : ""}
         transition-all
+        ${className}
       `}
       style={{
         backgroundColor: colors.bg,

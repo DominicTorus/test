@@ -77,6 +77,7 @@ interface TextProps {
   iconSize?: number;
   content?: string;
   children?: React.ReactNode;
+  className?: string;
 }
 
 export const Text: React.FC<TextProps> = ({
@@ -90,6 +91,7 @@ export const Text: React.FC<TextProps> = ({
   iconSize = 16,
   content,
   children,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -215,6 +217,7 @@ export const Text: React.FC<TextProps> = ({
         ${wordBreak === "break-all" ? "break-all" : wordBreak === "break-word" ? "break-words" : ""}
         ${whitespace === "nowrap" ? "whitespace-nowrap" : whitespace === "break-spaces" ? "whitespace-break-spaces" : ""}
         ${iconDisplay && icon ? "inline-flex items-center gap-2" : ""}
+        ${className}
       `}
       style={{ color: getColorStyle() }}
     >

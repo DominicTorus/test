@@ -14,6 +14,7 @@ interface TreeViewerProps {
   width?: string;
   view?: ViewType;
   data?: any;
+  className?: string;
 }
 
 export const TreeViewer: React.FC<TreeViewerProps> = ({
@@ -22,6 +23,7 @@ export const TreeViewer: React.FC<TreeViewerProps> = ({
   width = "700px",
   view = "Expanded",
   data,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
@@ -94,6 +96,7 @@ export const TreeViewer: React.FC<TreeViewerProps> = ({
         ${isDark ? "bg-gray-800 border-gray-600" : "bg-white border-gray-300"}
         overflow-auto
         p-4
+        ${className}
       `}
       style={{ height, width }}
     >

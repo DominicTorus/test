@@ -31,8 +31,11 @@ interface TextInputProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
+  require?: boolean;
   onChange?: (value: string) => void;
+  onBlur?: (value: string) => void;
   events?: ComponentEvents[];
+  className?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -57,8 +60,11 @@ export const TextInput: React.FC<TextInputProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
+  require = false,
   onChange,
+  onBlur,
   events,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const eventBus = useEventBus();
@@ -228,6 +234,7 @@ export const TextInput: React.FC<TextInputProps> = ({
             ${isDark ? "bg-gray-800 text-white" : "bg-white text-gray-900"}
             transition-colors
             focus:outline-none focus:ring-2 focus:ring-opacity-50
+            ${className}
           `}
           style={{
             ...getInputStyles(),
@@ -245,6 +252,7 @@ export const TextInput: React.FC<TextInputProps> = ({
             if (view === "normal" && !errorMessage) {
               e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
             }
+            onBlur?.(internalValue);
           }}
         />
         
@@ -282,11 +290,18 @@ export const TextInput: React.FC<TextInputProps> = ({
       isDark ? "text-gray-300" : "text-gray-700"
     }`;
 
+    const headerContent = (
+      <>
+        {headerText}
+        {require && <span className="text-red-500 ml-1">*</span>}
+      </>
+    );
+
     switch (headerPosition) {
       case "top":
         return (
           <div className="flex flex-col w-full">
-            <div className={headerClasses}>{headerText}</div>
+            <div className={headerClasses}>{headerContent}</div>
             {element}
           </div>
         );
@@ -294,14 +309,14 @@ export const TextInput: React.FC<TextInputProps> = ({
         return (
           <div className="flex flex-col w-full">
             {element}
-            <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
+            <div className={`${headerClasses} mt-1 mb-0`}>{headerContent}</div>
           </div>
         );
       case "left":
         return (
           <div className="flex items-center w-full">
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "ml-4" : "mr-4"} whitespace-nowrap`}>
-              {headerText}
+              {headerContent}
             </div>
             <div className="flex-1">{element}</div>
           </div>
@@ -311,7 +326,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           <div className="flex items-center w-full">
             <div className="flex-1">{element}</div>
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "mr-4" : "ml-4"} whitespace-nowrap`}>
-              {headerText}
+              {headerContent}
             </div>
           </div>
         );

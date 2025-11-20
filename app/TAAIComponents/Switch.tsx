@@ -16,6 +16,7 @@ interface SwitchProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (checked: boolean) => void;
+  className?: string;
 }
 
 export const Switch: React.FC<SwitchProps> = ({
@@ -28,6 +29,7 @@ export const Switch: React.FC<SwitchProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
 
@@ -65,7 +67,7 @@ export const Switch: React.FC<SwitchProps> = ({
 
   const switchElement = (
     <label
-      className={`inline-flex items-center ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+      className={`inline-flex items-center ${disabled ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
     >
       <div
         className={`${sizes.container} rounded-full relative transition-colors duration-200 ease-in-out`}

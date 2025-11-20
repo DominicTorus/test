@@ -22,6 +22,7 @@ interface TimePickerProps {
   headerPosition?: HeaderPosition;
   onChange?: (time: string) => void;
   value?: string;
+  className?: string;
 }
 
 export const TimePicker: React.FC<TimePickerProps> = ({
@@ -36,6 +37,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   headerPosition = "top",
   onChange,
   value = "",
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [timeValue, setTimeValue] = useState(value);
@@ -78,6 +80,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
         transition-colors
         focus:outline-none
+        ${className}
       `}
       onFocus={(e) => {
         e.currentTarget.style.borderColor = branding.brandColor;

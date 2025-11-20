@@ -16,6 +16,7 @@ interface DatePickerProps {
   headerPosition?: HeaderPosition;
   value?: string;
   onChange?: (date: string) => void;
+  className?: string;
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
@@ -28,6 +29,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   headerPosition = "top",
   value = "",
   onChange,
+  className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [dateValue, setDateValue] = useState(value);
@@ -71,6 +73,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
         transition-colors
         focus:outline-none
+        ${className}
       `}
       onFocus={(e) => {
         e.currentTarget.style.borderColor = branding.brandColor;

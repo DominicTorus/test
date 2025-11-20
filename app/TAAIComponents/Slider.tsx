@@ -25,6 +25,7 @@ interface SliderProps {
   headerPosition?: HeaderPosition;
   value?: number;
   onChange?: (value: number) => void;
+  className?: string;
 }
 
 export const Slider: React.FC<SliderProps> = ({
@@ -42,6 +43,7 @@ export const Slider: React.FC<SliderProps> = ({
   headerPosition = "top",
   value = 50,
   onChange,
+  className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [sliderValue, setSliderValue] = useState(value);
@@ -69,7 +71,7 @@ export const Slider: React.FC<SliderProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const sliderElement = (
-    <div className="w-full relative">
+    <div className={`w-full relative ${className}`}>
       <input
         type="range"
         min={min}

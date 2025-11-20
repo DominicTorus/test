@@ -7,6 +7,11 @@ import { Icon } from "./Icon";
 import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
+interface RenderRowActionsProps {
+  item: any;
+  index: number;
+}
+
 interface TableProps {
   pagination: boolean;
   tablename?: string;
@@ -27,6 +32,18 @@ interface TableProps {
   data?: any[];
   columns?: string[];
   onRowClick?: (row: any) => void;
+  className?: string;
+  renderRowActions?: (props: RenderRowActionsProps) => React.ReactNode;
+  selectedIds?: string[];
+  onSelectionChange?: (selectedIds: string[]) => void;
+  selectionMode?: 'single' | 'multi';
+  getRowId?: (row: any, index: number) => string;
+  externalPagination?: boolean;
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  onPageChange?: (page: number, pageSize: number) => void;
+  pageSizeOptions?: number[];
 }
 
 export const Table: React.FC<TableProps> = ({
@@ -49,23 +66,64 @@ export const Table: React.FC<TableProps> = ({
   data = [],
   columns = [],
   onRowClick,
+  className = "",
+  renderRowActions,
+  selectedIds,
+  onSelectionChange,
+  selectionMode = 'multi',
+  getRowId,
+  externalPagination = false,
+  page: externalPage,
+  pageSize: externalPageSize,
+  total: externalTotal,
+  onPageChange,
+  pageSizeOptions = [5, 10, 20, 50, 100],
 }) => {
   const { theme, branding } = useGlobal();
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
+  const [internalPage, setInternalPage] = useState(1);
+  const [internalPageSize, setInternalPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(columns);
 
-  const itemsPerPage = 10;
+  // Use controlled selection if selectedIds is provided, otherwise use internal state
+  const activeSelectedIds = selectedIds !== undefined ? selectedIds : internalSelectedIds;
+  const setActiveSelectedIds = selectedIds !== undefined ? onSelectionChange : setInternalSelectedIds;
 
-  const handleRowSelection = (index: number) => {
-    if (tableSelection) {
-      setSelectedRows((prev) =>
-        prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-      );
+  // Use external pagination if provided, otherwise use internal
+  const currentPage = externalPagination && externalPage !== undefined ? externalPage : internalPage;
+  const itemsPerPage = externalPagination && externalPageSize !== undefined ? externalPageSize : internalPageSize;
+
+  // Helper function to get row ID
+  const getRowIdHelper = (row: any, index: number): string => {
+    if (getRowId) {
+      return getRowId(row, index);
+    }
+    return index.toString();
+  };
+
+  const handleRowSelection = (row: any, index: number) => {
+    if (tableSelection && setActiveSelectedIds) {
+      const rowId = getRowIdHelper(row, index);
+
+      if (selectionMode === 'single') {
+        // Single selection mode: replace selection with clicked row
+        if (activeSelectedIds.includes(rowId)) {
+          setActiveSelectedIds([]);
+        } else {
+          setActiveSelectedIds([rowId]);
+        }
+      } else {
+        // Multi selection mode: toggle selection
+        if (activeSelectedIds.includes(rowId)) {
+          setActiveSelectedIds(activeSelectedIds.filter((id) => id !== rowId));
+        } else {
+          setActiveSelectedIds([...activeSelectedIds, rowId]);
+        }
+      }
     }
   };
 
@@ -113,29 +171,54 @@ export const Table: React.FC<TableProps> = ({
       })
     : filteredData;
 
-  const paginatedData = pagination
+  // For external pagination, use data as-is (already paginated from server)
+  // For internal pagination, slice the data
+  const paginatedData = pagination && !externalPagination
     ? sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    : externalPagination
+    ? data
     : sortedData;
 
-  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const totalRecords = externalPagination && externalTotal !== undefined ? externalTotal : sortedData.length;
+  const totalPages = Math.ceil(totalRecords / itemsPerPage);
 
   const handleSelectAllRows = () => {
-    if (selectedRows.length === paginatedData.length) {
-      // Deselect all
-      setSelectedRows([]);
+    if (!setActiveSelectedIds) return;
+
+    const currentPageIds = paginatedData.map((row, index) => {
+      const actualIndex = (currentPage - 1) * itemsPerPage + index;
+      return getRowIdHelper(row, actualIndex);
+    });
+
+    const allCurrentPageSelected = currentPageIds.every(id => activeSelectedIds.includes(id));
+
+    if (allCurrentPageSelected) {
+      // Deselect all rows on current page
+      setActiveSelectedIds(activeSelectedIds.filter(id => !currentPageIds.includes(id)));
     } else {
       // Select all rows on current page
-      setSelectedRows(paginatedData.map((_, index) => index));
+      const newSelectedIds = [...activeSelectedIds];
+      currentPageIds.forEach(id => {
+        if (!newSelectedIds.includes(id)) {
+          newSelectedIds.push(id);
+        }
+      });
+      setActiveSelectedIds(newSelectedIds);
     }
   };
 
-  const isAllRowsSelected = selectedRows.length === paginatedData.length && paginatedData.length > 0;
-  const isSomeRowsSelected = selectedRows.length > 0 && selectedRows.length < paginatedData.length;
+  // Check if all rows on current page are selected
+  const currentPageIds = paginatedData.map((row, index) => {
+    const actualIndex = (currentPage - 1) * itemsPerPage + index;
+    return getRowIdHelper(row, actualIndex);
+  });
+  const isAllRowsSelected = currentPageIds.length > 0 && currentPageIds.every(id => activeSelectedIds.includes(id));
+  const isSomeRowsSelected = currentPageIds.some(id => activeSelectedIds.includes(id)) && !isAllRowsSelected;
 
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const tableElement = (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <div className="flex gap-4 mb-4">
         {search && (
           <div className="flex-1">
@@ -342,19 +425,22 @@ export const Table: React.FC<TableProps> = ({
                   </div>
                 </th>
               ))}
-              {tableActions && (
+              {(tableActions || renderRowActions) && (
                 <th className="px-4 py-3 text-left font-semibold">Actions</th>
               )}
             </tr>
           </thead>
           <tbody>
             {paginatedData.map((row, index) => {
-              const isSelected = selectedRows.includes(index);
+              const actualIndex = (currentPage - 1) * itemsPerPage + index;
+              const rowId = getRowIdHelper(row, actualIndex);
+              const isSelected = activeSelectedIds.includes(rowId);
+
               return (
                 <tr
-                  key={index}
+                  key={rowId}
                   onClick={() => {
-                    handleRowSelection(index);
+                    handleRowSelection(row, actualIndex);
                     onRowClick?.(row);
                   }}
                   className={`
@@ -373,9 +459,9 @@ export const Table: React.FC<TableProps> = ({
                     <td className="px-4 py-3 w-12">
                       <div className="flex items-center justify-center">
                         <input
-                          type="checkbox"
+                          type={selectionMode === 'single' ? "radio" : "checkbox"}
                           checked={isSelected}
-                          onChange={() => handleRowSelection(index)}
+                          onChange={() => handleRowSelection(row, actualIndex)}
                           onClick={(e) => e.stopPropagation()}
                           className="w-4 h-4 cursor-pointer"
                           style={{
@@ -398,7 +484,11 @@ export const Table: React.FC<TableProps> = ({
                       {row[column]}
                     </td>
                   ))}
-                  {tableActions && (
+                  {renderRowActions ? (
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      {renderRowActions({ item: row, index: actualIndex })}
+                    </td>
+                  ) : tableActions ? (
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         <button className="text-blue-500 hover:text-blue-700">
@@ -409,7 +499,7 @@ export const Table: React.FC<TableProps> = ({
                         </button>
                       </div>
                     </td>
-                  )}
+                  ) : null}
                 </tr>
               );
             })}
@@ -418,40 +508,115 @@ export const Table: React.FC<TableProps> = ({
       </div>
 
       {pagination && (
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className={`
-              px-4 py-2
-              ${getBorderRadiusClass(branding.borderRadius)}
-              ${getFontSizeClass(branding.fontSize)}
-              ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
-              disabled:opacity-50
-              transition-colors
-            `}
-          >
-            Previous
-          </button>
+        <div className="flex justify-between items-center mt-4 flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Rows per page:
+            </span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                const newPageSize = Number(e.target.value);
+                if (externalPagination && onPageChange) {
+                  onPageChange(1, newPageSize);
+                } else {
+                  setInternalPageSize(newPageSize);
+                  setInternalPage(1);
+                }
+              }}
+              className={`
+                px-3 py-1.5
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-white text-gray-700 border-gray-300"}
+                border-2
+                cursor-pointer
+              `}
+            >
+              {pageSizeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-            Page {currentPage} of {totalPages}
-          </span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                const newPage = Math.max(1, currentPage - 1);
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              disabled={currentPage === 1}
+              className={`
+                px-4 py-2
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
+                disabled:opacity-50
+                transition-colors
+              `}
+            >
+              Previous
+            </button>
 
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className={`
-              px-4 py-2
-              ${getBorderRadiusClass(branding.borderRadius)}
-              ${getFontSizeClass(branding.fontSize)}
-              ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
-              disabled:opacity-50
-              transition-colors
-            `}
-          >
-            Next
-          </button>
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Page {currentPage} of {totalPages} ({totalRecords} total)
+            </span>
+
+            <button
+              onClick={() => {
+                const newPage = Math.min(totalPages, currentPage + 1);
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`
+                px-4 py-2
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
+                disabled:opacity-50
+                transition-colors
+              `}
+            >
+              Next
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Go to page:
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={currentPage}
+              onChange={(e) => {
+                const newPage = Math.max(1, Math.min(totalPages, Number(e.target.value)));
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              className={`
+                w-20 px-3 py-1.5
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-white text-gray-700 border-gray-300"}
+                border-2
+              `}
+            />
+          </div>
         </div>
       )}
     </div>
