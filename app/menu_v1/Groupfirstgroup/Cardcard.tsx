@@ -1,10 +1,10 @@
 'use client'
 
-import { Icon } from '@gravity-ui/uikit';
-import { CircleDollar } from '@gravity-ui/icons';
-import React, { useState, useContext, useEffect, useRef } from 'react'; 
-import { Text } from '@gravity-ui/uikit';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { Icon } from '@/components/Icon';
+import { Text } from '@/components/Text';
 import { Card } from '@/components/Card';
+import { Modal } from '@/components/Modal';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { getCookie } from '@/app/components/cookieMgment';
 import { AxiosService } from "@/app/components/axiosService";
@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation';
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps, getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { te_refreshDto } from '@/app/interfaces/interfaces';
-import {Modal} from '@gravity-ui/uikit';
 
 const Cardcard = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
@@ -120,25 +119,25 @@ useEffect(() => {
       
       size="m"
       // variant="normal"
-      theme="normal"
-      view="outlined"
+      theme="brand"
+      view="filled"
           disabled= {card63ac3?.isDisabled ? true : false}
       onClick={()=>handleClick}      
       >
       
       {/* <div className="my-4 w-3/4 border-1 border-gray-300"></div> */}
-      <div className=' flex justify-center space-x-2  '>
-        <span className=" flex justify-center ">< CircleDollar /></span>
-        <Text variant='body-1' className='truncate ' >
-        Card
+      <div className='flex justify-center items-center space-x-2'>
+        <Icon data="circle-dollar" size={20} />
+        <Text variant='body-1' className='truncate'>
+          Card
         </Text>
-        </div>
-        <br/> 
+      </div>
+      <br/>
       <div className='flex justify-center'>
-      <Text variant ="display-1">
-      {firstgroupc4acb?.card?firstgroupc4acb?.card:"0"}
-      </Text>
-    </div>
+        <Text variant="display-1">
+          {firstgroupc4acb?.card ? firstgroupc4acb?.card : "0"}
+        </Text>
+      </div>
       </Card>
     </div>
   )

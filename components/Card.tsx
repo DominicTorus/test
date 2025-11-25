@@ -5,36 +5,43 @@ import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { Icon } from "./Icon";
 import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { GravityIcon } from "@/types/icons";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
 type CardSize = "m" | "l";
-type CardTheme = "normal" | "info" | "success" | "warning" | "danger" | "utility";
+type CardTheme = "normal" | "info" | "success" | "warning" | "danger" | "utility" | "brand";
 type CardView = "outlined" | "clear" | "filled" | "raised";
+type CardType = "selection" | "action" | "container";
 type Alignment = "start" | "center" | "end";
 
 interface CardProps {
-  size: CardSize;
-  theme: CardTheme;
-  view: CardView;
+  size?: CardSize;
+  theme?: CardTheme;
+  view?: CardView;
+  type?: CardType;
   disabled?: boolean;
+  selected?: boolean;
+  title?: string;
   prefixValue?: string;
-  icon?: string;
+  icon?: string | React.ReactNode;
   alignment?: Alignment;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const Card: React.FC<CardProps> = ({
-  size,
-  theme: cardTheme,
-  view,
+  size = "m",
+  theme: cardTheme = "normal",
+  view = "outlined",
+  type = "container",
   disabled = false,
+  selected = false,
+  title,
   prefixValue,
   icon,
   alignment = "start",
@@ -45,6 +52,7 @@ export const Card: React.FC<CardProps> = ({
   children,
   onClick,
   className = "",
+  style = {},
 }) => {
   const { theme, branding } = useGlobal();
 
@@ -74,6 +82,8 @@ export const Card: React.FC<CardProps> = ({
         return { bg: isDark ? "#991B1B" : "#FEE2E2", border: "#EF4444", text: isDark ? "#FECACA" : "#991B1B" };
       case "utility":
         return { bg: isDark ? "#374151" : "#F3F4F6", border: "#6B7280", text: isDark ? "#D1D5DB" : "#374151" };
+      case "brand":
+        return { bg: isDark ? branding.brandColor + "33" : branding.brandColor + "1A", border: branding.brandColor, text: isDark ? "#F9FAFB" : "#111827" };
       default:
         return { bg: isDark ? "#1F2937" : "#FFFFFF", border: isDark ? "#4B5563" : "#E5E7EB", text: isDark ? "#F9FAFB" : "#111827" };
     }
@@ -100,29 +110,50 @@ export const Card: React.FC<CardProps> = ({
         ${getSizeClasses()}
         ${getBorderRadiusClass(branding.borderRadius)}
         ${getAlignmentClass()}
-        flex flex-col gap-2
-        ${view === "outlined" ? "border-2" : view === "raised" ? "shadow-lg" : ""}
+        flex flex-col gap-3
+        ${view === "outlined" ? "border-2" : view === "raised" ? "shadow-lg" : view === "filled" ? "border" : ""}
+        ${selected ? "ring-2 ring-offset-2" : ""}
         ${disabled ? "opacity-50 cursor-not-allowed" : onClick ? "cursor-pointer hover:shadow-md" : ""}
-        transition-all
+        ${type === "selection" && selected ? "border-2" : ""}
+        transition-all duration-200
         ${className}
       `}
       style={{
         backgroundColor: view === "filled" ? colors.bg : view === "clear" ? "transparent" : isDark ? "#1F2937" : "#FFFFFF",
-        borderColor: view === "outlined" ? colors.border : "transparent",
+        borderColor: selected ? branding.brandColor : view === "outlined" || view === "filled" ? colors.border : "transparent",
         color: colors.text,
+        fontFamily: "var(--font-body)",
+        ...(selected ? { '--tw-ring-color': branding.brandColor } as any : {}),
+        ...style,
       }}
     >
-      {icon && (
-        <div className="flex items-center gap-2">
-          <Icon data={icon} size={size === "l" ? 24 : 20} />
+      {/* Title Section */}
+      {title && (
+        <div className={`${getFontSizeClass(branding.fontSize)} font-semibold border-b pb-2`} style={{ borderColor: isDark ? "#374151" : "#E5E7EB" }}>
+          {title}
         </div>
       )}
 
-      {prefixValue && (
-        <span className="font-semibold">{prefixValue}</span>
+      {/* Icon and Prefix Section */}
+      {(icon || prefixValue) && (
+        <div className="flex items-center gap-2">
+          {icon && (
+            typeof icon === "string" ? (
+              <Icon data={icon} size={size === "l" ? 24 : 20} />
+            ) : (
+              icon
+            )
+          )}
+          {prefixValue && (
+            <span className="font-semibold">{prefixValue}</span>
+          )}
+        </div>
       )}
 
-      {children}
+      {/* Content Section */}
+      <div className="flex-1">
+        {children}
+      </div>
     </div>
   );
 
