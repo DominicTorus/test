@@ -2,13 +2,13 @@ import { deleteAllCookies, getCookie } from '@/app/components/cookieMgment'
 import decodeToken from '@/app/components/decodeToken'
 import { Logo } from '@/app/components/Logo'
 import {
-  Avatar,
-  Button,
   DropdownMenu,
-  Icon,
-  Text,
   UserLabel
 } from '@gravity-ui/uikit'
+import { Avatar } from '@/components/Avatar'
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
+import { Text } from '@/components/Text'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MenuItem, MenuStructure } from '../interfaces/interfaces'
@@ -122,7 +122,7 @@ const TopNav = ({
   async function logout() {
     localStorage.clear()
     deleteAllCookies()
-    window.location.href = '/ct003/cg/tg1/v8'
+    window.location.href = '/ct003/cg/tg2/v2'
   }
   const hasMatchingName = (obj: any, input: string): boolean => {
     if (typeof obj !== 'object' || obj === null) return false

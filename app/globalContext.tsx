@@ -6,124 +6,174 @@ import { RealTheme } from '@gravity-ui/uikit'
 import React from 'react'
 import { getCookie } from './components/cookieMgment'
 export interface TotalContextProps {
-  group1d56d: any 
-  setgroup1d56d: React.Dispatch<React.SetStateAction<any>>
-  group1d56dProps: any 
-  setgroup1d56dProps: React.Dispatch<React.SetStateAction<any>>
-  companygroup72d6d: any 
-  setcompanygroup72d6d: React.Dispatch<React.SetStateAction<any>>
-  companygroup72d6dProps: any 
-  setcompanygroup72d6dProps: React.Dispatch<React.SetStateAction<any>>
-  cgroupf48bf: any 
-  setcgroupf48bf: React.Dispatch<React.SetStateAction<any>>
-  cgroupf48bfProps: any 
-  setcgroupf48bfProps: React.Dispatch<React.SetStateAction<any>>
-  ecom231c9: any 
-  setecom231c9: React.Dispatch<React.SetStateAction<any>>
-  ecom231c9Props: any 
-  setecom231c9Props: React.Dispatch<React.SetStateAction<any>>
-  group2911c: any 
-  setgroup2911c: React.Dispatch<React.SetStateAction<any>>
-  group2911cProps: any 
-  setgroup2911cProps: React.Dispatch<React.SetStateAction<any>>
-  table77086: any 
-  settable77086: React.Dispatch<React.SetStateAction<any>>
-  table77086Props: any 
-  settable77086Props: React.Dispatch<React.SetStateAction<any>>
-  employee03307: any 
-  setemployee03307: React.Dispatch<React.SetStateAction<any>>
-  employee03307Props: any 
-  setemployee03307Props: React.Dispatch<React.SetStateAction<any>>
-  time96133: any 
-  settime96133: React.Dispatch<React.SetStateAction<any>>
-  time96133Props: any 
-  settime96133Props: React.Dispatch<React.SetStateAction<any>>
-  company7395c: any,
-  setcompany7395c:React.Dispatch<React.SetStateAction<any>>
-  company7395cProps: any 
-  setcompany7395cProps: React.Dispatch<React.SetStateAction<any>>
-  cname1a23c: any,
-  setcname1a23c:React.Dispatch<React.SetStateAction<any>>
-  cname1a23cProps: any 
-  setcname1a23cProps: React.Dispatch<React.SetStateAction<any>>
-  view155e3: any,
-  setview155e3:React.Dispatch<React.SetStateAction<any>>
-  view155e3Props: any 
-  setview155e3Props: React.Dispatch<React.SetStateAction<any>>
-  t_idb9088: any,
-  sett_idb9088:React.Dispatch<React.SetStateAction<any>>
-  t_idb9088Props: any 
-  sett_idb9088Props: React.Dispatch<React.SetStateAction<any>>
-  t_namefbecd: any,
-  sett_namefbecd:React.Dispatch<React.SetStateAction<any>>
-  t_namefbecdProps: any 
-  sett_namefbecdProps: React.Dispatch<React.SetStateAction<any>>
-  trs_status2a19e: any,
-  settrs_status2a19e:React.Dispatch<React.SetStateAction<any>>
-  trs_status2a19eProps: any 
-  settrs_status2a19eProps: React.Dispatch<React.SetStateAction<any>>
-  viewab0b7: any,
-  setviewab0b7:React.Dispatch<React.SetStateAction<any>>
-  viewab0b7Props: any 
-  setviewab0b7Props: React.Dispatch<React.SetStateAction<any>>
-  icone5068: any,
-  seticone5068:React.Dispatch<React.SetStateAction<any>>
-  icone5068Props: any 
-  seticone5068Props: React.Dispatch<React.SetStateAction<any>>
-  phonedeef3: any,
-  setphonedeef3:React.Dispatch<React.SetStateAction<any>>
-  phonedeef3Props: any 
-  setphonedeef3Props: React.Dispatch<React.SetStateAction<any>>
-  radioedaba: any,
-  setradioedaba:React.Dispatch<React.SetStateAction<any>>
-  radioedabaProps: any 
-  setradioedabaProps: React.Dispatch<React.SetStateAction<any>>
-  textinut187a8: any,
-  settextinut187a8:React.Dispatch<React.SetStateAction<any>>
-  textinut187a8Props: any 
-  settextinut187a8Props: React.Dispatch<React.SetStateAction<any>>
-  switch23709: any,
-  setswitch23709:React.Dispatch<React.SetStateAction<any>>
-  switch23709Props: any 
-  setswitch23709Props: React.Dispatch<React.SetStateAction<any>>
-  dropdown32403: any,
-  setdropdown32403:React.Dispatch<React.SetStateAction<any>>
-  dropdown32403Props: any 
-  setdropdown32403Props: React.Dispatch<React.SetStateAction<any>>
-  emailda9f0: any,
-  setemailda9f0:React.Dispatch<React.SetStateAction<any>>
-  emailda9f0Props: any 
-  setemailda9f0Props: React.Dispatch<React.SetStateAction<any>>
-  id75b92: any,
-  setid75b92:React.Dispatch<React.SetStateAction<any>>
-  id75b92Props: any 
-  setid75b92Props: React.Dispatch<React.SetStateAction<any>>
-  empname040f0: any,
-  setempname040f0:React.Dispatch<React.SetStateAction<any>>
-  empname040f0Props: any 
-  setempname040f0Props: React.Dispatch<React.SetStateAction<any>>
-  empcountry9cdb4: any,
-  setempcountry9cdb4:React.Dispatch<React.SetStateAction<any>>
-  empcountry9cdb4Props: any 
-  setempcountry9cdb4Props: React.Dispatch<React.SetStateAction<any>>
-  timeline1d3f6: any,
-  settimeline1d3f6:React.Dispatch<React.SetStateAction<any>>
-  timeline1d3f6Props: any 
-  settimeline1d3f6Props: React.Dispatch<React.SetStateAction<any>>
+  firstgroupc4acb: any 
+  setfirstgroupc4acb: React.Dispatch<React.SetStateAction<any>>
+  firstgroupc4acbProps: any 
+  setfirstgroupc4acbProps: React.Dispatch<React.SetStateAction<any>>
+  thirdgroup01a8f: any 
+  setthirdgroup01a8f: React.Dispatch<React.SetStateAction<any>>
+  thirdgroup01a8fProps: any 
+  setthirdgroup01a8fProps: React.Dispatch<React.SetStateAction<any>>
+  textinput2cc5d: any,
+  settextinput2cc5d:React.Dispatch<React.SetStateAction<any>>
+  textinput2cc5dProps: any 
+  settextinput2cc5dProps: React.Dispatch<React.SetStateAction<any>>
+  uploade78d7: any,
+  setuploade78d7:React.Dispatch<React.SetStateAction<any>>
+  uploade78d7Props: any 
+  setuploade78d7Props: React.Dispatch<React.SetStateAction<any>>
+  textarea87afb: any,
+  settextarea87afb:React.Dispatch<React.SetStateAction<any>>
+  textarea87afbProps: any 
+  settextarea87afbProps: React.Dispatch<React.SetStateAction<any>>
+  radiof9609: any,
+  setradiof9609:React.Dispatch<React.SetStateAction<any>>
+  radiof9609Props: any 
+  setradiof9609Props: React.Dispatch<React.SetStateAction<any>>
+  radiogroup5ad4f: any,
+  setradiogroup5ad4f:React.Dispatch<React.SetStateAction<any>>
+  radiogroup5ad4fProps: any 
+  setradiogroup5ad4fProps: React.Dispatch<React.SetStateAction<any>>
+  switcha515a: any,
+  setswitcha515a:React.Dispatch<React.SetStateAction<any>>
+  switcha515aProps: any 
+  setswitcha515aProps: React.Dispatch<React.SetStateAction<any>>
+  pininputf6753: any,
+  setpininputf6753:React.Dispatch<React.SetStateAction<any>>
+  pininputf6753Props: any 
+  setpininputf6753Props: React.Dispatch<React.SetStateAction<any>>
+  save67a1f: any,
+  setsave67a1f:React.Dispatch<React.SetStateAction<any>>
+  save67a1fProps: any 
+  setsave67a1fProps: React.Dispatch<React.SetStateAction<any>>
+  radiobutton6d7d6: any,
+  setradiobutton6d7d6:React.Dispatch<React.SetStateAction<any>>
+  radiobutton6d7d6Props: any 
+  setradiobutton6d7d6Props: React.Dispatch<React.SetStateAction<any>>
+  checkbox1c08f: any,
+  setcheckbox1c08f:React.Dispatch<React.SetStateAction<any>>
+  checkbox1c08fProps: any 
+  setcheckbox1c08fProps: React.Dispatch<React.SetStateAction<any>>
+  signature75ba3: any,
+  setsignature75ba3:React.Dispatch<React.SetStateAction<any>>
+  signature75ba3Props: any 
+  setsignature75ba3Props: React.Dispatch<React.SetStateAction<any>>
+  viewer2e45c: any,
+  setviewer2e45c:React.Dispatch<React.SetStateAction<any>>
+  viewer2e45cProps: any 
+  setviewer2e45cProps: React.Dispatch<React.SetStateAction<any>>
+  card63ac3: any,
+  setcard63ac3:React.Dispatch<React.SetStateAction<any>>
+  card63ac3Props: any 
+  setcard63ac3Props: React.Dispatch<React.SetStateAction<any>>
+  timepicker40a6b: any,
+  settimepicker40a6b:React.Dispatch<React.SetStateAction<any>>
+  timepicker40a6bProps: any 
+  settimepicker40a6bProps: React.Dispatch<React.SetStateAction<any>>
+  slider6c8f7: any,
+  setslider6c8f7:React.Dispatch<React.SetStateAction<any>>
+  slider6c8f7Props: any 
+  setslider6c8f7Props: React.Dispatch<React.SetStateAction<any>>
+  qrcode772a6: any,
+  setqrcode772a6:React.Dispatch<React.SetStateAction<any>>
+  qrcode772a6Props: any 
+  setqrcode772a6Props: React.Dispatch<React.SetStateAction<any>>
+  image54de2: any,
+  setimage54de2:React.Dispatch<React.SetStateAction<any>>
+  image54de2Props: any 
+  setimage54de2Props: React.Dispatch<React.SetStateAction<any>>
+  dropdown7f41a: any,
+  setdropdown7f41a:React.Dispatch<React.SetStateAction<any>>
+  dropdown7f41aProps: any 
+  setdropdown7f41aProps: React.Dispatch<React.SetStateAction<any>>
+  icon71de8: any,
+  seticon71de8:React.Dispatch<React.SetStateAction<any>>
+  icon71de8Props: any 
+  seticon71de8Props: React.Dispatch<React.SetStateAction<any>>
+  text5d0f8: any,
+  settext5d0f8:React.Dispatch<React.SetStateAction<any>>
+  text5d0f8Props: any 
+  settext5d0f8Props: React.Dispatch<React.SetStateAction<any>>
+  label9bd6f: any,
+  setlabel9bd6f:React.Dispatch<React.SetStateAction<any>>
+  label9bd6fProps: any 
+  setlabel9bd6fProps: React.Dispatch<React.SetStateAction<any>>
+  listec3b4: any,
+  setlistec3b4:React.Dispatch<React.SetStateAction<any>>
+  listec3b4Props: any 
+  setlistec3b4Props: React.Dispatch<React.SetStateAction<any>>
+  datepickerbe904: any,
+  setdatepickerbe904:React.Dispatch<React.SetStateAction<any>>
+  datepickerbe904Props: any 
+  setdatepickerbe904Props: React.Dispatch<React.SetStateAction<any>>
+  jsonviewerfbb2e: any,
+  setjsonviewerfbb2e:React.Dispatch<React.SetStateAction<any>>
+  jsonviewerfbb2eProps: any 
+  setjsonviewerfbb2eProps: React.Dispatch<React.SetStateAction<any>>
+  avatar24aed: any,
+  setavatar24aed:React.Dispatch<React.SetStateAction<any>>
+  avatar24aedProps: any 
+  setavatar24aedProps: React.Dispatch<React.SetStateAction<any>>
+  companycard071eb: any,
+  setcompanycard071eb:React.Dispatch<React.SetStateAction<any>>
+  companycard071ebProps: any 
+  setcompanycard071ebProps: React.Dispatch<React.SetStateAction<any>>
+  progressd7ccf: any,
+  setprogressd7ccf:React.Dispatch<React.SetStateAction<any>>
+  progressd7ccfProps: any 
+  setprogressd7ccfProps: React.Dispatch<React.SetStateAction<any>>
+  texttospeech63351: any,
+  settexttospeech63351:React.Dispatch<React.SetStateAction<any>>
+  texttospeech63351Props: any 
+  settexttospeech63351Props: React.Dispatch<React.SetStateAction<any>>
+  speechtotext5f5c9: any,
+  setspeechtotext5f5c9:React.Dispatch<React.SetStateAction<any>>
+  speechtotext5f5c9Props: any 
+  setspeechtotext5f5c9Props: React.Dispatch<React.SetStateAction<any>>
+  tabsb7d72: any,
+  settabsb7d72:React.Dispatch<React.SetStateAction<any>>
+  tabsb7d72Props: any 
+  settabsb7d72Props: React.Dispatch<React.SetStateAction<any>>
+  text6135a: any,
+  settext6135a:React.Dispatch<React.SetStateAction<any>>
+  text6135aProps: any 
+  settext6135aProps: React.Dispatch<React.SetStateAction<any>>
+  dropdownd94a5: any,
+  setdropdownd94a5:React.Dispatch<React.SetStateAction<any>>
+  dropdownd94a5Props: any 
+  setdropdownd94a5Props: React.Dispatch<React.SetStateAction<any>>
+  dropdown22adf7: any,
+  setdropdown22adf7:React.Dispatch<React.SetStateAction<any>>
+  dropdown22adf7Props: any 
+  setdropdown22adf7Props: React.Dispatch<React.SetStateAction<any>>
+  country2049a: any,
+  setcountry2049a:React.Dispatch<React.SetStateAction<any>>
+  country2049aProps: any 
+  setcountry2049aProps: React.Dispatch<React.SetStateAction<any>>
+  statec9a9f: any,
+  setstatec9a9f:React.Dispatch<React.SetStateAction<any>>
+  statec9a9fProps: any 
+  setstatec9a9fProps: React.Dispatch<React.SetStateAction<any>>
+  city6363b: any,
+  setcity6363b:React.Dispatch<React.SetStateAction<any>>
+  city6363bProps: any 
+  setcity6363bProps: React.Dispatch<React.SetStateAction<any>>
 
 ////// screen states 
-  company_v1Props: any 
-  setcompany_v1Props: React.Dispatch<React.SetStateAction<any>>
-  samplescreen_v1Props: any 
-  setsamplescreen_v1Props: React.Dispatch<React.SetStateAction<any>>
-  timeline_v1Props: any 
-  settimeline_v1Props: React.Dispatch<React.SetStateAction<any>>
+  allcomponents_v1Props: any 
+  setallcomponents_v1Props: React.Dispatch<React.SetStateAction<any>>
+  ufcomponent_v1Props: any 
+  setufcomponent_v1Props: React.Dispatch<React.SetStateAction<any>>
 
 ///////// dfd
-  dfd_employee_v1Props: any 
-  setdfd_employee_v1Props: React.Dispatch<React.SetStateAction<any>>
-  dfd_carddoc_v1Props: any 
-  setdfd_carddoc_v1Props: React.Dispatch<React.SetStateAction<any>>
+  dfd_code_description_v1Props: any 
+  setdfd_code_description_v1Props: React.Dispatch<React.SetStateAction<any>>
+  dfd_country_dropdown_v1Props: any 
+  setdfd_country_dropdown_v1Props: React.Dispatch<React.SetStateAction<any>>
+  dfd_state_dropdown_v1Props: any 
+  setdfd_state_dropdown_v1Props: React.Dispatch<React.SetStateAction<any>>
+  dfd_city_dropdown_v1Props: any 
+  setdfd_city_dropdown_v1Props: React.Dispatch<React.SetStateAction<any>>
 
   refetch: any,
   setRefetch: React.Dispatch<React.SetStateAction<any>>
@@ -167,8 +217,8 @@ export const TotalContext = React.createContext<TotalContextProps | {}>({})
 
 const GlobalContext = ({children} : {children: React.ReactNode}) => {
       //////////
-        const [group1d56d, setgroup1d56d ] = React.useState<any>({}) 
-    const [group1d56dProps, setgroup1d56dProps ] = React.useState<any>({
+        const [firstgroupc4acb, setfirstgroupc4acb ] = React.useState<any>({}) 
+    const [firstgroupc4acbProps, setfirstgroupc4acbProps ] = React.useState<any>({
       validation:false,
       required:false,
       refetch:false,
@@ -178,8 +228,8 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       isHidden: false,
       selectedIds:[]
       }) 
-        const [companygroup72d6d, setcompanygroup72d6d ] = React.useState<any>({}) 
-    const [companygroup72d6dProps, setcompanygroup72d6dProps ] = React.useState<any>({
+        const [thirdgroup01a8f, setthirdgroup01a8f ] = React.useState<any>({}) 
+    const [thirdgroup01a8fProps, setthirdgroup01a8fProps ] = React.useState<any>({
       validation:false,
       required:false,
       refetch:false,
@@ -189,194 +239,252 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       isHidden: false,
       selectedIds:[]
       }) 
-        const [cgroupf48bf, setcgroupf48bf ] = React.useState<any>({}) 
-    const [cgroupf48bfProps, setcgroupf48bfProps ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      refresh:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[]
-      }) 
-    
-    const [ecom231c9, setecom231c9 ] = React.useState<any>([]) 
-    const [ecom231c9Props, setecom231c9Props ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[],
-      refresh:false,
-      }) 
-        const [group2911c, setgroup2911c ] = React.useState<any>({}) 
-    const [group2911cProps, setgroup2911cProps ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      refresh:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[]
-      }) 
-        const [table77086, settable77086 ] = React.useState<any>({}) 
-    const [table77086Props, settable77086Props ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      refresh:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[]
-      }) 
-    
-    const [employee03307, setemployee03307 ] = React.useState<any>([]) 
-    const [employee03307Props, setemployee03307Props ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[],
-      refresh:false,
-      }) 
-        const [time96133, settime96133 ] = React.useState<any>({}) 
-    const [time96133Props, settime96133Props ] = React.useState<any>({
-      validation:false,
-      required:false,
-      refetch:false,
-      refresh:false,
-      isDisabled: false,
-      presetValues: '',
-      isHidden: false,
-      selectedIds:[]
-      }) 
-   const [company7395c,setcompany7395c] = React.useState<any>({
+   const [textinput2cc5d,settextinput2cc5d] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [cname1a23c,setcname1a23c] = React.useState<any>({
+   const [uploade78d7,setuploade78d7] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [view155e3,setview155e3] = React.useState<any>({
+   const [textarea87afb,settextarea87afb] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [t_idb9088,sett_idb9088] = React.useState<any>({
+   const [radiof9609,setradiof9609] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [t_namefbecd,sett_namefbecd] = React.useState<any>({
+   const [radiogroup5ad4f,setradiogroup5ad4f] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [trs_status2a19e,settrs_status2a19e] = React.useState<any>({
+   const [switcha515a,setswitcha515a] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [viewab0b7,setviewab0b7] = React.useState<any>({
+   const [pininputf6753,setpininputf6753] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [icone5068,seticone5068] = React.useState<any>({
+   const [save67a1f,setsave67a1f] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [phonedeef3,setphonedeef3] = React.useState<any>({
+   const [radiobutton6d7d6,setradiobutton6d7d6] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [radioedaba,setradioedaba] = React.useState<any>({
+   const [checkbox1c08f,setcheckbox1c08f] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [textinut187a8,settextinut187a8] = React.useState<any>({
+   const [signature75ba3,setsignature75ba3] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [switch23709,setswitch23709] = React.useState<any>({
+   const [viewer2e45c,setviewer2e45c] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [dropdown32403,setdropdown32403] = React.useState<any>({
+   const [card63ac3,setcard63ac3] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [emailda9f0,setemailda9f0] = React.useState<any>({
+   const [timepicker40a6b,settimepicker40a6b] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [id75b92,setid75b92] = React.useState<any>({
+   const [slider6c8f7,setslider6c8f7] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [empname040f0,setempname040f0] = React.useState<any>({
+   const [qrcode772a6,setqrcode772a6] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [empcountry9cdb4,setempcountry9cdb4] = React.useState<any>({
+   const [image54de2,setimage54de2] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [timeline1d3f6,settimeline1d3f6] = React.useState<any>({
+   const [dropdown7f41a,setdropdown7f41a] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [icon71de8,seticon71de8] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [text5d0f8,settext5d0f8] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [label9bd6f,setlabel9bd6f] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [listec3b4,setlistec3b4] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [datepickerbe904,setdatepickerbe904] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [jsonviewerfbb2e,setjsonviewerfbb2e] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [avatar24aed,setavatar24aed] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [companycard071eb,setcompanycard071eb] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [progressd7ccf,setprogressd7ccf] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [texttospeech63351,settexttospeech63351] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [speechtotext5f5c9,setspeechtotext5f5c9] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [tabsb7d72,settabsb7d72] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [text6135a,settext6135a] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [dropdownd94a5,setdropdownd94a5] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [dropdown22adf7,setdropdown22adf7] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [country2049a,setcountry2049a] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [statec9a9f,setstatec9a9f] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [city6363b,setcity6363b] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
@@ -384,42 +492,55 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
     refresh:false,
     }) 
     ///////////
-    const [refresh, setRefresh] = React.useState<any>({       companycardcompany7395c:false,
-       textcname1a23c:false,
-       buttonview155e3:false,
-       columnt_idb9088:false,
-       columnt_namefbecd:false,
-       columntrs_status2a19e:false,
-       buttonviewab0b7:false,
-       iconicone5068:false,
-       textinputphonedeef3:false,
-       radioradioedaba:false,
-       textinputtextInut187a8:false,
-       switchswitch23709:false,
-       dropdowndropDown32403:false,
-       textinputemailda9f0:false,
-       columnid75b92:false,
-       columnempname040f0:false,
-       columnempcountry9cdb4:false,
-       timelinetimeline1d3f6:false,
-       groupgroup1d56d:false,
-       groupcompanygroup72d6d:false,
-       groupcgroupf48bf:false,
-       tableecom231c9:false,
-       groupgroup2911c:false,
-       grouptable77086:false,
-       tableemployee03307:false,
-       grouptime96133:false,
+    const [refresh, setRefresh] = React.useState<any>({       textinputtextinput2cc5d:false,
+       documentuploaderuploade78d7:false,
+       textareatextarea87afb:false,
+       radioradiof9609:false,
+       radiogroupradiogroup5ad4f:false,
+       switchswitcha515a:false,
+       pininputpininputf6753:false,
+       buttonsave67a1f:false,
+       radiobuttonradiobutton6d7d6:false,
+       checkboxcheckbox1c08f:false,
+       signaturesignature75ba3:false,
+       documentviewerviewer2e45c:false,
+       cardcard63ac3:false,
+       timepickertimePicker40a6b:false,
+       sliderslider6c8f7:false,
+       qrcodeqrcode772a6:false,
+       imageimage54de2:false,
+       dropdowndropdown7f41a:false,
+       iconicon71de8:false,
+       texttext5d0f8:false,
+       labellabel9bd6f:false,
+       listlistec3b4:false,
+       datepickerdatepickerbe904:false,
+       treeviewerjsonviewerfbb2e:false,
+       avataravatar24aed:false,
+       companycardcompanycard071eb:false,
+       progressprogressd7ccf:false,
+       text_to_speechtexttospeech63351:false,
+       speech_to_textspeechtotext5f5c9:false,
+       tabstabsb7d72:false,
+       texttext6135a:false,
+       dropdowndropdownd94a5:false,
+       dropdowndropdown22adf7:false,
+       dropdowncountry2049a:false,
+       dropdownstatec9a9f:false,
+       dropdowncity6363b:false,
+       groupfirstgroupc4acb:false,
+       groupthirdgroup01a8f:false,
       })
 
   ////// screen states 
-   const [company_v1Props,setcompany_v1Props] = React.useState<any>([])
-   const [samplescreen_v1Props,setsamplescreen_v1Props] = React.useState<any>([])
-   const [timeline_v1Props,settimeline_v1Props] = React.useState<any>([])
+   const [allcomponents_v1Props,setallcomponents_v1Props] = React.useState<any>([])
+   const [ufcomponent_v1Props,setufcomponent_v1Props] = React.useState<any>([])
 
 ///////// dfd
-  const [dfd_employee_v1Props,setdfd_employee_v1Props] = React.useState<any>([])
-  const [dfd_carddoc_v1Props,setdfd_carddoc_v1Props] = React.useState<any>([])
+  const [dfd_code_description_v1Props,setdfd_code_description_v1Props] = React.useState<any>([])
+  const [dfd_country_dropdown_v1Props,setdfd_country_dropdown_v1Props] = React.useState<any>([])
+  const [dfd_state_dropdown_v1Props,setdfd_state_dropdown_v1Props] = React.useState<any>([])
+  const [dfd_city_dropdown_v1Props,setdfd_city_dropdown_v1Props] = React.useState<any>([])
     const [searchParam , setSearchParam] = React.useState<string>("")
     const [disableParam , setDisableParam] = React.useState<any>({})
     const [globalState , setGlobalState] = React.useState<any>({})
@@ -447,88 +568,102 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       value={
       {
       //
-        group1d56d, 
-        setgroup1d56d,
-        group1d56dProps, 
-        setgroup1d56dProps,
-        companygroup72d6d, 
-        setcompanygroup72d6d,
-        companygroup72d6dProps, 
-        setcompanygroup72d6dProps,
-        cgroupf48bf, 
-        setcgroupf48bf,
-        cgroupf48bfProps, 
-        setcgroupf48bfProps,
-        ecom231c9, 
-        setecom231c9,
-        ecom231c9Props, 
-        setecom231c9Props,
-        group2911c, 
-        setgroup2911c,
-        group2911cProps, 
-        setgroup2911cProps,
-        table77086, 
-        settable77086,
-        table77086Props, 
-        settable77086Props,
-        employee03307, 
-        setemployee03307,
-        employee03307Props, 
-        setemployee03307Props,
-        time96133, 
-        settime96133,
-        time96133Props, 
-        settime96133Props,
-        company7395c,
-        setcompany7395c, 
-        cname1a23c,
-        setcname1a23c, 
-        view155e3,
-        setview155e3, 
-        t_idb9088,
-        sett_idb9088, 
-        t_namefbecd,
-        sett_namefbecd, 
-        trs_status2a19e,
-        settrs_status2a19e, 
-        viewab0b7,
-        setviewab0b7, 
-        icone5068,
-        seticone5068, 
-        phonedeef3,
-        setphonedeef3, 
-        radioedaba,
-        setradioedaba, 
-        textinut187a8,
-        settextinut187a8, 
-        switch23709,
-        setswitch23709, 
-        dropdown32403,
-        setdropdown32403, 
-        emailda9f0,
-        setemailda9f0, 
-        id75b92,
-        setid75b92, 
-        empname040f0,
-        setempname040f0, 
-        empcountry9cdb4,
-        setempcountry9cdb4, 
-        timeline1d3f6,
-        settimeline1d3f6, 
+        firstgroupc4acb, 
+        setfirstgroupc4acb,
+        firstgroupc4acbProps, 
+        setfirstgroupc4acbProps,
+        thirdgroup01a8f, 
+        setthirdgroup01a8f,
+        thirdgroup01a8fProps, 
+        setthirdgroup01a8fProps,
+        textinput2cc5d,
+        settextinput2cc5d, 
+        uploade78d7,
+        setuploade78d7, 
+        textarea87afb,
+        settextarea87afb, 
+        radiof9609,
+        setradiof9609, 
+        radiogroup5ad4f,
+        setradiogroup5ad4f, 
+        switcha515a,
+        setswitcha515a, 
+        pininputf6753,
+        setpininputf6753, 
+        save67a1f,
+        setsave67a1f, 
+        radiobutton6d7d6,
+        setradiobutton6d7d6, 
+        checkbox1c08f,
+        setcheckbox1c08f, 
+        signature75ba3,
+        setsignature75ba3, 
+        viewer2e45c,
+        setviewer2e45c, 
+        card63ac3,
+        setcard63ac3, 
+        timepicker40a6b,
+        settimepicker40a6b, 
+        slider6c8f7,
+        setslider6c8f7, 
+        qrcode772a6,
+        setqrcode772a6, 
+        image54de2,
+        setimage54de2, 
+        dropdown7f41a,
+        setdropdown7f41a, 
+        icon71de8,
+        seticon71de8, 
+        text5d0f8,
+        settext5d0f8, 
+        label9bd6f,
+        setlabel9bd6f, 
+        listec3b4,
+        setlistec3b4, 
+        datepickerbe904,
+        setdatepickerbe904, 
+        jsonviewerfbb2e,
+        setjsonviewerfbb2e, 
+        avatar24aed,
+        setavatar24aed, 
+        companycard071eb,
+        setcompanycard071eb, 
+        progressd7ccf,
+        setprogressd7ccf, 
+        texttospeech63351,
+        settexttospeech63351, 
+        speechtotext5f5c9,
+        setspeechtotext5f5c9, 
+        tabsb7d72,
+        settabsb7d72, 
+        text6135a,
+        settext6135a, 
+        dropdownd94a5,
+        setdropdownd94a5, 
+        dropdown22adf7,
+        setdropdown22adf7, 
+        country2049a,
+        setcountry2049a, 
+        statec9a9f,
+        setstatec9a9f, 
+        city6363b,
+        setcity6363b, 
         ////// screen states 
-          company_v1Props,
-          setcompany_v1Props,
-          samplescreen_v1Props,
-          setsamplescreen_v1Props,
-          timeline_v1Props,
-          settimeline_v1Props,
+          allcomponents_v1Props,
+          setallcomponents_v1Props,
+          ufcomponent_v1Props,
+          setufcomponent_v1Props,
         //////////
 
         ///////// dfd
-        dfd_employee_v1Props,
-        setdfd_employee_v1Props,
-        dfd_carddoc_v1Props,
-        setdfd_carddoc_v1Props,
+        dfd_code_description_v1Props,
+        setdfd_code_description_v1Props,
+        dfd_country_dropdown_v1Props,
+        setdfd_country_dropdown_v1Props,
+        dfd_state_dropdown_v1Props,
+        setdfd_state_dropdown_v1Props,
+        dfd_city_dropdown_v1Props,
+        setdfd_city_dropdown_v1Props,
         refetch,
         setRefetch,
         searchParam,

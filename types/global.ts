@@ -1,8 +1,14 @@
 export type Theme = "light" | "dark" | "light-hc" | "dark-hc";
-export type Language = "English" | "Tamil" | "Arabic" | "Russian";
+export type Language = "English" | "Tamil" | "Arabic" | "Russian" | "French";
 export type Direction = "LTR" | "RTL";
 export type FontSize = "Small" | "Medium" | "Large" | "Extra Large";
 export type BorderRadiusSize = "xs" | "s" | "m" | "l" | "xl" | "none";
+
+export interface Typography {
+  bodyFont: string;
+  headerFont: string;
+  displayFont: string;
+}
 
 export interface Branding {
   fontSize: FontSize;
@@ -17,6 +23,7 @@ export interface GlobalProps {
   language: Language;
   direction: Direction;
   branding: Branding;
+  typography: Typography;
 }
 
 export type ButtonView =

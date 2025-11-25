@@ -12,7 +12,8 @@ import { BiPackage } from 'react-icons/bi'
 import { RiUserShared2Fill } from 'react-icons/ri'
 import { SetupScreenContext, SetupScreenContextType } from '../setup'
 import { TotalContext, TotalContextProps } from '@/app/globalContext'
-import { Button, Modal } from '@gravity-ui/uikit'
+import { Modal } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
 
 interface OprMatrixContextType {
   isSearchOpen: string

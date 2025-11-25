@@ -1,4 +1,7 @@
-import { Button, Select, Text ,Switch} from '@gravity-ui/uikit'
+import { Select } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Text } from '@/components/Text'
+import { Switch } from '@/components/Switch'
 import React, { useContext, useMemo, useRef, useState } from 'react'
 import { CameraIcon, Multiply } from './svgApplication'
 import { isLightColor } from '@/app/components/utils'

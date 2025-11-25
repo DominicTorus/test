@@ -16,7 +16,7 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { Card } from '@gravity-ui/uikit'
+import { Card } from '@/components/Card'
 import { Select } from '@gravity-ui/uikit'
 
 export interface ExpenseData {

@@ -1,16 +1,16 @@
 'use client'
 import {
-  Button,
   Modal,
   Pagination,
   Table,
   TableProps,
   Tabs,
-  Text,
   User,
   withTableActions,
   withTableSorting
 } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Text } from '@/components/Text'
 import React, { SetStateAction, useMemo, useRef, useState } from 'react'
 import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'

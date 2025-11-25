@@ -3,7 +3,7 @@ import { DownArrow, SearchIcon } from "./svgApplication";
 import useClickOutside from "./useClickOutsideRef";
 import { TotalContext, TotalContextProps } from "@/app/globalContext";
 import { useGravityThemeClass } from "../utils/useGravityUITheme";
-import { Text } from "@gravity-ui/uikit";
+import { Text } from "@/components/Text";
 
 const CustomGrpMemberDropdown = ({
     data,

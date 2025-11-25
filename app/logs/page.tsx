@@ -18,8 +18,8 @@ const ParentComponent = () => {
   const [nodeData, setNodeData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [app, setApp] = useState({
-    code: 'TG1',
-    name: 'TG1'
+    code: 'TG2',
+    name: 'TG2'
   })
   const [appGroup, setappGroup] = useState({
     code: 'CG',
@@ -33,7 +33,7 @@ const ParentComponent = () => {
   const [ fabrics , setFabrics ] = useState<Array<string>>([])
   const [jsonViewerData, setJsonViewerData] = useState({})
   const router = useRouter()
-  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1';
+  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1';
   const encryptionFlagApp: boolean = false;    
   const [jsonData, setJsonData] = useState({
     data: [],
@@ -251,7 +251,7 @@ const ParentComponent = () => {
   const securityCheck = async () => {
   try {
     const encryptionDpd: string =
-      'CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpdatedMongodb:AFVK:v1'
+      'CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG2:AFK:updatemongoDPD:AFVK:v1'
     const encryptionMethod: string = ''
     let introspect: any
     if (encryptionFlagApp) {

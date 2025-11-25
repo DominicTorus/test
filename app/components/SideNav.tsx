@@ -1,9 +1,9 @@
 'use client'
 import {
-  Avatar,
   DropdownMenu,
   Tooltip,
 } from '@gravity-ui/uikit'
+import { Avatar } from '@/components/Avatar'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 import { deleteAllCookies, getCookie } from '@/app/components/cookieMgment'
@@ -152,7 +152,7 @@ const SideNav = ({
     localStorage.clear()
     sessionStorage.clear()
     deleteAllCookies()
-    window.location.href = '/ct003/cg/tg1/v8'
+    window.location.href = '/ct003/cg/tg2/v2'
   }
 
   const hasMatchingName = (obj: any, input: string): boolean => {

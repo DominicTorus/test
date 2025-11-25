@@ -36,19 +36,19 @@ const LayoutDecider = ({
     TotalContext
   ) as TotalContextProps
   const encryptionFlagApp: boolean = false;    
-  const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpdatedMongodb:AFVK:v1";
+  const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG2:AFK:updatemongoDPD:AFVK:v1";
   const encryptionMethod: string = "";
   const brandColor = property?.brandColor || '#1F2D3D'
   const hoverColor = property?.hoverColor || '#1F2D3D'
   const selectionColor = property?.selectionColor || '#1F2D3D'
   const sidebarColor = property?.menubarColor || '#1F2D3D'
  // const topbarColor = property?.topbarColor || ''
-  const logo = "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png"
-  const appName = "TG1"
+  const logo = "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/image.jfif"
+  const appName = "TG2"
   const toast = useInfoMsg()
   const [loading, setLoading] = useState(true)
   const [updatedNavData, setUpdatedNavData] = useState<MenuItem[]>([])
-  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v8:bldc"
+  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG2:AFVK:v2:bldc"
   const [rawNavData, setRawNavData] = useState<MenuItem[] | null>(null);
   /*const navData: MenuItem[] = [
   {
@@ -76,13 +76,11 @@ const LayoutDecider = ({
     "icon": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/resources/icons/admin-svgrepo-com.svg"
   },
   {
-    "menuGroup": "menu",
     "menuGroupLabel": "Menu",
     "screenDetails": [
       {
-        "name": "test",
-        "label": "test",
-        "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1",
+        "name": "menu",
+        "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1",
         "allowedAccessProfile": [
           "Employee"
         ],
@@ -362,7 +360,7 @@ const LayoutDecider = ({
   }
 
    if (loading == true){
-    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><img src="https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/splashImage/Material loading.gif" alt="loadingImage" /></div>);
+    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><img src="https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif" alt="loadingImage" /></div>);
   }
   return (
     <div className={`flex h-screen w-screen flex-col`}>

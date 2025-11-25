@@ -8,7 +8,10 @@ import { api_screenRouteDto, api_signinDto } from '../interfaces/interfaces'
 import { useInfoMsg } from '../components/infoMsgHandler'
 import { setCookie } from '../components/cookieMgment'
 import { useRouter } from 'next/navigation'
-import { Button, Icon, Spin, Text } from '@gravity-ui/uikit'
+import { Spin } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
+import { Text } from '@/components/Text'
 import { DefaultLoginImage, GitHubIcon, GoogleIcon } from '../utils/svgApplications'
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs'
 import Link from 'next/link'
@@ -24,7 +27,7 @@ interface LoginProps {
   image?: string
 }
 
-const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "standard", image }: LoginProps) => {
+const Login = ({ logo, appName = "TG2", brandColor = "#adffaf", loginType = "standard", image }: LoginProps) => {
   const { selectedTheme, setSelectedTheme } = useContext(
     TotalContext
   ) as TotalContextProps
@@ -37,7 +40,7 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
   const baseUrl: any = process.env.NEXT_PUBLIC_API_BASE_URL
   const toast = useInfoMsg()
   const router = useRouter()
-  const onBoardingKey:string = "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1"
+  const onBoardingKey:string = "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1"
   const tenant = process.env.NEXT_PUBLIC_TENANT_CODE
   const [imageandLogoValid, setImageandLogoValid] = useState({
     image: image ? true : false,
@@ -54,14 +57,14 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
       if (tenant && formData.email && formData.password) {
         setLoading(true)
 
-        setCookie('cfg_theme','light')
-        setSelectedTheme('light')
+        setCookie('cfg_theme','dark')
+        setSelectedTheme('dark')
         
         const api_signinBody: api_signinDto = {
           client: tenant,
           username: formData.email,
           password: formData.password,
-          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v8:bldc",
+          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG2:AFVK:v2:bldc",
           ufClientType: 'UFW'
         }
         const api_signin = await axios.post(
@@ -91,8 +94,8 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
           let screenDetails: any = {
             keys:[
   {
-    "screensName": "test-v1",
-    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1"
+    "screensName": "menu-v1",
+    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1"
   }
 ]
           }
@@ -264,7 +267,8 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
             </Link>
             <Button
               onClick={handleFormSubmit}
-              size='xl'              
+              view="normal"
+              size='xl'
             >
               {loading ? <Spin size='s' style={{marginTop : "10px"}}/> : 'Login'}
             </Button>
@@ -273,26 +277,25 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
               <div className='flex w-full'>
                 <Button
                   onClick={() => singleSignOn('fusionauth')}
-                  width='max'
-                  size='l'
                   view='raised'
+                  size='l'
+                  className='w-full'
                 >
-                <Icon data={Shield} />
+                <Icon data="Shield" size={18} />
                   ViaFusionAuth
                 </Button>
               </div>
             )}
 
             <div className='flex justify-center'>
-              <Text>
+              <Text variant='body-1'>
                 Don&apos;t have an account?{' '}
                 <a
                 href="https://outlook.office.com/mail/deeplink/compose?to=support@torus.tech"
                 target="_blank"
                 rel="noopener noreferrer"
                 >
-                <Text color='brand'
-                >
+                <Text variant='body-1' color='brand'>
                   Contact Admin
                 </Text>
                 </a>

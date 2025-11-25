@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import {
-  Button,
-  Icon,
   Pagination,
   Popover,
   Select,
   Table,
-  Text,
-  withTableSelection
+  withTableSelection,
+  Modal
 } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
+import { Text } from '@/components/Text'
 import { AxiosService } from '@/app/components/axiosService'
 import { getCookie } from '@/app/components/cookieMgment'
 import { useInfoMsg } from '@/app/components/infoMsgHandler'
-import { Modal } from '@gravity-ui/uikit'
 import UserCreationModal from './userCreationModal'
 import { SetupScreenContext, SetupScreenContextType } from './setup'
 import { useGravityThemeClass } from '../utils/useGravityUITheme'

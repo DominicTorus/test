@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useTheme } from 'next-themes'
-
-import { Button } from '@gravity-ui/uikit'
+import { useGlobal } from '@/context/GlobalContext'
+import { Button } from '@/components/Button'
 
 export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useGlobal()
 
   useEffect(() => {
     setMounted(true)
@@ -16,16 +15,35 @@ export default function ThemeSwitcher() {
   if (!mounted) return null
 
   return (
-    <>
-      <Button size='l'  onClick={() => setTheme('light')}>
+    <div className="flex gap-2">
+      <Button
+        view={theme === 'light' ? 'action' : 'normal'}
+        size='m'
+        onClick={() => setTheme('light')}
+      >
         Light
       </Button>
-      <Button size='l'  onClick={() => setTheme('dark')}>
+      <Button
+        view={theme === 'dark' ? 'action' : 'normal'}
+        size='m'
+        onClick={() => setTheme('dark')}
+      >
         Dark
       </Button>
-      <Button size='l'  onClick={() => setTheme('modern')}>
-        Modern
+      <Button
+        view={theme === 'light-hc' ? 'action' : 'normal'}
+        size='m'
+        onClick={() => setTheme('light-hc')}
+      >
+        Light HC
       </Button>
-    </>
+      <Button
+        view={theme === 'dark-hc' ? 'action' : 'normal'}
+        size='m'
+        onClick={() => setTheme('dark-hc')}
+      >
+        Dark HC
+      </Button>
+    </div>
   )
 }

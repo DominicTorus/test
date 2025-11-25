@@ -1,6 +1,7 @@
 'use client'
 import React, { useContext,useEffect, useState } from 'react'
-import { Button, Container, DropdownMenu } from '@gravity-ui/uikit'
+import { Container, DropdownMenu } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { Logo } from '@/app/components/Logo'
@@ -100,7 +101,7 @@ const Navbar = ({ data }: any) => {
         return  <DropdownMenu
         key={id}
         renderSwitcher={props => (
-          <Button {...props} view='flat'>
+          <Button {...props} view='flat' size='m'>
             {keyset(group.menuGroup)}
           </Button>
         )}

@@ -2,7 +2,8 @@ import React, { ChangeEvent, useContext, useState } from 'react'
 import { Multiply } from '../svgApplication'
 import { isLightColor } from '../utils'
 import { useInfoMsg } from '../infoMsgHandler'
-import { Button, Label } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Label } from '@/components/Label'
 import { TotalContext, TotalContextProps } from '@/app/globalContext'
 
 const AddGroupLevelModal = ({
@@ -110,7 +111,7 @@ const AddGroupLevelModal = ({
           onClick={close}
           style={{ fontSize: `0.8vw` }}
           className={
-            'bg-torus-bg border-torus-border rounded-lg border px-[.5vw] py-[.5vh] outline-none'
+            'bg-torus-bg border-[var(--g-color-line-generic)] rounded-lg border px-[.5vw] py-[.5vh] outline-none'
           }
         >
           Cancel

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Theme, Language, Direction, GlobalProps, Branding } from "@/types/global";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { Theme, Language, Direction, GlobalProps, Branding, Typography } from "@/types/global";
 
 interface GlobalContextType extends GlobalProps {
   setTheme: (theme: Theme) => void;
@@ -9,14 +9,40 @@ interface GlobalContextType extends GlobalProps {
   setDirection: (direction: Direction) => void;
   setBranding: (branding: Branding) => void;
   updateBranding: (updates: Partial<Branding>) => void;
+  setTypography: (typography: Typography) => void;
+  updateTypography: (updates: Partial<Typography>) => void;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
+// Helper to get cookie value
+const getCookie = (name: string): string | null => {
+  if (typeof window === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+};
+
+// Helper to set cookie
+const setCookie = (name: string, value: string, days: number = 365) => {
+  if (typeof window === 'undefined') return;
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+};
+
 export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [theme, setTheme] = useState<Theme>("light");
+  // Initialize theme from cookie or default to "light"
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = getCookie('cfg_theme');
+      return (savedTheme as Theme) || "light";
+    }
+    return "light";
+  });
+
   const [language, setLanguage] = useState<Language>("English");
   const [direction, setDirection] = useState<Direction>("LTR");
   const [branding, setBrandingState] = useState<Branding>({
@@ -27,12 +53,32 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     borderRadius: "s",
   });
 
+  const [typography, setTypographyState] = useState<Typography>({
+    bodyFont: "Roboto",
+    headerFont: "Roboto",
+    displayFont: "Roboto",
+  });
+
+  // Wrapper to save theme to cookie when it changes
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    setCookie('cfg_theme', newTheme);
+  };
+
   const setBranding = (newBranding: Branding) => {
     setBrandingState(newBranding);
   };
 
   const updateBranding = (updates: Partial<Branding>) => {
     setBrandingState((prev) => ({ ...prev, ...updates }));
+  };
+
+  const setTypography = (newTypography: Typography) => {
+    setTypographyState(newTypography);
+  };
+
+  const updateTypography = (updates: Partial<Typography>) => {
+    setTypographyState((prev) => ({ ...prev, ...updates }));
   };
 
   return (
@@ -42,11 +88,14 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
         language,
         direction,
         branding,
+        typography,
         setTheme,
         setLanguage,
         setDirection,
         setBranding,
         updateBranding,
+        setTypography,
+        updateTypography,
       }}
     >
       {children}

@@ -1,0 +1,618 @@
+"use client";
+
+import React, { useState } from "react";
+import { useGlobal } from "@/context/GlobalContext";
+import { Icon } from "./Icon";
+import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
+
+interface RenderRowActionsProps {
+  item: any;
+  index: number;
+}
+
+interface TableProps {
+  pagination: boolean;
+  tablename?: string;
+  primarykey?: string;
+  parenttableprimarykey?: string;
+  parenttablename?: string;
+  isPivotTable?: boolean;
+  search?: boolean;
+  tableActions?: boolean;
+  tableSelection?: boolean;
+  tableSettings?: boolean;
+  tableSorting?: boolean;
+  isHyperLink?: boolean;
+  needLocking?: boolean;
+  data?: any[];
+  columns?: string[];
+  onRowClick?: (row: any) => void;
+  className?: string;
+  renderRowActions?: (props: RenderRowActionsProps) => React.ReactNode;
+  selectedIds?: string[];
+  onSelectionChange?: (selectedIds: string[]) => void;
+  selectionMode?: 'single' | 'multi';
+  getRowId?: (row: any, index: number) => string;
+  externalPagination?: boolean;
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  onPageChange?: (page: number, pageSize: number) => void;
+  pageSizeOptions?: number[];
+}
+
+export const Table: React.FC<TableProps> = ({
+  pagination,
+  tablename,
+  primarykey,
+  parenttableprimarykey,
+  parenttablename,
+  isPivotTable = false,
+  search = false,
+  tableActions = false,
+  tableSelection = false,
+  tableSettings = false,
+  tableSorting = false,
+  isHyperLink = false,
+  needLocking = false,
+  data = [],
+  columns = [],
+  onRowClick,
+  className = "",
+  renderRowActions,
+  selectedIds,
+  onSelectionChange,
+  selectionMode = 'multi',
+  getRowId,
+  externalPagination = false,
+  page: externalPage,
+  pageSize: externalPageSize,
+  total: externalTotal,
+  onPageChange,
+  pageSizeOptions = [5, 10, 20, 50, 100],
+}) => {
+  const { theme, branding } = useGlobal();
+  const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
+  const [internalPage, setInternalPage] = useState(1);
+  const [internalPageSize, setInternalPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [showColumnModal, setShowColumnModal] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(columns);
+
+  // Use controlled selection if selectedIds is provided, otherwise use internal state
+  const activeSelectedIds = selectedIds !== undefined ? selectedIds : internalSelectedIds;
+  const setActiveSelectedIds = selectedIds !== undefined ? onSelectionChange : setInternalSelectedIds;
+
+  // Use external pagination if provided, otherwise use internal
+  const currentPage = externalPagination && externalPage !== undefined ? externalPage : internalPage;
+  const itemsPerPage = externalPagination && externalPageSize !== undefined ? externalPageSize : internalPageSize;
+
+  // Helper function to get row ID
+  const getRowIdHelper = (row: any, index: number): string => {
+    if (getRowId) {
+      return getRowId(row, index);
+    }
+    return index.toString();
+  };
+
+  const handleRowSelection = (row: any, index: number) => {
+    if (tableSelection && setActiveSelectedIds) {
+      const rowId = getRowIdHelper(row, index);
+
+      if (selectionMode === 'single') {
+        // Single selection mode: replace selection with clicked row
+        if (activeSelectedIds.includes(rowId)) {
+          setActiveSelectedIds([]);
+        } else {
+          setActiveSelectedIds([rowId]);
+        }
+      } else {
+        // Multi selection mode: toggle selection
+        if (activeSelectedIds.includes(rowId)) {
+          setActiveSelectedIds(activeSelectedIds.filter((id) => id !== rowId));
+        } else {
+          setActiveSelectedIds([...activeSelectedIds, rowId]);
+        }
+      }
+    }
+  };
+
+  const handleSort = (column: string) => {
+    if (tableSorting) {
+      if (sortColumn === column) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortColumn(column);
+        setSortDirection("asc");
+      }
+    }
+  };
+
+  const handleColumnToggle = (column: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(column)
+        ? prev.filter((col) => col !== column)
+        : [...prev, column]
+    );
+  };
+
+  const handleSelectAllColumns = () => {
+    setVisibleColumns(columns);
+  };
+
+  const handleDeselectAllColumns = () => {
+    setVisibleColumns([]);
+  };
+
+  const filteredData = search
+    ? data.filter((row) =>
+        Object.values(row).some((value) =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    : data;
+
+  const sortedData = sortColumn
+    ? [...filteredData].sort((a, b) => {
+        const aVal = a[sortColumn];
+        const bVal = b[sortColumn];
+        const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+        return sortDirection === "asc" ? comparison : -comparison;
+      })
+    : filteredData;
+
+  // For external pagination, use data as-is (already paginated from server)
+  // For internal pagination, slice the data
+  const paginatedData = pagination && !externalPagination
+    ? sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    : externalPagination
+    ? data
+    : sortedData;
+
+  const totalRecords = externalPagination && externalTotal !== undefined ? externalTotal : sortedData.length;
+  const totalPages = Math.ceil(totalRecords / itemsPerPage);
+
+  const handleSelectAllRows = () => {
+    if (!setActiveSelectedIds) return;
+
+    const currentPageIds = paginatedData.map((row, index) => {
+      const actualIndex = (currentPage - 1) * itemsPerPage + index;
+      return getRowIdHelper(row, actualIndex);
+    });
+
+    const allCurrentPageSelected = currentPageIds.every(id => activeSelectedIds.includes(id));
+
+    if (allCurrentPageSelected) {
+      // Deselect all rows on current page
+      setActiveSelectedIds(activeSelectedIds.filter(id => !currentPageIds.includes(id)));
+    } else {
+      // Select all rows on current page
+      const newSelectedIds = [...activeSelectedIds];
+      currentPageIds.forEach(id => {
+        if (!newSelectedIds.includes(id)) {
+          newSelectedIds.push(id);
+        }
+      });
+      setActiveSelectedIds(newSelectedIds);
+    }
+  };
+
+  // Check if all rows on current page are selected
+  const currentPageIds = paginatedData.map((row, index) => {
+    const actualIndex = (currentPage - 1) * itemsPerPage + index;
+    return getRowIdHelper(row, actualIndex);
+  });
+  const isAllRowsSelected = currentPageIds.length > 0 && currentPageIds.every(id => activeSelectedIds.includes(id));
+  const isSomeRowsSelected = currentPageIds.some(id => activeSelectedIds.includes(id)) && !isAllRowsSelected;
+
+  const isDark = theme === "dark" || theme === "dark-hc";
+
+  const tableElement = (
+    <div className={`w-full ${className}`}>
+      <div className="flex gap-4 mb-4">
+        {search && (
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`
+                w-full
+                px-4 py-2
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                border-2
+                ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
+              `}
+            />
+          </div>
+        )}
+
+        {/* Filter/Column Visibility Button */}
+        <button
+          onClick={() => setShowColumnModal(!showColumnModal)}
+          className={`
+            px-4 py-2
+            ${getBorderRadiusClass(branding.borderRadius)}
+            ${getFontSizeClass(branding.fontSize)}
+            border-2
+            flex items-center gap-2
+            transition-colors
+            ${isDark ? "bg-gray-800 text-white border-gray-600 hover:bg-gray-700" : "bg-white text-gray-900 border-gray-300 hover:bg-gray-50"}
+          `}
+          style={{
+            borderColor: showColumnModal ? branding.brandColor : undefined,
+          }}
+        >
+          <Icon data="filter" size={16} />
+          <span>Columns</span>
+        </button>
+      </div>
+
+      {/* Column Visibility Modal */}
+      {showColumnModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className={`
+              ${getBorderRadiusClass(branding.borderRadius)}
+              ${isDark ? "bg-gray-800 border-gray-600" : "bg-white border-gray-300"}
+              border-2
+              p-6
+              w-96
+              max-h-[80vh]
+              overflow-auto
+              shadow-xl
+            `}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className={`text-lg font-semibold ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                Select Columns
+              </h3>
+              <button
+                onClick={() => setShowColumnModal(false)}
+                className="hover:opacity-70 transition-opacity"
+              >
+                <Icon data="close" size={20} />
+              </button>
+            </div>
+
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={handleSelectAllColumns}
+                className={`
+                  flex-1
+                  px-3 py-1.5
+                  text-sm
+                  ${getBorderRadiusClass(branding.borderRadius)}
+                  ${isDark ? "bg-gray-700 text-gray-200 hover:bg-gray-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
+                  transition-colors
+                `}
+              >
+                Select All
+              </button>
+              <button
+                onClick={handleDeselectAllColumns}
+                className={`
+                  flex-1
+                  px-3 py-1.5
+                  text-sm
+                  ${getBorderRadiusClass(branding.borderRadius)}
+                  ${isDark ? "bg-gray-700 text-gray-200 hover:bg-gray-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
+                  transition-colors
+                `}
+              >
+                Deselect All
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {columns.map((column) => (
+                <label
+                  key={column}
+                  className={`
+                    flex items-center gap-3
+                    p-3
+                    ${getBorderRadiusClass(branding.borderRadius)}
+                    cursor-pointer
+                    transition-colors
+                    ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-50"}
+                  `}
+                >
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.includes(column)}
+                    onChange={() => handleColumnToggle(column)}
+                    className="w-4 h-4 cursor-pointer"
+                    style={{
+                      accentColor: branding.brandColor,
+                    }}
+                  />
+                  <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                    {column}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowColumnModal(false)}
+                className={`
+                  px-4 py-2
+                  ${getBorderRadiusClass(branding.borderRadius)}
+                  ${getFontSizeClass(branding.fontSize)}
+                  font-medium
+                  transition-colors
+                  text-white
+                `}
+                style={{
+                  backgroundColor: branding.brandColor,
+                }}
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <table
+          className={`
+            w-full
+            ${getBorderRadiusClass(branding.borderRadius)}
+            ${isDark ? "bg-gray-800" : "bg-white"}
+          `}
+        >
+          <thead
+            className={`
+              ${isDark ? "bg-gray-700" : "bg-gray-100"}
+            `}
+          >
+            <tr>
+              {tableSelection && (
+                <th className="px-4 py-3 w-12">
+                  <div className="flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllRowsSelected}
+                      ref={(input) => {
+                        if (input) {
+                          input.indeterminate = isSomeRowsSelected;
+                        }
+                      }}
+                      onChange={handleSelectAllRows}
+                      className="w-4 h-4 cursor-pointer"
+                      style={{
+                        accentColor: branding.brandColor,
+                      }}
+                    />
+                  </div>
+                </th>
+              )}
+              {visibleColumns.map((column) => (
+                <th
+                  key={column}
+                  onClick={() => handleSort(column)}
+                  className={`
+                    px-4 py-3
+                    text-left
+                    ${getFontSizeClass(branding.fontSize)}
+                    font-semibold
+                    ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
+                    ${isDark ? "text-gray-200" : "text-gray-700"}
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    {column}
+                    {tableSorting && sortColumn === column && (
+                      <Icon
+                        data={sortDirection === "asc" ? "arrow-up" : "arrow-down"}
+                        size={14}
+                      />
+                    )}
+                  </div>
+                </th>
+              ))}
+              {(tableActions || renderRowActions) && (
+                <th className="px-4 py-3 text-left font-semibold">Actions</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.map((row, index) => {
+              const actualIndex = (currentPage - 1) * itemsPerPage + index;
+              const rowId = getRowIdHelper(row, actualIndex);
+              const isSelected = activeSelectedIds.includes(rowId);
+
+              return (
+                <tr
+                  key={rowId}
+                  onClick={() => {
+                    handleRowSelection(row, actualIndex);
+                    onRowClick?.(row);
+                  }}
+                  className={`
+                    border-t
+                    ${isDark ? "border-gray-700" : "border-gray-200"}
+                    ${isSelected ? "bg-opacity-20" : ""}
+                    ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-50"}
+                    transition-colors
+                    cursor-pointer
+                  `}
+                  style={{
+                    backgroundColor: isSelected ? `${branding.brandColor}20` : undefined,
+                  }}
+                >
+                  {tableSelection && (
+                    <td className="px-4 py-3 w-12">
+                      <div className="flex items-center justify-center">
+                        <input
+                          type={selectionMode === 'single' ? "radio" : "checkbox"}
+                          checked={isSelected}
+                          onChange={() => handleRowSelection(row, actualIndex)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 cursor-pointer"
+                          style={{
+                            accentColor: branding.brandColor,
+                          }}
+                        />
+                      </div>
+                    </td>
+                  )}
+                  {visibleColumns.map((column) => (
+                    <td
+                      key={column}
+                      className={`
+                        px-4 py-3
+                        ${getFontSizeClass(branding.fontSize)}
+                        ${isDark ? "text-gray-300" : "text-gray-700"}
+                        ${isHyperLink ? "text-blue-500 underline" : ""}
+                      `}
+                    >
+                      {row[column]}
+                    </td>
+                  ))}
+                  {renderRowActions ? (
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      {renderRowActions({ item: row, index: actualIndex })}
+                    </td>
+                  ) : tableActions ? (
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button className="text-blue-500 hover:text-blue-700">
+                          <Icon data="FaEdit" size={16} />
+                        </button>
+                        <button className="text-red-500 hover:text-red-700">
+                          <Icon data="FaRegTrashAlt" size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  ) : null}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {pagination && (
+        <div className="flex justify-between items-center mt-4 flex-wrap gap-4">
+          <div className="flex items-center gap-2">
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Rows per page:
+            </span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                const newPageSize = Number(e.target.value);
+                if (externalPagination && onPageChange) {
+                  onPageChange(1, newPageSize);
+                } else {
+                  setInternalPageSize(newPageSize);
+                  setInternalPage(1);
+                }
+              }}
+              className={`
+                px-3 py-1.5
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-white text-gray-700 border-gray-300"}
+                border-2
+                cursor-pointer
+              `}
+            >
+              {pageSizeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                const newPage = Math.max(1, currentPage - 1);
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              disabled={currentPage === 1}
+              className={`
+                px-4 py-2
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
+                disabled:opacity-50
+                transition-colors
+              `}
+            >
+              Previous
+            </button>
+
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Page {currentPage} of {totalPages} ({totalRecords} total)
+            </span>
+
+            <button
+              onClick={() => {
+                const newPage = Math.min(totalPages, currentPage + 1);
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={`
+                px-4 py-2
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200" : "bg-gray-200 text-gray-700"}
+                disabled:opacity-50
+                transition-colors
+              `}
+            >
+              Next
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+              Go to page:
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={totalPages}
+              value={currentPage}
+              onChange={(e) => {
+                const newPage = Math.max(1, Math.min(totalPages, Number(e.target.value)));
+                if (externalPagination && onPageChange) {
+                  onPageChange(newPage, itemsPerPage);
+                } else {
+                  setInternalPage(newPage);
+                }
+              }}
+              className={`
+                w-20 px-3 py-1.5
+                ${getBorderRadiusClass(branding.borderRadius)}
+                ${getFontSizeClass(branding.fontSize)}
+                ${isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-white text-gray-700 border-gray-300"}
+                border-2
+              `}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return <>{tableElement}</>;
+};

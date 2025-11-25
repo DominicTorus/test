@@ -3,7 +3,9 @@ import JsonView from 'react18-json-view'
 import { ArrowLeft, Copy, CopyCheckXmark, ChevronDown } from '@gravity-ui/icons'
 import 'react18-json-view/src/style.css'
 import { twMerge } from 'tailwind-merge'
-import { Button, Loader, Text } from '@gravity-ui/uikit'
+import { Loader } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Text } from '@/components/Text'
 import { AxiosService } from '../components/axiosService'
 
 const fontSize = 1

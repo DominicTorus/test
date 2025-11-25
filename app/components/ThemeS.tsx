@@ -1,6 +1,5 @@
 'use client'
 import {
-  Button,
   Col,
   Container,
   Direction,
@@ -8,41 +7,52 @@ import {
   Row,
   ThemeProvider
 } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
 import React, { useContext, useEffect, useState } from 'react'
 import { getCookie } from './cookieMgment';
 import { useLanguage } from './languageContext';
+import { useGlobal } from '@/context/GlobalContext';
 
 import LogoutPage from './logout';
 import i18n from './i18n';
 import { TotalContext, TotalContextProps } from '../globalContext';
 const ThemeS = ({ children }: any) => {
-  
+
   //let selectedDirection:Direction = 'direction?.toLowerCase() '
 
   const { property, setProperty , selectedTheme , setSelectedTheme } = useContext(TotalContext) as TotalContextProps;
+  const { theme: newTheme } = useGlobal();
 
   const selectedDirect = property?.direction?.toLowerCase() as Direction;
   const [loading,setLoading] = useState(true)
- 
+
 
   {/*  const handleAction1 = (direction: Direction) => {
     setSelectedDirect(direction)
   } */}
 
-  const { language, handleLanguageChange } = useLanguage(); 
+  const { language, handleLanguageChange } = useLanguage();
   const selectedLanguage = getCookie('language') ? getCookie('language') : 'en';
-  
+
   useEffect(() => {
-    
+
     if(typeof window !='undefined'){
       setLoading(false)
   }}, [])
+
+  // Sync new theme context with old theme context
+  useEffect(() => {
+    if (newTheme && newTheme !== selectedTheme) {
+      setSelectedTheme(newTheme as any);
+    }
+  }, [newTheme, selectedTheme, setSelectedTheme]);
+
   if(loading){
     return<></>
   }
   const keyset:any=i18n.keyset("language")
   return (
-    <ThemeProvider theme={selectedTheme} direction={selectedDirect}>
+    <ThemeProvider theme={selectedTheme || newTheme} direction={selectedDirect}>
       <Container style={{padding:"0px"}}  >
         <Row space={0} className='rounded-lg '>
             {/*<Col>

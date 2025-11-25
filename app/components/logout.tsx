@@ -7,7 +7,8 @@ import { IoSunny } from 'react-icons/io5'
 import { FaMoon } from 'react-icons/fa'
 import { deleteAllCookies, deleteCookie, getCookie } from './cookieMgment'
 import i18n from './i18n'
-import {  Button, UserLabel } from '@gravity-ui/uikit'
+import { UserLabel } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
 import {ArrowRightFromSquare, Person} from '@gravity-ui/icons';
 import decodeToken from './decodeToken'
 const LogoutPage = () => {
@@ -39,8 +40,8 @@ const LogoutPage = () => {
         }
       ></Switch> */}
       <UserLabel type="person" avatar={{icon: Person}} >{user}</UserLabel>
-      <div className="mx-3 h-8 border-l border-gray-300"></div> 
-      <Button  onClick={logout} size='m'>
+      <div className="mx-3 h-8 border-l border-gray-300"></div>
+      <Button onClick={logout} view="flat" size='m'>
         <ArrowRightFromSquare style={{"height":"25px"}} />
       </Button>
     </div>
