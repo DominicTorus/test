@@ -11,8 +11,8 @@ import {
 import { getFontSizeClass, getBorderRadiusClass, applyBrandColor } from "@/utils/branding";
 
 interface CheckboxProps {
-  checked: boolean;
-  size: CheckboxSize;
+  checked?: boolean;
+  size?: CheckboxSize;
   disabled?: boolean;
   content?: string;
   title?: string;
@@ -21,7 +21,9 @@ interface CheckboxProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (checked: boolean) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
+  value?: boolean;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
@@ -35,7 +37,9 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  onBlur,
   className = "",
+  value,
 }) => {
   const { theme, direction, branding } = useGlobal();
 
@@ -90,6 +94,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           checked={checked}
           disabled={disabled}
           onChange={(e) => onChange?.(e.target.checked)}
+          onBlur={onBlur}
           className="sr-only"
         />
         <div

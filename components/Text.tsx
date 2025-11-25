@@ -69,7 +69,7 @@ type TextColor =
 type IconDisplay = "Icon only" | "start with icon" | "end with icon";
 
 interface TextProps {
-  variant: TextVariant;
+  variant?: TextVariant;
   wordBreak?: WordBreak;
   color?: TextColor;
   static?: boolean;

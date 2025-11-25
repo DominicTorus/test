@@ -1,27 +1,30 @@
 "use client";
 
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useEffect, useCallback, forwardRef } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { useEventBus } from "@/context/EventBusContext";
-import { Icon } from "./Icon";
-import { Tooltip } from "./Tooltip";
+import { Icon } from "@/components/Icon";
+import { Tooltip } from "@/components/Tooltip";
 import {
   ButtonView,
   ButtonSize,
   ButtonPin,
-  IconDisplay,
   HeaderPosition,
   TooltipProps as TooltipPropsType,
   ComponentEvents,
 } from "@/types/global";
-import { GravityIcon } from "@/types/icons";
-import { getFontSizeClass, getBorderRadiusClass, applyBrandColor, lightenColor, darkenColor } from "@/utils/branding";
+import {
+  getFontSizeClass,
+  getBorderRadiusClass,
+} from "@/utils/branding";
+
+type IconDisplay = "Icon only" | "Start with Icon" | "End with Icon";
 
 interface ButtonProps {
-  nodeId?: string;
-  view: ButtonView;
-  size: ButtonSize;
-  icon?: GravityIcon;
+  nodeId?: any;
+  view?: ButtonView;
+  size?: ButtonSize;
+  icon?: string;
   disabled?: boolean;
   pin?: ButtonPin;
   iconDisplay?: IconDisplay;
@@ -32,18 +35,20 @@ interface ButtonProps {
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
   onClick?: () => void;
+  onFocus?: () => void;
   events?: ComponentEvents[];
   className?: string;
+  endContent?: React.ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   nodeId,
-  view,
-  size,
+  view = "action",
+  size = "s",
   icon,
   disabled = false,
-  pin = "round-round",
-  iconDisplay = "start with icon",
+  pin = "circle-circle",
+  iconDisplay = "End with Icon",
   isRecordLevel = false,
   needTooltip = false,
   tooltipProps,
@@ -51,87 +56,146 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   headerPosition = "top",
   children,
   onClick,
-  events,
+  onFocus,
+  events = [],
   className = "",
+  endContent,
 }, ref) => {
   const { theme, direction, branding } = useGlobal();
-  const eventBus = useEventBus();
-  const [isDisabled, setIsDisabled] = useState(disabled);
-  const [isVisible, setIsVisible] = useState(true);
+  const { emit, subscribe, subscribeGlobal } = useEventBus();
 
-  // Handle onClick with event emission
-  const handleClick = () => {
-    onClick?.();
-
-    // Emit rise events when onClick occurs
-    const onClickEvent = events?.find(e => e.name === "onClick");
-    if (onClickEvent?.enabled && onClickEvent.rise && nodeId) {
-      onClickEvent.rise.forEach(riseEvent => {
-        eventBus.emit(riseEvent.key, {
-          nodeId,
-          data: {},
-        });
-      });
-    }
-  };
-
-  // Subscribe to riseListen events
+  // Setup event listeners
   useEffect(() => {
-    if (!nodeId || !events) return;
+    if (!events || events.length === 0) return;
 
     const unsubscribers: (() => void)[] = [];
 
-    events.forEach(event => {
+    events.forEach((event) => {
       if (event.enabled && event.riseListen) {
-        event.riseListen.forEach(listener => {
-          const subscribe = listener.listenerType === "type1"
-            ? eventBus.subscribeGlobal
-            : (key: string, cb: any) => eventBus.subscribe(key, nodeId, cb);
-
-          const unsubscribe = subscribe(listener.key, (payload) => {
-            // Handle different event types
-            switch (listener.key) {
-              case "hideElement":
-                setIsVisible(false);
-                break;
-              case "showElement":
-                setIsVisible(true);
-                break;
-              case "disableElement":
-                setIsDisabled(true);
-                break;
-              case "enableElement":
-                setIsDisabled(false);
-                break;
-              default:
-                // For custom events, just log them
-                console.log(`Button ${nodeId} received event: ${listener.key}`, payload);
-            }
-          });
-
-          unsubscribers.push(unsubscribe);
+        event.riseListen.forEach((listener) => {
+          if (listener.listenerType === "type1") {
+            // Global listener
+            const unsubscribe = subscribeGlobal(listener.key, (payload) => {
+              handleEventAction(listener.key, payload);
+            });
+            unsubscribers.push(unsubscribe);
+          } else if (listener.listenerType === "type2") {
+            // Node-specific listener
+            const unsubscribe = subscribe(listener.key, nodeId, (payload) => {
+              handleEventAction(listener.key, payload);
+            });
+            unsubscribers.push(unsubscribe);
+          }
         });
       }
     });
 
     return () => {
-      unsubscribers.forEach(unsub => unsub());
+      unsubscribers.forEach((unsubscribe) => unsubscribe());
     };
-  }, [nodeId, events, eventBus]);
+  }, [nodeId, events, subscribe, subscribeGlobal]);
+
+  const handleEventAction = useCallback((eventKey: string, payload: any) => {
+    console.log(`Button ${nodeId} received event:`, eventKey, payload);
+
+    switch (eventKey) {
+      case "triggerButtonClick":
+        handleClick();
+        break;
+      case "disableElement":
+        // Would need state management to dynamically disable
+        break;
+      case "enableElement":
+        // Would need state management to dynamically enable
+        break;
+      case "hideElement":
+        // Would need state management to hide/show
+        break;
+      case "showElement":
+        // Would need state management to hide/show
+        break;
+      default:
+        console.log(`Unhandled event action: ${eventKey}`);
+    }
+  }, [nodeId]);
+
+  const handleClick = useCallback(() => {
+    if (disabled) return;
+
+    // Call provided onClick handler
+    if (onClick) {
+      onClick();
+    }
+
+    // Emit events based on configuration
+    const clickEvent = events.find((e) => e.name === "onClick");
+    if (clickEvent && clickEvent.enabled && clickEvent.rise) {
+      clickEvent.rise.forEach((riseConfig) => {
+        emit(riseConfig.key, {
+          nodeId,
+          data: { action: riseConfig.key },
+        });
+      });
+    }
+  }, [disabled, onClick, events, emit, nodeId]);
+
+  const handleFocus = useCallback(() => {
+    if (disabled) return;
+
+    // Call provided onFocus handler
+    if (onFocus) {
+      onFocus();
+    }
+
+    // Emit events based on configuration
+    const focusEvent = events.find((e) => e.name === "onFocus");
+    if (focusEvent && focusEvent.enabled && focusEvent.rise) {
+      focusEvent.rise.forEach((riseConfig) => {
+        emit(riseConfig.key, {
+          nodeId,
+          data: { action: riseConfig.key },
+        });
+      });
+    }
+  }, [disabled, onFocus, events, emit, nodeId]);
 
   const getSizeClasses = () => {
     const baseFontSize = getFontSizeClass(branding.fontSize);
     switch (size) {
       case "xs":
-        return `h-6 min-w-16 px-2 ${baseFontSize === "text-xl" ? "text-base" : baseFontSize === "text-lg" ? "text-sm" : "text-xs"}`;
+        return `px-2 py-1 ${
+          baseFontSize === "text-xl"
+            ? "text-base"
+            : baseFontSize === "text-lg"
+            ? "text-sm"
+            : "text-xs"
+        }`;
       case "s":
-        return `h-8 min-w-20 px-3 ${baseFontSize === "text-xl" ? "text-lg" : baseFontSize === "text-lg" ? "text-base" : "text-sm"}`;
+        return `px-3 py-1.5 ${
+          baseFontSize === "text-xl"
+            ? "text-lg"
+            : baseFontSize === "text-lg"
+            ? "text-base"
+            : "text-sm"
+        }`;
       case "m":
-        return `h-10 min-w-24 px-4 ${baseFontSize}`;
+        return `px-4 py-2 ${baseFontSize}`;
       case "l":
-        return `h-12 min-w-28 px-5 ${baseFontSize === "text-sm" ? "text-base" : baseFontSize === "text-base" ? "text-lg" : "text-xl"}`;
+        return `px-5 py-2.5 ${
+          baseFontSize === "text-sm"
+            ? "text-base"
+            : baseFontSize === "text-base"
+            ? "text-lg"
+            : "text-xl"
+        }`;
       case "xl":
-        return `h-14 min-w-32 px-6 ${baseFontSize === "text-sm" ? "text-lg" : baseFontSize === "text-base" ? "text-xl" : "text-2xl"}`;
+        return `px-6 py-3 ${
+          baseFontSize === "text-sm"
+            ? "text-lg"
+            : baseFontSize === "text-base"
+            ? "text-xl"
+            : "text-2xl"
+        }`;
     }
   };
 
@@ -141,9 +205,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
     switch (view) {
       case "normal":
-        return isDark
-          ? "text-white"
-          : "text-white";
+        return isDark ? "text-white" : "text-white";
       case "action":
         return isDark
           ? "bg-green-600 text-white hover:bg-green-700"
@@ -236,12 +298,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   const getPinClasses = () => {
     const [left, right] = pin.split("-");
     const baseRadius = getBorderRadiusClass(branding.borderRadius);
-    
+
     // Override based on pin style
     if (pin === "circle-circle") {
       return "rounded-full";
     }
-    
+
     const leftRadius =
       left === "round"
         ? "rounded-l-full"
@@ -258,18 +320,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         : right === "circle"
         ? "rounded-r-full"
         : `rounded-r${baseRadius.replace("rounded", "")}`;
-    
+
     if (pin === "clear-clear") {
       return baseRadius;
     }
-    
+
     return `${leftRadius} ${rightRadius}`;
   };
 
   const getButtonStyles = (): React.CSSProperties => {
-    const styles: React.CSSProperties = {
-      fontFamily: 'var(--font-body)', // Apply global font
-    };
+    const styles: React.CSSProperties = {};
 
     // Apply brand color for normal and flat views
     if (view === "normal") {
@@ -282,6 +342,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       styles.color = branding.brandColor;
     } else if (view === "flat") {
       styles.color = branding.brandColor;
+    }else if (view === "action") {
+      styles.backgroundColor = branding.brandColor;
+    }else if (view === "normal-contrast") {
+      styles.backgroundColor = branding.brandColor;
     }
 
     return styles;
@@ -289,19 +353,27 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const getHoverStyles = (): string => {
     if (disabled) return "";
-    
+
     if (view === "normal") {
       return "transition-all hover:opacity-90";
     } else if (view === "outlined" || view === "flat") {
       return "transition-all";
     }
-    
+
     return "";
   };
 
   const renderIcon = () => {
     if (!icon) return null;
-    return <Icon data={icon} className="inline-block" size={size === "xs" ? 14 : size === "s" ? 16 : size === "m" ? 18 : size === "l" ? 20 : 24} />;
+    return (
+      <Icon
+        data={icon}
+        className="inline-block"
+        size={
+          size === "xs" ? 14 : size === "s" ? 16 : size === "m" ? 18 : size === "l" ? 20 : 24
+        }
+      />
+    );
   };
 
   const renderContent = () => {
@@ -310,18 +382,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
     if (iconDisplay === "Icon only") {
       return iconElement;
-    } else if (iconDisplay === "start with icon") {
+    } else if (iconDisplay === "Start with Icon") {
       return (
         <>
           {iconElement}
-          {textElement && <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{textElement}</span>}
+          {textElement && (
+            <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{textElement}</span>
+          )}
+          {endContent}
         </>
       );
     } else {
+      // "End with Icon"
       return (
         <>
           {textElement}
-          {iconElement && <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{iconElement}</span>}
+          {iconElement && (
+            <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{iconElement}</span>
+          )}
+          {endContent}
         </>
       );
     }
@@ -331,7 +410,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     <button
       ref={ref}
       onClick={handleClick}
-      disabled={isDisabled}
+      onFocus={handleFocus}
+      disabled={disabled}
       style={getButtonStyles()}
       className={`
         inline-flex items-center justify-center font-medium
@@ -339,20 +419,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         ${getViewClasses()}
         ${getPinClasses()}
         ${getHoverStyles()}
-        ${isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         ${isRecordLevel ? "relative overflow-hidden" : ""}
         ${className}
       `}
       dir={direction}
       onMouseEnter={(e) => {
-        if (!isDisabled ) {
+        if (!disabled) {
           e.currentTarget.style.backgroundColor = branding.hoverColor;
         }
       }}
       onMouseLeave={(e) => {
-        if (!isDisabled && (view === "outlined" || view === "flat")) {
+        if (!disabled && (view.startsWith("outlined") || view.startsWith( "flat") || view === "raised")) {
           e.currentTarget.style.backgroundColor = "transparent";
-        }else if (view === "normal") {
+        } else if (view.startsWith("normal") || view === "action") {
           e.currentTarget.style.backgroundColor = branding.brandColor;
         }
       }}
@@ -371,13 +451,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       theme === "dark" || theme === "dark-hc" ? "text-gray-300" : "text-gray-700"
     }`;
 
-    const headerStyle = { fontFamily: 'var(--font-body)' };
-
     switch (headerPosition) {
       case "top":
         return (
           <div className="flex flex-col">
-            <div className={headerClasses} style={headerStyle}>{headerText}</div>
+            <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
         );
@@ -385,13 +463,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         return (
           <div className="flex flex-col">
             {element}
-            <div className={`${headerClasses} mt-1 mb-0`} style={headerStyle}>{headerText}</div>
+            <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
           </div>
         );
       case "left":
         return (
           <div className="flex items-center">
-            <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "ml-2" : "mr-2"}`} style={headerStyle}>
+            <div
+              className={`${headerClasses} mb-0 ${
+                direction === "RTL" ? "ml-2" : "mr-2"
+              }`}
+            >
               {headerText}
             </div>
             {element}
@@ -401,7 +483,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         return (
           <div className="flex items-center">
             {element}
-            <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "mr-2" : "ml-2"}`} style={headerStyle}>
+            <div
+              className={`${headerClasses} mb-0 ${
+                direction === "RTL" ? "mr-2" : "ml-2"
+              }`}
+            >
               {headerText}
             </div>
           </div>
@@ -410,11 +496,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   };
 
   const finalElement = renderWithHeader(buttonElement);
-
-  // Don't render if hidden by event
-  if (!isVisible) {
-    return null;
-  }
 
   if (needTooltip && tooltipProps) {
     return (
@@ -428,5 +509,3 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 });
 
 Button.displayName = "Button";
-
-  
