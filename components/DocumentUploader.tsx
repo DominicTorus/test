@@ -131,7 +131,7 @@ export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
                   isDark ? "text-gray-300" : "text-gray-600"
                 }`}
               >
-                <Icon data="menu" size={16} />
+                <Icon data="FaFile" size={16} />
                 <span>{file.name}</span>
                 <span className="text-sm opacity-60">({(file.size / 1024).toFixed(2)} KB)</span>
               </li>
