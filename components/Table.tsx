@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
@@ -11,7 +11,7 @@ interface RenderRowActionsProps {
 }
 
 interface TableProps {
-  pagination: boolean;
+  pagination?: boolean;
   tablename?: string;
   primarykey?: string;
   parenttableprimarykey?: string;
@@ -25,7 +25,7 @@ interface TableProps {
   isHyperLink?: boolean;
   needLocking?: boolean;
   data?: any[];
-  columns?: string[];
+  columns?: any[];
   onRowClick?: (row: any) => void;
   className?: string;
   renderRowActions?: (props: RenderRowActionsProps) => React.ReactNode;
@@ -39,10 +39,14 @@ interface TableProps {
   total?: number;
   onPageChange?: (page: number, pageSize: number) => void;
   pageSizeOptions?: number[];
+  edgePadding?: boolean;
+  settings?: any;
+  updateSettings?: (settings: any) => void;
+  wordWrap?: boolean;
 }
 
 export const Table: React.FC<TableProps> = ({
-  pagination,
+  pagination = false,
   tablename,
   primarykey,
   parenttableprimarykey,
@@ -70,6 +74,10 @@ export const Table: React.FC<TableProps> = ({
   total: externalTotal,
   onPageChange,
   pageSizeOptions = [5, 10, 20, 50, 100],
+  edgePadding = true,
+  settings,
+  updateSettings,
+  wordWrap = false,
 }) => {
   const { theme, branding } = useGlobal();
   const [internalSelectedIds, setInternalSelectedIds] = useState<string[]>([]);
@@ -79,7 +87,18 @@ export const Table: React.FC<TableProps> = ({
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [showColumnModal, setShowColumnModal] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(columns);
+
+  // Normalize columns to handle both string[] and object[] formats
+  const normalizedColumns = columns.map((col: any) =>
+    typeof col === 'string' ? { id: col, name: col } : col
+  );
+
+  const [visibleColumns, setVisibleColumns] = useState<any[]>([]);
+
+  // Update visible columns when columns prop changes - default to all columns selected
+  useEffect(() => {
+    setVisibleColumns(normalizedColumns);
+  }, [columns]);
 
   // Use controlled selection if selectedIds is provided, otherwise use internal state
   const activeSelectedIds = selectedIds !== undefined ? selectedIds : internalSelectedIds;
@@ -119,27 +138,27 @@ export const Table: React.FC<TableProps> = ({
     }
   };
 
-  const handleSort = (column: string) => {
+  const handleSort = (columnId: string) => {
     if (tableSorting) {
-      if (sortColumn === column) {
+      if (sortColumn === columnId) {
         setSortDirection(sortDirection === "asc" ? "desc" : "asc");
       } else {
-        setSortColumn(column);
+        setSortColumn(columnId);
         setSortDirection("asc");
       }
     }
   };
 
-  const handleColumnToggle = (column: string) => {
+  const handleColumnToggle = (columnId: string) => {
     setVisibleColumns((prev) =>
-      prev.includes(column)
-        ? prev.filter((col) => col !== column)
-        : [...prev, column]
+      prev.some((col) => col.id === columnId)
+        ? prev.filter((col) => col.id !== columnId)
+        : [...prev, normalizedColumns.find((col) => col.id === columnId)]
     );
   };
 
   const handleSelectAllColumns = () => {
-    setVisibleColumns(columns);
+    setVisibleColumns(normalizedColumns);
   };
 
   const handleDeselectAllColumns = () => {
@@ -210,7 +229,7 @@ export const Table: React.FC<TableProps> = ({
   const isDark = theme === "dark" || theme === "dark-hc";
 
   const tableElement = (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${edgePadding ? "p-4" : ""} ${className}`}>
       <div className="flex gap-4 mb-4">
         {search && (
           <div className="flex-1">
@@ -309,9 +328,9 @@ export const Table: React.FC<TableProps> = ({
             </div>
 
             <div className="space-y-2">
-              {columns.map((column) => (
+              {normalizedColumns.map((column) => (
                 <label
-                  key={column}
+                  key={column.id}
                   className={`
                     flex items-center gap-3
                     p-3
@@ -323,15 +342,15 @@ export const Table: React.FC<TableProps> = ({
                 >
                   <input
                     type="checkbox"
-                    checked={visibleColumns.includes(column)}
-                    onChange={() => handleColumnToggle(column)}
+                    checked={visibleColumns.some((col) => col.id === column.id)}
+                    onChange={() => handleColumnToggle(column.id)}
                     className="w-4 h-4 cursor-pointer"
                     style={{
                       accentColor: branding.brandColor,
                     }}
                   />
                   <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-200" : "text-gray-700"}`}>
-                    {column}
+                    {column.name}
                   </span>
                 </label>
               ))}
@@ -395,8 +414,8 @@ export const Table: React.FC<TableProps> = ({
               )}
               {visibleColumns.map((column) => (
                 <th
-                  key={column}
-                  onClick={() => handleSort(column)}
+                  key={column.id}
+                  onClick={() => handleSort(column.id)}
                   className={`
                     px-4 py-3
                     text-left
@@ -407,8 +426,8 @@ export const Table: React.FC<TableProps> = ({
                   `}
                 >
                   <div className="flex items-center gap-2">
-                    {column}
-                    {tableSorting && sortColumn === column && (
+                    {column.name}
+                    {tableSorting && sortColumn === column.id && (
                       <Icon
                         data={sortDirection === "asc" ? "arrow-up" : "arrow-down"}
                         size={14}
@@ -465,15 +484,16 @@ export const Table: React.FC<TableProps> = ({
                   )}
                   {visibleColumns.map((column) => (
                     <td
-                      key={column}
+                      key={column.id}
                       className={`
                         px-4 py-3
                         ${getFontSizeClass(branding.fontSize)}
                         ${isDark ? "text-gray-300" : "text-gray-700"}
                         ${isHyperLink ? "text-blue-500 underline" : ""}
+                        ${wordWrap ? "break-words" : "whitespace-nowrap"}
                       `}
                     >
-                      {row[column]}
+                      {row[column.id]}
                     </td>
                   ))}
                   {renderRowActions ? (

@@ -1,24 +1,9 @@
 'use client'
 import { TotalContext, TotalContextProps } from '@/app/globalContext'
 import JsonView from "react18-json-view";
-import 'react18-json-view/src/style.css'
-import {
-  Col,
-  Flex,
-  Row,
-  Table,
-  TableDataItem,
-  TableProps,
-  withTableSettings,
-  WithTableSettingsProps,
-  withTableSorting,
-  withTableSelection,
-  WithTableSelectionProps,
-  RenderRowActionsProps,
-  withTableActions,
-  WithTableActionsProps
-} from '@gravity-ui/uikit'
-import { DatePicker } from '@gravity-ui/date-components'
+// import 'react18-json-view/src/style.css'
+import { Table } from '@/components/Table'
+import { DatePicker } from '@/components/DatePicker'
 import React, { useEffect, useState,useContext, useRef, useImperativeHandle} from 'react'
 import { AxiosService } from '@/app/components/axiosService'
 import { useInfoMsg } from "@/app/components/infoMsgHandler"
@@ -27,27 +12,15 @@ import { nullFilter } from '@/app/utils/nullDataFilter';
 import { codeExecution } from '@/app/utils/codeExecution'
 import { uf_fetchActionDetailsDto,uf_fetchRuleDetailsDto,te_refreshDto,api_paginationDto,uf_paginationDataFilterDto } from '@/app/interfaces/interfaces';
 import { useRouter } from 'next/navigation'
-import {Modal} from '@gravity-ui/uikit';
+import { Modal } from '@/components/Modal';
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps, getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import i18n from '@/app/components/i18n';
-import { Pagination, PaginationProps} from '@gravity-ui/uikit'
-import { Button, Icon,TextInput } from '@gravity-ui/uikit'
-import {Magnifier} from '@gravity-ui/icons';
+import { Button } from '@/components/Button';
+import { Icon } from '@/components/Icon';
+import { TextInput } from '@/components/TextInput';
 import Buttonview  from './Buttonview'
 
-const MyTable: React.ComponentType<
-  TableProps<TableDataItem> &
-      WithTableSettingsProps &
-    WithTableSelectionProps<TableDataItem> &
-    WithTableActionsProps<TableDataItem>|any
-> =
-  withTableSettings
-(
-  withTableSorting(
-      withTableSelection
-  (withTableActions(Table)))
-)
 let colourIndicatorCols:any= [] ;
 let defaultColumns = [
   {
@@ -875,7 +848,7 @@ const TabletableEcom=({ lockedData,setLockedData,primaryTableData, setPrimaryTab
       toast(err?.response?.data?.errorDetails?.message, 'danger')
     }
   }
-  const RowAction = ({item,index}: RenderRowActionsProps<any>) => {
+  const RowAction = ({item,index}: any) => {
     let filteredData:any={}
     if(allData.length!=0)
     {
@@ -1061,9 +1034,8 @@ const TabletableEcom=({ lockedData,setLockedData,primaryTableData, setPrimaryTab
                         />
                       ) : (
                         <TextInput
-                          view='clear'
                           placeholder={item.name}
-                          type={item.type}
+                          type={item.type === 'number' ? 'number' : 'text'}
                           onChange={(e: any) =>
                             setSearchParams({
                               ...SearchParams,
@@ -1073,9 +1045,8 @@ const TabletableEcom=({ lockedData,setLockedData,primaryTableData, setPrimaryTab
                                   : e.target.value
                             })
                           }
-                          hasClear={true}
                           value={SearchParams?.[item?.id] || ''}
-                          className='w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm transition-all duration-200 hover:shadow-md focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          size='m'
                         />
                       )}
                     </div>
@@ -1087,20 +1058,19 @@ const TabletableEcom=({ lockedData,setLockedData,primaryTableData, setPrimaryTab
 
             <div className='animate-slide-up flex flex-col justify-center gap-3 rounded-b-xl border-t border-gray-200 bg-gray-50 p-6 sm:flex-row'>
               <Button
-                pin='circle-circle'
-                className='flex-1 transform rounded-lg bg-gray-500 px-6 py-2 font-medium text-white shadow-md transition-all duration-200 ease-in-out hover:bg-gray-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 active:scale-95 sm:w-auto'
+                view='outlined'
+                size='m'
                 onClick={() => {
                   setOpen(false)
                   setSearchParams({})
                   handleSearch({})
                 }}
-                view='action' // Assuming Button supports variant; otherwise, override with classes
               >
                 Clear
               </Button>
               <Button
-                pin='circle-circle'
-                className='flex-1 transform rounded-lg bg-blue-600 px-6 py-2 font-medium text-white shadow-md transition-all duration-200 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95 sm:w-auto'
+                view='normal'
+                size='m'
                 onClick={() => {
                   setOpen(false)
                   handleSearch(SearchParams)
@@ -1161,43 +1131,35 @@ const TabletableEcom=({ lockedData,setLockedData,primaryTableData, setPrimaryTab
     return <></>
   }
   return(
-    <div className="col-start-1 col-end-13 gap-">
-      <Row space={3}>
-        <Col>
-          <Flex direction='column' >
-            <Modal 
-                  open={open} 
-                  onClose={() => setOpen(false)} 
-                  className="fixed inset-0 z-50 overflow-y-auto"
-                >
-              {searchModal()}
-              </Modal>
-            <MyTable
-              className=""
-              data={Array.isArray(allDataObject) ? allDataObject : []}
-              columns={translatedColumns}
-              edgePadding={true}
-              selectedIds={tableecom7ef45Props?.selectedIds}  
-              onSelectionChange={setLockMode} 
-              settings={settings}
-              updateSettings={setSettings}
-              renderRowActions={RowAction}
-              wordWrap={true}
-            />
-              {paginationData?.page != null && paginationData?.pageSize != null && paginationData?.total != null && Array.isArray(allDataObject) && allDataObject.length>0 ?
-              <Pagination
-              className='flex w-full items-center justify-center'
-              page={paginationData.page}
-              pageSize={paginationData.pageSize}
-              pageSizeOptions={[5, 10, 20, 50, 100]}
-              total={paginationData.total}
-              onUpdate={handleUpdate}
-              showInput={true}
-              size='l'
-            />:null}
-          </Flex>
-        </Col>
-      </Row>
+    <div className="col-start-1 col-end-13">
+      <div className="flex flex-col">
+        <Modal
+          open={open}
+          onClose={() => setOpen(false)}
+        >
+          {searchModal()}
+        </Modal>
+        <Table
+          data={Array.isArray(allDataObject) ? allDataObject : []}
+          columns={translatedColumns}
+          edgePadding={true}
+          selectedIds={tableecom7ef45Props?.selectedIds}
+          onSelectionChange={setLockMode}
+          settings={settings}
+          updateSettings={setSettings}
+          renderRowActions={RowAction}
+          wordWrap={true}
+          pagination={true}
+          externalPagination={true}
+          page={paginationData.page}
+          pageSize={paginationData.pageSize}
+          total={paginationData.total}
+          onPageChange={handleUpdate}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          tableSelection={true}
+          selectionMode={needLockingAndRule.lockMode === 'Single' ? 'single' : 'multi'}
+        />
+      </div>
     </div>
   )
 }

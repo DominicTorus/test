@@ -20,6 +20,7 @@ interface DatePickerProps {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
   label?: string;
+  placeholder?: string;
   style?: React.CSSProperties;
   validationState?: "invalid" | undefined;
   errorMessage?: string;
@@ -39,6 +40,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   onBlur,
   className = "",
   label,
+  placeholder,
   style,
   validationState,
   errorMessage,
@@ -106,6 +108,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         onChange={(e) => handleChange(e.target.value)}
         disabled={disabled}
         readOnly={readOnly}
+        placeholder={placeholder}
         className={`
           w-full
           ${getSizeClasses()}

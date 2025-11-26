@@ -159,11 +159,112 @@ export interface TotalContextProps {
   city6363bProps: any 
   setcity6363bProps: React.Dispatch<React.SetStateAction<any>>
 
+  parent1d56d: any 
+  setparent1d56d: React.Dispatch<React.SetStateAction<any>>
+  parent1d56dProps: any 
+  setparent1d56dProps: React.Dispatch<React.SetStateAction<any>>
+  container72d6d: any 
+  setcontainer72d6d: React.Dispatch<React.SetStateAction<any>>
+  container72d6dProps: any 
+  setcontainer72d6dProps: React.Dispatch<React.SetStateAction<any>>
+  dynamic9403b: any 
+  setdynamic9403b: React.Dispatch<React.SetStateAction<any>>
+  dynamic9403bProps: any 
+  setdynamic9403bProps: React.Dispatch<React.SetStateAction<any>>
+  tableecom7ef45: any 
+  settableecom7ef45: React.Dispatch<React.SetStateAction<any>>
+  tableecom7ef45Props: any 
+  settableecom7ef45Props: React.Dispatch<React.SetStateAction<any>>
+  group2911c: any 
+  setgroup2911c: React.Dispatch<React.SetStateAction<any>>
+  group2911cProps: any 
+  setgroup2911cProps: React.Dispatch<React.SetStateAction<any>>
+  time96133: any 
+  settime96133: React.Dispatch<React.SetStateAction<any>>
+  time96133Props: any 
+  settime96133Props: React.Dispatch<React.SetStateAction<any>>
+  namedf0caad: any,
+  setnamedf0caad:React.Dispatch<React.SetStateAction<any>>
+  namedf0caadProps: any 
+  setnamedf0caadProps: React.Dispatch<React.SetStateAction<any>>
+  plandf36f3e: any,
+  setplandf36f3e:React.Dispatch<React.SetStateAction<any>>
+  plandf36f3eProps: any 
+  setplandf36f3eProps: React.Dispatch<React.SetStateAction<any>>
+  industrydf5679e: any,
+  setindustrydf5679e:React.Dispatch<React.SetStateAction<any>>
+  industrydf5679eProps: any 
+  setindustrydf5679eProps: React.Dispatch<React.SetStateAction<any>>
+  employeedfb0755: any,
+  setemployeedfb0755:React.Dispatch<React.SetStateAction<any>>
+  employeedfb0755Props: any 
+  setemployeedfb0755Props: React.Dispatch<React.SetStateAction<any>>
+  locationdf8b23d: any,
+  setlocationdf8b23d:React.Dispatch<React.SetStateAction<any>>
+  locationdf8b23dProps: any 
+  setlocationdf8b23dProps: React.Dispatch<React.SetStateAction<any>>
+  revenue95787: any,
+  setrevenue95787:React.Dispatch<React.SetStateAction<any>>
+  revenue95787Props: any 
+  setrevenue95787Props: React.Dispatch<React.SetStateAction<any>>
+  revenuedfbd405: any,
+  setrevenuedfbd405:React.Dispatch<React.SetStateAction<any>>
+  revenuedfbd405Props: any 
+  setrevenuedfbd405Props: React.Dispatch<React.SetStateAction<any>>
+  viewdetails50348: any,
+  setviewdetails50348:React.Dispatch<React.SetStateAction<any>>
+  viewdetails50348Props: any 
+  setviewdetails50348Props: React.Dispatch<React.SetStateAction<any>>
+  t_id8da71: any,
+  sett_id8da71:React.Dispatch<React.SetStateAction<any>>
+  t_id8da71Props: any 
+  sett_id8da71Props: React.Dispatch<React.SetStateAction<any>>
+  t_name3f53e: any,
+  sett_name3f53e:React.Dispatch<React.SetStateAction<any>>
+  t_name3f53eProps: any 
+  sett_name3f53eProps: React.Dispatch<React.SetStateAction<any>>
+  trs_statusd040b: any,
+  settrs_statusd040b:React.Dispatch<React.SetStateAction<any>>
+  trs_statusd040bProps: any 
+  settrs_statusd040bProps: React.Dispatch<React.SetStateAction<any>>
+  companycodef6591: any,
+  setcompanycodef6591:React.Dispatch<React.SetStateAction<any>>
+  companycodef6591Props: any 
+  setcompanycodef6591Props: React.Dispatch<React.SetStateAction<any>>
+  view761fb: any,
+  setview761fb:React.Dispatch<React.SetStateAction<any>>
+  view761fbProps: any 
+  setview761fbProps: React.Dispatch<React.SetStateAction<any>>
+  companycode5eb43: any,
+  setcompanycode5eb43:React.Dispatch<React.SetStateAction<any>>
+  companycode5eb43Props: any 
+  setcompanycode5eb43Props: React.Dispatch<React.SetStateAction<any>>
+  tabsdb531: any,
+  settabsdb531:React.Dispatch<React.SetStateAction<any>>
+  tabsdb531Props: any 
+  settabsdb531Props: React.Dispatch<React.SetStateAction<any>>
+  t_name568ed: any,
+  sett_name568ed:React.Dispatch<React.SetStateAction<any>>
+  t_name568edProps: any 
+  sett_name568edProps: React.Dispatch<React.SetStateAction<any>>
+  timeline7141a: any,
+  settimeline7141a:React.Dispatch<React.SetStateAction<any>>
+  timeline7141aProps: any 
+  settimeline7141aProps: React.Dispatch<React.SetStateAction<any>>
+
 ////// screen states 
   allcomponents_v1Props: any 
   setallcomponents_v1Props: React.Dispatch<React.SetStateAction<any>>
   ufcomponent_v1Props: any 
   setufcomponent_v1Props: React.Dispatch<React.SetStateAction<any>>
+
+  company_v1Props: any 
+  setcompany_v1Props: React.Dispatch<React.SetStateAction<any>>
+  samplescreen_v1Props: any 
+  setsamplescreen_v1Props: React.Dispatch<React.SetStateAction<any>>
+  timeline_v1Props: any 
+  settimeline_v1Props: React.Dispatch<React.SetStateAction<any>>
+
 
 ///////// dfd
   dfd_code_description_v1Props: any 
@@ -174,6 +275,9 @@ export interface TotalContextProps {
   setdfd_state_dropdown_v1Props: React.Dispatch<React.SetStateAction<any>>
   dfd_city_dropdown_v1Props: any 
   setdfd_city_dropdown_v1Props: React.Dispatch<React.SetStateAction<any>>
+  dfd_carddoc_v1Props: any 
+  setdfd_carddoc_v1Props: React.Dispatch<React.SetStateAction<any>>
+
 
   refetch: any,
   setRefetch: React.Dispatch<React.SetStateAction<any>>
@@ -491,6 +595,194 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
     refetch:false,
     refresh:false,
     }) 
+
+         const [parent1d56d, setparent1d56d ] = React.useState<any>({}) 
+    const [parent1d56dProps, setparent1d56dProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+        const [container72d6d, setcontainer72d6d ] = React.useState<any>({}) 
+    const [container72d6dProps, setcontainer72d6dProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+        const [dynamic9403b, setdynamic9403b ] = React.useState<any>({}) 
+    const [dynamic9403bProps, setdynamic9403bProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+    
+    const [tableecom7ef45, settableecom7ef45 ] = React.useState<any>([]) 
+    const [tableecom7ef45Props, settableecom7ef45Props ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[],
+      refresh:false,
+      }) 
+        const [group2911c, setgroup2911c ] = React.useState<any>({}) 
+    const [group2911cProps, setgroup2911cProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+        const [time96133, settime96133 ] = React.useState<any>({}) 
+    const [time96133Props, settime96133Props ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+   const [namedf0caad,setnamedf0caad] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [plandf36f3e,setplandf36f3e] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [industrydf5679e,setindustrydf5679e] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [employeedfb0755,setemployeedfb0755] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [locationdf8b23d,setlocationdf8b23d] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [revenue95787,setrevenue95787] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [revenuedfbd405,setrevenuedfbd405] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [viewdetails50348,setviewdetails50348] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [t_id8da71,sett_id8da71] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [t_name3f53e,sett_name3f53e] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [trs_statusd040b,settrs_statusd040b] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [companycodef6591,setcompanycodef6591] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [view761fb,setview761fb] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [companycode5eb43,setcompanycode5eb43] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [tabsdb531,settabsdb531] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [t_name568ed,sett_name568ed] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [timeline7141a,settimeline7141a] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+
     ///////////
     const [refresh, setRefresh] = React.useState<any>({       textinputtextinput2cc5d:false,
        documentuploaderuploade78d7:false,
@@ -535,12 +827,16 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
   ////// screen states 
    const [allcomponents_v1Props,setallcomponents_v1Props] = React.useState<any>([])
    const [ufcomponent_v1Props,setufcomponent_v1Props] = React.useState<any>([])
+      const [company_v1Props,setcompany_v1Props] = React.useState<any>([])
+   const [samplescreen_v1Props,setsamplescreen_v1Props] = React.useState<any>([])
+   const [timeline_v1Props,settimeline_v1Props] = React.useState<any>([])
 
 ///////// dfd
   const [dfd_code_description_v1Props,setdfd_code_description_v1Props] = React.useState<any>([])
   const [dfd_country_dropdown_v1Props,setdfd_country_dropdown_v1Props] = React.useState<any>([])
   const [dfd_state_dropdown_v1Props,setdfd_state_dropdown_v1Props] = React.useState<any>([])
   const [dfd_city_dropdown_v1Props,setdfd_city_dropdown_v1Props] = React.useState<any>([])
+  const [dfd_carddoc_v1Props,setdfd_carddoc_v1Props] = React.useState<any>([])
     const [searchParam , setSearchParam] = React.useState<string>("")
     const [disableParam , setDisableParam] = React.useState<any>({})
     const [globalState , setGlobalState] = React.useState<any>({})
@@ -648,14 +944,84 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
         setstatec9a9f, 
         city6363b,
         setcity6363b, 
+
+         parent1d56d, 
+        setparent1d56d,
+        parent1d56dProps, 
+        setparent1d56dProps,
+        container72d6d, 
+        setcontainer72d6d,
+        container72d6dProps, 
+        setcontainer72d6dProps,
+        dynamic9403b, 
+        setdynamic9403b,
+        dynamic9403bProps, 
+        setdynamic9403bProps,
+        tableecom7ef45, 
+        settableecom7ef45,
+        tableecom7ef45Props, 
+        settableecom7ef45Props,
+        group2911c, 
+        setgroup2911c,
+        group2911cProps, 
+        setgroup2911cProps,
+        time96133, 
+        settime96133,
+        time96133Props, 
+        settime96133Props,
+        namedf0caad,
+        setnamedf0caad, 
+        plandf36f3e,
+        setplandf36f3e, 
+        industrydf5679e,
+        setindustrydf5679e, 
+        employeedfb0755,
+        setemployeedfb0755, 
+        locationdf8b23d,
+        setlocationdf8b23d, 
+        revenue95787,
+        setrevenue95787, 
+        revenuedfbd405,
+        setrevenuedfbd405, 
+        viewdetails50348,
+        setviewdetails50348, 
+        t_id8da71,
+        sett_id8da71, 
+        t_name3f53e,
+        sett_name3f53e, 
+        trs_statusd040b,
+        settrs_statusd040b, 
+        companycodef6591,
+        setcompanycodef6591, 
+        view761fb,
+        setview761fb, 
+        companycode5eb43,
+        setcompanycode5eb43, 
+        tabsdb531,
+        settabsdb531, 
+        t_name568ed,
+        sett_name568ed, 
+        timeline7141a,
+        settimeline7141a, 
         ////// screen states 
           allcomponents_v1Props,
           setallcomponents_v1Props,
           ufcomponent_v1Props,
           setufcomponent_v1Props,
+
+          company_v1Props,
+          setcompany_v1Props,
+          samplescreen_v1Props,
+          setsamplescreen_v1Props,
+          timeline_v1Props,
+          settimeline_v1Props,
         //////////
 
         ///////// dfd
+        dfd_carddoc_v1Props,
+        setdfd_carddoc_v1Props,
+
+        
         dfd_code_description_v1Props,
         setdfd_code_description_v1Props,
         dfd_country_dropdown_v1Props,

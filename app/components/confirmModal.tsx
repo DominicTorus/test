@@ -1,38 +1,54 @@
 
 'use client'
-import { Modal } from '@gravity-ui/uikit'
+import { Modal } from '@/components/Modal'
+import { Button } from '@/components/Button'
 import React from 'react'
 
-const ConfirmModal = ({confirmMsg, setConfirmMsg, confirmMsgTitle, confirmMsgContent,handleConfirm}:any) => {
+const ConfirmModal = ({confirmMsg, setConfirmMsg, confirmMsgTitle, confirmMsgContent, handleConfirm}:any) => {
+  const handleClose = () => {
+    setConfirmMsg(false)
+  }
+
+  const handleConfirmClick = () => {
+    setConfirmMsg(false)
+    handleConfirm()
+  }
+
   return (
-      <Modal open={confirmMsg}  className='rounded-2xl bg-white p-8 shadow-2xl transition-all duration-300 ease-in-out'>
-            <div className='w-11/12 scale-95 transform rounded-lg bg-white p-6 shadow-2xl transition-all duration-300 md:w-96'>
-      
-              <div className='text-center'>
-                <h3 className='mb-2 text-xl font-semibold text-gray-800'>
-                  {confirmMsgTitle}
-                </h3>
-                <p className='text-gray-600'>
-                  {confirmMsgContent}
-                </p>
-              </div>
-      
-              <div className='mt-6 flex justify-center space-x-4'>
-                <button onClick={() => {
-                  setConfirmMsg(false)
-                  
-                }} className='rounded-lg bg-gray-300 px-6 py-2 text-gray-700 transition duration-200 hover:bg-gray-400'>
-                  Cancel
-                </button>
-                <button onClick={() => {
-                  setConfirmMsg(false)
-                  handleConfirm()
-                }} className='rounded-lg bg-red-500 px-6 py-2 text-white transition duration-200 hover:bg-red-600'>
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </Modal>
+    <Modal
+      open={confirmMsg}
+      onClose={handleClose}
+      title={confirmMsgTitle}
+      size="s"
+      showCloseButton={true}
+      closeOnOverlayClick={false}
+      closeOnEscape={true}
+      footer={
+        <div className='flex justify-end gap-3 w-full'>
+          <Button
+            size="m"
+            view="outlined"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="m"
+            view="flat"
+            onClick={handleConfirmClick}
+            className="bg-red-500 hover:bg-red-600 text-white"
+          >
+            Confirm
+          </Button>
+        </div>
+      }
+    >
+      <div className='text-center py-4'>
+        <p>
+          {confirmMsgContent}
+        </p>
+      </div>
+    </Modal>
   )
 }
 
