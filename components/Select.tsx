@@ -34,6 +34,7 @@ interface SelectProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   className?: string;
+  customRenderSelectedLabels?: string | undefined;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -56,6 +57,7 @@ export const Select: React.FC<SelectProps> = ({
   headerText,
   headerPosition = "top",
   className = "",
+  customRenderSelectedLabels ,
 }) => {
   const { isDark, isHighContrast, branding } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -175,6 +177,9 @@ export const Select: React.FC<SelectProps> = ({
   };
 
   const getSelectedLabels = () => {
+    if(customRenderSelectedLabels) {
+      return customRenderSelectedLabels;
+    }
     if (multiple) {
       const values = Array.isArray(internalValue) ? internalValue : [];
       if (values.length === 0) return placeholder;
