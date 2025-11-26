@@ -9,7 +9,7 @@ import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 interface ListProps {
   sortable: boolean;
   items: string[];
-  itemsheight?: number;
+  itemsHeight?: number;
   selecteditemindex?: number;
   dynamic?: boolean;
   filterable?: boolean;
@@ -17,14 +17,14 @@ interface ListProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
-  onItemClick?: (index: number, item: string) => void;
+  onItemClick?: ( item: string) => void;
   className?: string;
 }
 
 export const List: React.FC<ListProps> = ({
   sortable,
   items: initialItems,
-  itemsheight,
+  itemsHeight,
   selecteditemindex,
   dynamic = false,
   filterable = false,
@@ -41,8 +41,8 @@ export const List: React.FC<ListProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleItemClick = (index: number, item: string) => {
-    setSelectedIndex(index);
-    onItemClick?.(index, item);
+    setSelectedIndex(items.indexOf(item));
+    onItemClick?.(item);
   };
 
   const isDark = theme === "dark" || theme === "dark-hc";
@@ -91,7 +91,7 @@ export const List: React.FC<ListProps> = ({
           ${isDark ? "border-gray-600" : "border-gray-300"}
           ${className}
         `}
-        style={{ maxHeight: itemsheight ? `${itemsheight}px` : "auto" }}
+        style={{ maxHeight: itemsHeight ? `${itemsHeight}px` : "auto" }}
       >
         {filteredItems.map((item, index) => {
           const isSelected = selectedIndex === index;
