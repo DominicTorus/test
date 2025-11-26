@@ -7,8 +7,8 @@ import { RadioSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/t
 import { getFontSizeClass } from "@/utils/branding";
 
 interface RadioProps {
-  checked: boolean;
-  size: RadioSize;
+  checked?: boolean;
+  size?: RadioSize;
   disabled?: boolean;
   content?: string;
   needTooltip?: boolean;
@@ -17,7 +17,9 @@ interface RadioProps {
   headerPosition?: HeaderPosition;
   value?: string;
   name?: string;
-  onChange?: (value: string) => void;
+  onChange?: (checked: boolean) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
 }
 
@@ -33,6 +35,8 @@ export const Radio: React.FC<RadioProps> = ({
   value = "",
   name,
   onChange,
+  onBlur,
+  onFocus,
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
@@ -74,9 +78,17 @@ export const Radio: React.FC<RadioProps> = ({
     };
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (!disabled) {
+      e.preventDefault();
+      onChange?.(!checked);
+    }
+  };
+
   const radioElement = (
     <label
       className={`inline-flex items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${className}`}
+      onClick={handleClick}
     >
       <input
         type="radio"
@@ -84,7 +96,9 @@ export const Radio: React.FC<RadioProps> = ({
         disabled={disabled}
         name={name}
         value={value}
-        onChange={() => onChange?.(value)}
+        onChange={() => {}}
+        onBlur={onBlur}
+        onFocus={onFocus}
         className="sr-only"
       />
       <div

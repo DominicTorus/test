@@ -30,7 +30,7 @@ interface ModalProps {
 export const Modal: React.FC<ModalProps> = ({
   open,
   onClose,
-  size = "m",
+  size = "xl",
   title,
   showCloseButton = true,
   closeOnOverlayClick = true,

@@ -25,6 +25,7 @@ interface SliderProps {
   headerPosition?: HeaderPosition;
   value?: number;
   onChange?: (value: number) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
 }
 
@@ -43,14 +44,15 @@ export const Slider: React.FC<SliderProps> = ({
   headerPosition = "top",
   value = 50,
   onChange,
+  onBlur,
   className = "",
 }) => {
   const { theme, branding, direction } = useGlobal();
-  const [sliderValue, setSliderValue] = useState(value);
+  const [sliderValue, setSliderValue] = useState(value || 50);
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    setSliderValue(value);
+    setSliderValue(value || 50);
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +184,7 @@ export const Slider: React.FC<SliderProps> = ({
           step={step}
           value={sliderValue}
           onChange={handleChange}
+          onBlur={onBlur}
           disabled={disabled}
           className={`
             w-full
