@@ -33,8 +33,8 @@ interface TextInputProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   require?: boolean;
-  onChange?: (value: string) => void;
-  onBlur?: (value: string) => void;
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined
+  onBlur?: React.FocusEventHandler<HTMLInputElement> | undefined
   events?: ComponentEvents[];
   className?: string;
 }
@@ -64,7 +64,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   headerPosition = "top",
   require = false,
   onChange,
-  onBlur,
+  onBlur=() => {},
   events,
   className = "",
 }) => {
@@ -76,7 +76,7 @@ export const TextInput: React.FC<TextInputProps> = ({
 
   const handleChange = (newValue: string) => {
     setInternalValue(newValue);
-    onChange?.(newValue);
+    // onChange?.(newValue);
 
     // Emit rise events when onChange occurs
     const onChangeEvent = events?.find(e => e.name === "onChange");
@@ -120,7 +120,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                 break;
               case "clearHandler":
                 setInternalValue("");
-                onChange?.("");
+                // onChange?.("");
                 break;
               case "refreshElement":
                 // Refresh could reload value from memory or reset to initial
@@ -142,7 +142,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     return () => {
       unsubscribers.forEach(unsub => unsub());
     };
-  }, [nodeId, events, eventBus, onChange]);
+  }, [nodeId, events, eventBus]);
 
   const getSizeClasses = () => {
     const fontSize = getFontSizeClass(branding.fontSize);
@@ -225,8 +225,8 @@ export const TextInput: React.FC<TextInputProps> = ({
         
         <input
           type={type}
-          value={internalValue}
-          onChange={(e) => handleChange(e.target.value)}
+          value={value}
+          onChange={onChange}
           placeholder={placeholder}
           disabled={isDisabled}
           readOnly={readOnly}
@@ -270,7 +270,7 @@ export const TextInput: React.FC<TextInputProps> = ({
                 e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
               }
             }
-            onBlur?.(internalValue);
+            onBlur(e)
           }}
         />
         

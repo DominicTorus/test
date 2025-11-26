@@ -17,7 +17,8 @@ interface PinInputProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
-  onChange?: (value: string) => void;
+  onChange?: (value: any) => void;
+  onBlur?: (value: any) => void;
   className?: string;
 }
 
@@ -32,7 +33,8 @@ export const PinInput: React.FC<PinInputProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
-  onChange,
+  onChange=() => {},
+  onBlur=() => {},
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
@@ -67,7 +69,7 @@ export const PinInput: React.FC<PinInputProps> = ({
     const newValues = [...values];
     newValues[index] = value;
     setValues(newValues);
-    onChange?.(newValues.join(""));
+    onChange(newValues);
 
     if (value && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -102,7 +104,7 @@ export const PinInput: React.FC<PinInputProps> = ({
 
   const pinInputElement = (
     <div className={`flex gap-2 ${direction === "RTL" ? "flex-row-reverse" : ""} ${className}`}>
-      {Array.from({ length }).map((_, index) => (
+      {Array.from({length},(_,i)=>i).map((index) => (
         <input
           key={index}
           ref={(el:any) => (inputRefs.current[index] = el)}
@@ -112,7 +114,7 @@ export const PinInput: React.FC<PinInputProps> = ({
           maxLength={1}
           value={values[index]}
           onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
+          // onKeyDown={(e) => handleKeyDown(index, e)}
           placeholder={placeholder}
           disabled={disabled}
           className={`
@@ -130,10 +132,7 @@ export const PinInput: React.FC<PinInputProps> = ({
             e.currentTarget.style.borderColor = branding.brandColor;
             e.currentTarget.style.boxShadow = `0 0 0 2px ${branding.brandColor}20`;
           }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
-            e.currentTarget.style.boxShadow = "none";
-          }}
+          onBlur={onBlur}
         />
       ))}
     </div>

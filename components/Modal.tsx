@@ -155,7 +155,7 @@ export const Modal: React.FC<ModalProps> = ({
                 `}
                 aria-label="Close modal"
               >
-                <Icon data="xmark" size={20} />
+                <Icon data="FaRegTimesCircle" size={20} />
               </button>
             )}
           </div>

@@ -19,7 +19,8 @@ interface TextAreaProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
-  onChange?: (value: string) => void;
+ onChange?: React.ChangeEventHandler<HTMLTextAreaElement> | undefined
+  onBlur?: (value: any) => void;
   className?: string;
 }
 
@@ -37,16 +38,11 @@ export const TextArea: React.FC<TextAreaProps> = ({
   headerText,
   headerPosition = "top",
   onChange,
+  onBlur,
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
   const [internalValue, setInternalValue] = useState(value);
-
-  const handleChange = (newValue: string) => {
-    setInternalValue(newValue);
-    onChange?.(newValue);
-  };
-
   const getSizeClasses = () => {
     const fontSize = getFontSizeClass(branding.fontSize);
     switch (size) {
@@ -88,11 +84,12 @@ export const TextArea: React.FC<TextAreaProps> = ({
   const textAreaElement = (
     <div className={`w-full ${className}`}>
       <textarea
-        value={internalValue}
-        onChange={(e) => handleChange(e.target.value)}
+        value={value}
+        onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
         readOnly={readOnly}
+      
         rows={minRows}
         style={{
           maxHeight: `${maxRows * 1.5}em`,
@@ -112,10 +109,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
           e.currentTarget.style.borderColor = branding.brandColor;
           e.currentTarget.style.boxShadow = `0 0 0 2px ${branding.brandColor}20`;
         }}
-        onBlur={(e) => {
-          e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
-          e.currentTarget.style.boxShadow = "none";
-        }}
+        onBlur={onBlur}
       />
     </div>
   );

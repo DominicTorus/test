@@ -28,7 +28,7 @@ interface TabsProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   defaultActiveId?: string;
-  onChange?: (id: string) => void;
+  onChange?: (id: any) => void;
   className?: string;
 }
 
@@ -42,17 +42,16 @@ export const Tabs: React.FC<TabsProps> = ({
   headerText,
   headerPosition = "top",
   defaultActiveId,
-  onChange,
+  onChange=()=>{},
   className = "",
 }) => {
   const { theme, branding } = useGlobal();
   const [activeTab, setActiveTab] = useState(defaultActiveId || items[0]?.id || "");
 
   const handleTabClick = (id: string) => {
-    if (!disabled) {
+      onChange(id);
       setActiveTab(id);
-      onChange?.(id);
-    }
+    
   };
 
   const getSizeClasses = () => {
@@ -90,7 +89,7 @@ export const Tabs: React.FC<TabsProps> = ({
           return (
             <button
               key={item.id}
-              onClick={() => handleTabClick(item.id)}
+              onClick={()=> handleTabClick(item.id)}
               disabled={disabled}
               className={`
                 ${getSizeClasses()}
