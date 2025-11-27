@@ -37,7 +37,7 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({
   size = "m",
   theme: cardTheme = "normal",
-  view = "outlined",
+  view = "filled",
   type = "container",
   disabled = false,
   selected = false,
@@ -83,7 +83,7 @@ export const Card: React.FC<CardProps> = ({
       case "utility":
         return { bg: isDark ? "#374151" : "#F3F4F6", border: "#6B7280", text: isDark ? "#D1D5DB" : "#374151" };
       case "brand":
-        return { bg: isDark ? branding.brandColor + "33" : branding.brandColor + "1A", border: branding.brandColor, text: isDark ? "#F9FAFB" : "#111827" };
+        return { bg: isDark ? branding.brandColor  : branding.brandColor , border: branding.brandColor, text: isDark ? "#F9FAFB" : "#111827" };
       default:
         return { bg: isDark ? "#1F2937" : "#FFFFFF", border: isDark ? "#4B5563" : "#E5E7EB", text: isDark ? "#F9FAFB" : "#111827" };
     }

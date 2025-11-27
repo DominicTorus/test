@@ -1,336 +1,248 @@
 "use client";
 
 import React from "react";
-import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
-import { ComponentSize } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
-
-interface PaginationProps {
+import { Button } from "./Button";
+export interface PaginationProps {
+  /**
+   * Current page number (1-based)
+   */
   page: number;
+  /**
+   * Number of items per page
+   */
   pageSize: number;
-  total: number;
-  onUpdate: (page: number, pageSize: number) => void;
+  /**
+   * Available page size options
+   */
   pageSizeOptions?: number[];
-  showInput?: boolean;
-  size?: ComponentSize;
+  /**
+   * Total number of items
+   */
+  total: number;
+  /**
+   * Callback when pagination state changes
+   */
+  onUpdate: (data: { page: number; pageSize: number }) => void;
+  /**
+   * Size variant of the component
+   */
+  size?: 's' | 'm' | 'l';
+  /**
+   * Custom className
+   */
   className?: string;
-  compact?: boolean;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
   page,
   pageSize,
+  pageSizeOptions = [5, 10, 20, 50, 100],
   total,
   onUpdate,
-  pageSizeOptions = [5, 10, 20, 50, 100],
-  showInput = true,
-  size = "m",
+  size = 'm',
   className = "",
-  compact = false,
 }) => {
-  const { theme, branding } = useGlobal();
-  const isDark = theme === "dark" || theme === "dark-hc";
+  // Calculate total pages
+  const pageCount = Math.ceil(total / pageSize);
+  // Calculate visible page numbers
+  const getVisiblePages = (): (number | "ellipsis")[] => {
+    const siblingCount = 1;
+    
+    if (pageCount <= 7) {
+      return Array.from({ length: pageCount }, (_, i) => i + 1);
+    }
 
-  const totalPages = Math.ceil(total / pageSize);
-  const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
+    const leftSiblingIndex = Math.max(page - siblingCount, 1);
+    const rightSiblingIndex = Math.min(page + siblingCount, pageCount);
+
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < pageCount - 1;
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = 3 + 2 * siblingCount;
+      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+      return [...leftRange, "ellipsis", pageCount];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = 3 + 2 * siblingCount;
+      const rightRange = Array.from(
+        { length: rightItemCount },
+        (_, i) => pageCount - rightItemCount + i + 1
+      );
+      return [1, "ellipsis", ...rightRange];
+    }
+
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i
+      );
+      return [1, "ellipsis", ...middleRange, "ellipsis", pageCount];
+    }
+
+    return [];
+  };
+
+  const visiblePages = getVisiblePages();
+
+  // Calculate page info
+  const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, total);
 
-  const getSizeClasses = () => {
-    const fontSize = getFontSizeClass(branding.fontSize);
-    switch (size) {
-      case "s":
-        return {
-          button: `px-2 py-1 text-sm`,
-          select: `px-2 py-1 text-sm`,
-          input: `px-2 py-1 text-sm w-16`,
-          text: "text-sm",
-        };
-      case "m":
-        return {
-          button: `px-3 py-1.5 ${fontSize}`,
-          select: `px-3 py-1.5 ${fontSize}`,
-          input: `px-3 py-1.5 ${fontSize} w-20`,
-          text: fontSize,
-        };
-      case "l":
-        return {
-          button: `px-4 py-2 ${fontSize}`,
-          select: `px-4 py-2 ${fontSize}`,
-          input: `px-4 py-2 ${fontSize} w-24`,
-          text: fontSize,
-        };
-      case "xl":
-        return {
-          button: `px-5 py-2.5 text-lg`,
-          select: `px-5 py-2.5 text-lg`,
-          input: `px-5 py-2.5 text-lg w-28`,
-          text: "text-lg",
-        };
-      default:
-        return {
-          button: `px-3 py-1.5 ${fontSize}`,
-          select: `px-3 py-1.5 ${fontSize}`,
-          input: `px-3 py-1.5 ${fontSize} w-20`,
-          text: fontSize,
-        };
+  // Size variants
+  const sizeClasses = {
+    s: {
+      Button: 'min-w-[28px] h-7 px-1.5 text-xs',
+      text: 'text-xs',
+      select: 'px-1.5 py-0.5 text-xs'
+    },
+    m: {
+      Button: 'min-w-[32px] h-8 px-2 text-sm',
+      text: 'text-sm',
+      select: 'px-2 py-1 text-sm'
+    },
+    l: {
+      Button: 'min-w-[36px] h-9 px-3 text-base',
+      text: 'text-base',
+      select: 'px-3 py-1.5 text-base'
     }
   };
 
-  const sizeClasses = getSizeClasses();
+  const currentSize:any = sizeClasses[size];
+
+  const buttonBaseClass = `
+    inline-flex items-center justify-center
+    ${currentSize?.Button} mx-0.5
+    font-medium
+    border border-gray-300 dark:border-gray-600
+    bg-white dark:bg-gray-800
+    text-gray-700 dark:text-gray-300
+    hover:bg-gray-50 dark:hover:bg-gray-700
+    disabled:opacity-50 disabled:cursor-not-allowed
+    transition-colors duration-150
+    rounded
+  `;
+
+  const activeButtonClass = `
+    ${buttonBaseClass.replace('bg-white dark:bg-gray-800', '')}
+    bg-blue-600 dark:bg-blue-700
+    text-white border-blue-600 dark:border-blue-700
+    hover:bg-blue-700 dark:hover:bg-blue-800
+  `;
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages && newPage !== page) {
-      onUpdate(newPage, pageSize);
+    if (newPage >= 1 && newPage <= pageCount) {
+      onUpdate({ page: newPage, pageSize });
     }
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
-    if (newPageSize !== pageSize) {
-      onUpdate(1, newPageSize);
-    }
+    onUpdate({ page: 1, pageSize: newPageSize }); // Reset to page 1 when changing page size
   };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    if (!isNaN(value)) {
-      handlePageChange(value);
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const showEllipsis = totalPages > 7;
-
-    if (!showEllipsis) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-
-      if (page > 3) {
-        pages.push("...");
-      }
-
-      const start = Math.max(2, page - 1);
-      const end = Math.min(totalPages - 1, page + 1);
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      if (page < totalPages - 2) {
-        pages.push("...");
-      }
-
-      pages.push(totalPages);
-    }
-
-    return pages;
-  };
-
-  const baseButtonClass = `
-    ${getBorderRadiusClass(branding.borderRadius)}
-    border-2
-    transition-all
-    ${isDark ? "border-gray-600" : "border-gray-300"}
-    ${isDark ? "bg-gray-700 text-gray-200" : "bg-white text-gray-700"}
-    hover:shadow-md
-  `;
-
-  const activeButtonClass = `
-    ${getBorderRadiusClass(branding.borderRadius)}
-    border-2
-    transition-all
-  `;
-
-  if (compact) {
-    return (
-      <div className={`flex items-center justify-center gap-2 ${className}`}>
-        <button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
-          aria-label="Previous page"
-        >
-          <Icon data="FaStepBackward" size={16} />
-        </button>
-
-        <span className={`${sizeClasses.text} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          {page} / {totalPages}
-        </span>
-
-        <button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages || totalPages === 0}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
-          aria-label="Next page"
-        >
-          <Icon data="FaStepForward" size={16} />
-        </button>
-      </div>
-    );
-  }
 
   return (
-    <div className={`flex flex-wrap items-center justify-between gap-4 ${className}`}>
-      {/* Page Size Selector */}
+    <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-center gap-4 ${className}`}>
+      {/* Pagination Controls */}
       <div className="flex items-center gap-2">
-        <span className={`${sizeClasses.text} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          Rows per page:
-        </span>
-        <select
-          value={pageSize}
-          onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.select}
-            cursor-pointer
-          `}
-        >
-          {pageSizeOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+        {/* Page Size Selector */}
+        <div className="flex items-center gap-2 mr-4">
+          <span className={`text-gray-600 dark:text-gray-400 ${currentSize?.text}`}>Show:</span>
+          <select
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+            className={`
+              ${currentSize?.select}
+              border border-gray-300 dark:border-gray-600
+              bg-white dark:bg-gray-800
+              text-gray-700 dark:text-gray-300
+              rounded
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+            `}
+          >
+            {pageSizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Page Navigation */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={page === 1}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
-          aria-label="First page"
-        >
-          <Icon data="FaFastBackward" size={16} />
-        </button>
+        {/* First Page */}
+        {pageCount > 7 && (
+          <Button
+            className={buttonBaseClass}
+            onClick={() => handlePageChange(1)}
+            disabled={page <= 1}
+            aria-label="First page"
+          >
+            <Icon data="FaFastBackward" size={16} />
+          </Button>
+        )}
 
-        <button
+        {/* Previous Page */}
+        <Button
+          className={buttonBaseClass}
           onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
+          disabled={page <= 1}
           aria-label="Previous page"
         >
           <Icon data="FaStepBackward" size={16} />
-        </button>
+        </Button>
 
         {/* Page Numbers */}
-        <div className="flex items-center gap-1">
-          {getPageNumbers().map((pageNum, index) =>
-            pageNum === "..." ? (
+        {visiblePages.map((pageNum, index) => {
+          if (pageNum === "ellipsis") {
+            return (
               <span
                 key={`ellipsis-${index}`}
-                className={`${sizeClasses.button} ${sizeClasses.text} ${isDark ? "text-gray-400" : "text-gray-500"}`}
+                className="px-2 py-2 text-gray-500 dark:text-gray-400"
               >
                 ...
               </span>
-            ) : (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum as number)}
-                className={`
-                  ${pageNum === page ? activeButtonClass : baseButtonClass}
-                  ${sizeClasses.button}
-                  ${
-                    pageNum === page
-                      ? `${isDark ? "text-white" : "text-white"}`
-                      : ""
-                  }
-                `}
-                style={
-                  pageNum === page
-                    ? {
-                        backgroundColor: branding.brandColor,
-                        borderColor: branding.brandColor,
-                      }
-                    : undefined
-                }
-                aria-label={`Page ${pageNum}`}
-                aria-current={pageNum === page ? "page" : undefined}
-              >
-                {pageNum}
-              </button>
-            )
-          )}
-        </div>
+            );
+          }
 
-        <button
+          return (
+            <Button
+              key={pageNum}
+              className={pageNum === page ? activeButtonClass : buttonBaseClass}
+              onClick={() => handlePageChange(pageNum)}
+              aria-label={`Page ${pageNum}`}
+              aria-current={pageNum === page ? "page" : undefined}
+            >
+              {pageNum}
+            </Button>
+          );
+        })}
+
+        {/* Next Page */}
+        <Button
+          className={buttonBaseClass}
           onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages || totalPages === 0}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
+          disabled={page >= pageCount}
           aria-label="Next page"
         >
           <Icon data="FaStepForward" size={16} />
-        </button>
+        </Button>
 
-        <button
-          onClick={() => handlePageChange(totalPages)}
-          disabled={page === totalPages || totalPages === 0}
-          className={`
-            ${baseButtonClass}
-            ${sizeClasses.button}
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-          `}
-          aria-label="Last page"
-        >
-          <Icon data="FaFastForward" size={16} />
-        </button>
-      </div>
-
-      {/* Info and Jump to Page */}
-      <div className="flex items-center gap-4">
-        <span className={`${sizeClasses.text} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-          {startItem}-{endItem} of {total}
-        </span>
-
-        {showInput && (
-          <div className="flex items-center gap-2">
-            <span className={`${sizeClasses.text} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-              Go to:
-            </span>
-            <input
-              type="number"
-              min={1}
-              max={totalPages}
-              value={page}
-              onChange={handleInputChange}
-              className={`
-                ${baseButtonClass}
-                ${sizeClasses.input}
-              `}
-            />
-          </div>
+        {/* Last Page */}
+        {pageCount > 7 && (
+          <Button
+            className={buttonBaseClass}
+            onClick={() => handlePageChange(pageCount)}
+            disabled={page >= pageCount}
+            aria-label="Last page"
+          >
+            <Icon data="FaFastForward" size={16} />
+          </Button>
         )}
       </div>
     </div>
   );
 };
+
+export default Pagination;
+
+

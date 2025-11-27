@@ -98,9 +98,11 @@ export const Modal: React.FC<ModalProps> = ({
 
   const modalElement = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn"
       style={{
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        backdropFilter: "blur(2px)",
+        WebkitBackdropFilter: "blur(2px)",
       }}
       onClick={handleOverlayClick}
     >
@@ -108,10 +110,12 @@ export const Modal: React.FC<ModalProps> = ({
         className={`
           ${getSizeClasses()}
           ${getBorderRadiusClass(branding.borderRadius)}
+          animate-scaleIn
           w-full
           flex flex-col
-          shadow-2xl
           ${isHighContrast ? 'border-2' : 'border'}
+          transition-all duration-300 ease-in-out
+          hover:shadow-2xl
           ${className}
         `}
         style={{
@@ -119,6 +123,9 @@ export const Modal: React.FC<ModalProps> = ({
           borderColor: isDark ? "#4B5563" : "#E5E7EB",
           color: isDark ? "#F9FAFB" : "#111827",
           maxHeight: "90vh",
+          boxShadow: isDark
+            ? "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)"
+            : "0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -130,9 +137,13 @@ export const Modal: React.FC<ModalProps> = ({
               px-6 py-4
               border-b
               ${isHighContrast ? 'border-b-2' : ''}
+              backdrop-blur-sm
             `}
             style={{
               borderColor: isDark ? "#374151" : "#E5E7EB",
+              background: isDark
+                ? "linear-gradient(to bottom, rgba(31, 41, 55, 0.8), rgba(31, 41, 55, 0.6))"
+                : "linear-gradient(to bottom, rgba(249, 250, 251, 0.8), rgba(255, 255, 255, 0.6))",
             }}
           >
             {title && (
@@ -150,12 +161,19 @@ export const Modal: React.FC<ModalProps> = ({
                 className={`
                   p-2
                   ${getBorderRadiusClass(branding.borderRadius)}
-                  transition-colors
-                  ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}
+                  transition-all duration-200
+                  ${isDark ? "hover:bg-gray-700 hover:shadow-lg" : "hover:bg-gray-100 hover:shadow-md"}
+                  hover:scale-110
+                  active:scale-95
                 `}
+                style={{
+                  boxShadow: isDark
+                    ? "0 2px 4px rgba(0, 0, 0, 0.2)"
+                    : "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
                 aria-label="Close modal"
               >
-                <Icon data="FaRegTimesCircle" size={20} />
+                <Icon data="FaTimes" size={20} />
               </button>
             )}
           </div>
@@ -163,9 +181,10 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Content */}
         <div
-          className="flex-1 overflow-y-auto px-6 py-4"
+          className="flex-1 overflow-y-auto px-6 py-4 custom-scrollbar"
           style={{
             color: isDark ? "#F9FAFB" : "#111827",
+            overscrollBehavior: "contain",
           }}
         >
           {children}
@@ -178,10 +197,14 @@ export const Modal: React.FC<ModalProps> = ({
               px-6 py-4
               border-t
               ${isHighContrast ? 'border-t-2' : ''}
-              flex items-center justify-end gap-2
+              flex items-center justify-end gap-3
+              backdrop-blur-sm
             `}
             style={{
               borderColor: isDark ? "#374151" : "#E5E7EB",
+              background: isDark
+                ? "linear-gradient(to top, rgba(31, 41, 55, 0.8), rgba(31, 41, 55, 0.6))"
+                : "linear-gradient(to top, rgba(249, 250, 251, 0.8), rgba(255, 255, 255, 0.6))",
             }}
           >
             {footer}

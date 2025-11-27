@@ -20,8 +20,8 @@ interface TabItem {
 
 interface TabsProps {
   items: TabItem[];
-  direction: TabDirection;
-  size: TabSize;
+  direction?: TabDirection;
+  size?: TabSize;
   disabled?: boolean;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;

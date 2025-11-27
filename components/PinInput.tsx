@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, KeyboardEvent, useEffect } from "react";
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { ComponentSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
@@ -8,50 +8,54 @@ import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
 interface PinInputProps {
   length: number;
-  size: ComponentSize;
+  size?: ComponentSize;
+  value?: string;
   disabled?: boolean;
   placeholder?: string;
   mask?: boolean;
-  value?: string;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
-  onChange?: (value: any) => void;
-  onBlur?: (value: any) => void;
+  onChange?: (value: string) => void;
+  onBlur?: (value: string) => void;
   className?: string;
 }
 
 export const PinInput: React.FC<PinInputProps> = ({
   length,
   size,
+  value,
   disabled = false,
   placeholder = "",
   mask = false,
-  value = "",
   needTooltip = false,
   tooltipProps,
   headerText,
   headerPosition = "top",
-  onChange=() => {},
-  onBlur=() => {},
+  onChange,
+  onBlur,
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
-  const [values, setValues] = useState<string[]>(() => {
+
+  // Initialize state from value prop or empty array
+  const getInitialValues = () => {
     if (value) {
-      const valueArray = value.split("").slice(0, length);
-      return [...valueArray, ...Array(Math.max(0, length - valueArray.length)).fill("")];
+      const chars = value.split('').slice(0, length);
+      return [...chars, ...Array(length - chars.length).fill('')];
     }
     return Array(length).fill("");
-  });
+  };
+
+  const [values, setValues] = useState<string[]>(getInitialValues());
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Sync with value prop changes
+  // Sync internal state with external value prop
   useEffect(() => {
     if (value !== undefined) {
-      const valueArray = value.split("").slice(0, length);
-      const newValues = [...valueArray, ...Array(Math.max(0, length - valueArray.length)).fill("")];
+      const chars = value.split('').slice(0, length);
+      const newValues = [...chars, ...Array(length - chars.length).fill('')];
       setValues(newValues);
     }
   }, [value, length]);
@@ -69,7 +73,7 @@ export const PinInput: React.FC<PinInputProps> = ({
     const newValues = [...values];
     newValues[index] = value;
     setValues(newValues);
-    onChange(newValues);
+    onChange?.(newValues.join(""));
 
     if (value && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
@@ -104,7 +108,7 @@ export const PinInput: React.FC<PinInputProps> = ({
 
   const pinInputElement = (
     <div className={`flex gap-2 ${direction === "RTL" ? "flex-row-reverse" : ""} ${className}`}>
-      {Array.from({length},(_,i)=>i).map((index) => (
+      {Array.from({ length }).map((_, index) => (
         <input
           key={index}
           ref={(el:any) => (inputRefs.current[index] = el)}
@@ -114,7 +118,7 @@ export const PinInput: React.FC<PinInputProps> = ({
           maxLength={1}
           value={values[index]}
           onChange={(e) => handleChange(index, e.target.value)}
-          // onKeyDown={(e) => handleKeyDown(index, e)}
+          onKeyDown={(e) => handleKeyDown(index, e)}
           placeholder={placeholder}
           disabled={disabled}
           className={`
@@ -132,7 +136,12 @@ export const PinInput: React.FC<PinInputProps> = ({
             e.currentTarget.style.borderColor = branding.brandColor;
             e.currentTarget.style.boxShadow = `0 0 0 2px ${branding.brandColor}20`;
           }}
-          onBlur={onBlur}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
+            e.currentTarget.style.boxShadow = "none";
+            // Call onBlur callback with the complete PIN value
+            onBlur?.(values.join(""));
+          }}
         />
       ))}
     </div>
