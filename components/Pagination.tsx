@@ -159,7 +159,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="Previous page"
         >
-          <Icon data="chevron-left" size={16} />
+          <Icon data="FaStepBackward" size={16} />
         </button>
 
         <span className={`${sizeClasses.text} ${isDark ? "text-gray-300" : "text-gray-700"}`}>
@@ -177,7 +177,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="Next page"
         >
-          <Icon data="chevron-right" size={16} />
+          <Icon data="FaStepForward" size={16} />
         </button>
       </div>
     );
@@ -220,7 +220,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="First page"
         >
-          <Icon data="chevrons-left" size={16} />
+          <Icon data="FaFastBackward" size={16} />
         </button>
 
         <button
@@ -234,7 +234,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="Previous page"
         >
-          <Icon data="chevron-left" size={16} />
+          <Icon data="FaStepBackward" size={16} />
         </button>
 
         {/* Page Numbers */}
@@ -288,7 +288,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="Next page"
         >
-          <Icon data="chevron-right" size={16} />
+          <Icon data="FaStepForward" size={16} />
         </button>
 
         <button
@@ -302,7 +302,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           `}
           aria-label="Last page"
         >
-          <Icon data="chevrons-right" size={16} />
+          <Icon data="FaFastForward" size={16} />
         </button>
       </div>
 
