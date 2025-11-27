@@ -90,7 +90,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         ref={triggerRef}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
-        className={triggerClassName}
+        // className={triggerClassName}
       >
         {children}
       </div>
