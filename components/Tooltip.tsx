@@ -10,6 +10,7 @@ interface TooltipProps {
   placement: TooltipPlacement;
   className?: string;
   triggerClassName?: string;
+  disable?: boolean;
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
@@ -18,12 +19,18 @@ export const Tooltip: React.FC<TooltipProps> = ({
   placement,
   className = "",
   triggerClassName = "inline-block",
+  disable = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const { theme } = useGlobal();
+
+  // If tooltip is disabled, just return children without tooltip functionality
+  if (disable) {
+    return <>{children}</>;
+  }
 
   useEffect(() => {
     if (isVisible && triggerRef.current && tooltipRef.current) {
