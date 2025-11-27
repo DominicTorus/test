@@ -16,7 +16,7 @@ import {
 import {
   getFontSizeClass,
   getBorderRadiusClass,
-} from "@/utils/branding";
+} from "@/app/utils/branding";
 
 type IconDisplay = "Icon only" | "Start with Icon" | "End with Icon";
 
@@ -34,7 +34,7 @@ interface ButtonProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   children?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e?:any) => void;
   onFocus?: () => void;
   events?: ComponentEvents[];
   className?: string;
@@ -119,12 +119,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     }
   }, [nodeId]);
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e?:any) => {
     if (disabled) return;
 
     // Call provided onClick handler
     if (onClick) {
-      onClick();
+      onClick(e);
     }
 
     // Emit events based on configuration
