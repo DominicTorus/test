@@ -17,7 +17,8 @@ interface RadioProps {
   headerPosition?: HeaderPosition;
   value?: string;
   name?: string;
-  onChange?: (checked: boolean) => void;
+  onClick?: (checked: boolean) => void;
+  onChange?: (value: string) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   className?: string;
@@ -37,6 +38,7 @@ export const Radio: React.FC<RadioProps> = ({
   onChange,
   onBlur,
   onFocus,
+  onClick,
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
@@ -78,10 +80,11 @@ export const Radio: React.FC<RadioProps> = ({
     };
   };
 
-  const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent) => {
     if (!disabled) {
       e.preventDefault();
-      onChange?.(!checked);
+      onClick?.(!checked);
+      onChange?.(value);
     }
   };
 
@@ -96,7 +99,7 @@ export const Radio: React.FC<RadioProps> = ({
         disabled={disabled}
         name={name}
         value={value}
-        onChange={() => {}}
+        onChange={() => onChange?.(value)}
         onBlur={onBlur}
         onFocus={onFocus}
         className="sr-only"
