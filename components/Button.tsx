@@ -38,6 +38,7 @@ interface ButtonProps {
   onFocus?: () => void;
   events?: ComponentEvents[];
   className?: string;
+  startContent?: React.ReactNode;
   endContent?: React.ReactNode;
 }
 
@@ -59,6 +60,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   onFocus,
   events = [],
   className = "",
+  startContent,
   endContent,
 }, ref) => {
   const { theme, direction, branding } = useGlobal();
@@ -381,10 +383,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     const textElement = children && <span>{children}</span>;
 
     if (iconDisplay === "Icon only") {
-      return iconElement;
+      return (
+        <>
+          {startContent}
+          {iconElement}
+          {endContent}
+        </>
+      );
     } else if (iconDisplay === "Start with Icon") {
       return (
         <>
+          {startContent}
           {iconElement}
           {textElement && (
             <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{textElement}</span>
@@ -396,6 +405,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       // "End with Icon"
       return (
         <>
+          {startContent}
           {textElement}
           {iconElement && (
             <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{iconElement}</span>
