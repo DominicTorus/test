@@ -1,199 +1,660 @@
-"use client";
+'use client'
+import * as XLSX from 'xlsx'
+import { useEffect, useState } from 'react'
+import * as React from 'react'
+import { DropzoneOptions, useDropzone } from 'react-dropzone'
+import {
+  BsFiletypeJpg,
+  BsFiletypeJson,
+  BsFiletypePng,
+  BsImage
+} from 'react-icons/bs'
+import { RiDeleteBinLine } from 'react-icons/ri'
+import { BiHide } from 'react-icons/bi'
+import {
+  FaArrowCircleDown,
+  FaCss3Alt,
+  FaFileAlt,
+  FaFileArchive,
+  FaFileCode,
+  FaFileCsv,
+  FaFileExcel,
+  FaFilePdf,
+  FaFilePowerpoint,
+  FaFileWord,
+  FaHtml5,
+  FaMarkdown,
+  FaSass
+} from 'react-icons/fa'
+import { IoLogoJavascript } from 'react-icons/io'
+import { IoCloseCircleOutline } from 'react-icons/io5'
+import { MdFileUpload, MdOutlineCloudDownload } from 'react-icons/md'
+import { SiReact, SiTypescript } from 'react-icons/si'
+import { TbFileUpload } from 'react-icons/tb'
+import DocViewer from "@/components/DocumentViewer";
+import axios from 'axios'
+import { Button } from '@/components/Button'
+import { Modal } from '@/components/Modal'
+import { Icon } from '@/components/Icon'
 
-import React, { useState } from "react";
-import { useGlobal } from "@/context/GlobalContext";
-import { Tooltip } from "./Tooltip";
-import { Icon } from "./Icon";
-import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
-
-type ViewType = "modal" | "onScreen";
-type StorageLocation = "DB" | "DFS";
-type FileNamingPreference = "use_system_generated_name" | "keep_original_file_name";
-
-interface DocumentUploaderProps {
-  viewType?: ViewType;
-  storageLocation?: StorageLocation;
-  fileNamingPreference?: FileNamingPreference;
-  enableEncryption?: boolean;
-  needTooltip?: boolean;
-  tooltipProps?: TooltipPropsType;
-  headerText?: string;
-  headerPosition?: HeaderPosition;
-  onFileUpload?: (files: File[]) => void;
-  className?: string;
+type InputProps = {
+  className?: string
+  value?: FilesType[]
+  onChange?: React.Dispatch<React.SetStateAction<FilesType[]>>
+  disabled?: boolean
+  dropzoneOptions?: Omit<DropzoneOptions, 'disabled'>
+  preview?: boolean
+  draggable?: boolean
+  id: string
+  singleSelect?: boolean
 }
 
-export const DocumentUploader: React.FC<DocumentUploaderProps> = ({
-  viewType = "onScreen",
-  storageLocation = "DB",
-  fileNamingPreference = "keep_original_file_name",
-  enableEncryption = false,
-  needTooltip = false,
-  tooltipProps,
-  headerText,
-  headerPosition = "top",
-  onFileUpload,
-  className = "",
-}) => {
-  const { theme, direction, branding } = useGlobal();
-  const [files, setFiles] = useState<File[]>([]);
-  const [dragActive, setDragActive] = useState(false);
+interface FilesType {
+  file: File
+  url: string
+}
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const fileList = Array.from(e.target.files);
-      setFiles(fileList);
-      onFileUpload?.(fileList);
+type Drag_file = FilesType[]
+
+const DocumentUploader = ({
+  dropzoneOptions,
+  value = [],
+  className,
+  disabled,
+  onChange,
+  preview = true,
+  draggable = false,
+  id,
+  singleSelect = true,
+  viewType="modal",
+  DbType,
+  enableEncryption,
+  fileNamingPreference="use_system_generated_name"
+}: any) => {
+  const [files, setFiles] = React.useState<Drag_file>(value)
+  const [open, setOpen] = React.useState(false)
+  const [previewModel, setPreviewModel] = React.useState(false)
+  const [currentFile, setCurrentFile] = React.useState<FilesType | null>(null);
+
+  async function convertUrlToFile(url: string) {
+    try {
+      const response = await axios.get(url, { responseType: "blob" });
+  
+      const fileType = response.data.type || "application/octet-stream";
+      const fileName = url.split("/").pop() || "downloaded-file";
+  
+      const file = new File([response.data], fileName, { type: fileType });
+      const fileUrl = URL.createObjectURL(file);
+  
+      return { file, url: fileUrl };
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      return null;
     }
-  };
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const fileList = Array.from(e.dataTransfer.files);
-      setFiles(fileList);
-      onFileUpload?.(fileList);
-    }
-  };
-
-  const isDark = theme === "dark" || theme === "dark-hc";
-
-  const uploaderElement = (
-    <div className={`w-full ${className}`}>
-      <div
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        className={`
-          relative
-          border-2 border-dashed
-          ${getBorderRadiusClass(branding.borderRadius)}
-          p-8
-          text-center
-          transition-all
-          ${dragActive ? "border-opacity-100" : "border-opacity-50"}
-          ${isDark ? "bg-gray-800 border-gray-600" : "bg-gray-50 border-gray-300"}
-          hover:border-opacity-100
-        `}
-        style={{
-          borderColor: dragActive ? branding.brandColor : undefined,
-        }}
-      >
-        <input
-          type="file"
-          multiple
-          onChange={handleFileChange}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        />
-
-        <div className="pointer-events-none flex flex-col items-center">
-          <Icon data="FaCloudUploadAlt" size={48} className=" " />
-
-          <p className={`mt-4 ${getFontSizeClass(branding.fontSize)} font-medium ${
-            isDark ? "text-gray-200" : "text-gray-700"
-          }`}>
-            Drop files here or click to upload
-          </p>
-
-          <p className={`mt-2 text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-            Storage: {storageLocation} | Encryption: {enableEncryption ? "Enabled" : "Disabled"}
-          </p>
-        </div>
-      </div>
-
-      {files.length > 0 && (
-        <div className={`mt-4 ${getBorderRadiusClass(branding.borderRadius)} ${
-          isDark ? "bg-gray-800" : "bg-gray-50"
-        } p-4`}>
-          <h4 className={`font-semibold mb-2 ${isDark ? "text-gray-200" : "text-gray-700"}`}>
-            Uploaded Files:
-          </h4>
-          <ul className="space-y-2">
-            {files.map((file, index) => (
-              <li
-                key={index}
-                className={`flex items-center gap-2 ${getFontSizeClass(branding.fontSize)} ${
-                  isDark ? "text-gray-300" : "text-gray-600"
-                }`}
-              >
-                <Icon data="FaFile" size={16} />
-                <span>{file.name}</span>
-                <span className="text-sm opacity-60">({(file.size / 1024).toFixed(2)} KB)</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-
-  const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return element;
-
-    const headerClasses = `${getFontSizeClass(branding.fontSize)} font-semibold mb-2 ${
-      isDark ? "text-gray-300" : "text-gray-700"
-    }`;
-
-    switch (headerPosition) {
-      case "top":
-        return (
-          <div className="flex flex-col w-full">
-            <div className={headerClasses}>{headerText}</div>
-            {element}
-          </div>
-        );
-      case "bottom":
-        return (
-          <div className="flex flex-col w-full">
-            {element}
-            <div className={`${headerClasses} mt-2 mb-0`}>{headerText}</div>
-          </div>
-        );
-      case "left":
-        return (
-          <div className="flex items-start gap-4 w-full">
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
-              {headerText}
-            </div>
-            <div className="flex-1">{element}</div>
-          </div>
-        );
-      case "right":
-        return (
-          <div className="flex items-start gap-4 w-full">
-            <div className="flex-1">{element}</div>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
-              {headerText}
-            </div>
-          </div>
-        );
-    }
-  };
-
-  const finalElement = renderWithHeader(uploaderElement);
-
-  if (needTooltip && tooltipProps) {
-    return (
-      <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
-        {finalElement}
-      </Tooltip>
-    );
   }
 
-  return <>{finalElement}</>;
-};
+  React.useEffect(() => {
+
+      if (Array.isArray(value) && value.length > 0) {
+        setFiles(value);
+      } else if (value === "" || value === null || value === undefined) {
+        setFiles([]);
+      } else if (typeof value === "string") {
+        convertUrlToFile(value).then((result) => {
+          if (result) {
+            setFiles([result]);
+          }
+        });
+      }
+   
+  }, [value]);
+
+
+  const handleDrop = (acceptedFiles: File[]) => {
+
+    if (!acceptedFiles.length) {
+
+      return
+    }
+    setFiles((prevFiles: any) => {
+      const existingFileNames = new Set(
+        prevFiles.map((file: any) =>
+          file instanceof File ? `${file.name}-${file.size}` : file
+        )
+      )
+      const newFiles = acceptedFiles.filter(file => {
+        const uniqueKey = `${file.name}-${file.size}`
+        return !existingFileNames.has(uniqueKey)
+      })
+ 
+      if (newFiles.length === 0) return prevFiles
+
+      const filesWithUrls: FilesType[] = newFiles.map(file => {
+        const ext = file.name.split('.').pop() || '';
+        const baseName = file.name.replace(`.${ext}`, '');
+        const uniqueName = `${baseName}${fileNamingPreference=="use_system_generated_name"?"_"+Date.now():""}.${ext}`; // name_time format
+
+        const renamedFile = new File([file], uniqueName, { type: file.type });
+        Object.defineProperty(renamedFile, 'DbType', {
+          value: DbType,
+          writable: true,
+          enumerable: true
+        })
+        
+        Object.defineProperty(renamedFile, 'enableEncryption', {
+          value: enableEncryption,
+          writable: true,
+          enumerable: true
+        })
+        return {
+          file: renamedFile,
+          url: URL.createObjectURL(renamedFile)
+        }
+      })
+
+      if (singleSelect) {
+        if (typeof onChange === 'function') {
+          onChange([{ file: filesWithUrls[0].file, url: filesWithUrls[0].url }])
+        }
+        return [filesWithUrls[0]]
+      } else {
+        const updatedFiles: FilesType[] = [...prevFiles, ...filesWithUrls]
+        if (typeof onChange === 'function') {
+          onChange(updatedFiles.map((f: any) => ({ file: f.file, url: f.url })))
+        }
+        return updatedFiles
+      }
+    })
+  }
+
+const removeFile = async (
+    fileIndex: number,
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault()
+    event.stopPropagation()
+    const newFiles = [...files]
+    newFiles.splice(fileIndex, 1)
+    setFiles(newFiles)
+    if (typeof onChange === 'function') {
+      onChange(files.filter((_: any, index: number) => index !== fileIndex))
+    }
+  }
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    multiple: singleSelect ? false : true,
+    disabled,
+    onDrop: handleDrop,
+    noClick: draggable,
+    noDrag: !draggable,
+    ...dropzoneOptions
+  })
+
+  const viewTypeUI=()=>{
+    return           <div className='h-full w-full' {...getRootProps()}>
+            <div className={` h-[52vh] w-[37.55vw] `}>
+              <div className='flex items-center justify-between px-2 py-2'>
+                <div className='flex items-center justify-center gap-2'>
+                  <TbFileUpload size={20} color='black' />
+                  <div className='flex flex-col gap-0'>
+                    <div className='text-sm font-semibold'>Upload Document</div>
+                    <div className='text-xs font-semibold opacity-45'>
+                      Select and upload the required documents
+                    </div>
+                  </div>
+                </div>
+                      {viewType=='modal'?
+                <span
+                  className='flex cursor-pointer items-center justify-center'
+                  onClick={() => setOpen(false)}
+                >
+                  <IoCloseCircleOutline fill='black' size={15} />
+                </span> : null}
+              </div>
+              <input {...getInputProps()} className='hidden' />
+
+              <input
+                id={id}
+                type='file'
+                multiple={!singleSelect}
+                className='hidden'
+                onChange={e => {
+                  const selectedFiles = Array.from(e.target.files || [])
+                  handleDrop(selectedFiles)
+                }}
+              />
+
+              <div
+                className={`scrollbar-none flex h-[83%] flex-col overflow-x-hidden overflow-y-scroll px-2 `}
+              >
+                <div
+                  className={`flex h-[60%] w-full cursor-pointer items-center justify-center border border-dashed 
+                                    ${isDragActive ? 'border-blue-500 bg-blue-200' : 'border-gray-300 bg-white'} 
+                                    rounded-md`}
+                  onClick={e => {
+                    e.stopPropagation()
+                  }}
+                >
+                  <div className='flex flex-col items-center justify-center gap-2 '>
+                    {!isDragActive ? (
+                      <>
+                        <MdOutlineCloudDownload size={20} />
+                        <span className='text-sm text-black'>
+                          Choose a file to upload
+                        </span>
+                        <span className='text-xs text-black/50'>
+                          JPEG,PNG,DOC,PDF,XLS,CSV and formats up to 5MB
+                        </span>
+
+                        <Button
+                          pin='round-round'
+                          // width='auto'
+                          view='outlined'
+                          size='l'
+                          onClick={e => {
+                            document.getElementById(id)?.click()
+                            e.stopPropagation()
+                            e.preventDefault()
+                          }}
+                        >
+                          <span className='text-sm text-black'>
+                            Browse File
+                          </span>
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <FaArrowCircleDown size={20} />
+                        <span className='text-sm text-black'>Drop here</span>
+                        <span className='text-xs text-black/50'>
+                          JPEG,PNG,DOC,PDF,XLS,CSV and formats up to 5MB
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className='scrollbar-none flex h-[40%] flex-col gap-1 overflow-y-scroll py-1'>
+                  {files.length > 0 &&
+                    files.map((file: any, index) => (
+                      <div
+                        className='flex w-full cursor-pointer select-none items-center justify-between rounded-md bg-slate-200 px-2 py-2 hover:bg-slate-300/85 '
+                        onClick={e => {
+                          e.stopPropagation()
+                          setCurrentFile(file)
+                          setPreviewModel(true)
+                        }}
+                        key={index}
+                      >
+                        <div className='flex w-[50%] items-center justify-start gap-2 '>
+                          <div>{getFileIcon(file.file)}</div>
+                          <div className='flex items-center justify-between gap-2'>
+                            <div className='flex flex-col'>
+                              <span className='whitespace-nowrap'>
+                                {file.file.name}
+                              </span>
+                              <div className='flex items-center justify-start gap-1'>
+                                <span className='text-black/50'>
+                                  {bytestoKb(file.file.size)}
+                                </span>
+                                <span className='h-[0.25vw] w-[0.25vw] rounded-full bg-black/50'></span>
+                                <div className='flex items-center justify-center gap-1'>
+                                  <span>
+                                    <Completed />
+                                  </span>
+                                  <span>Completed</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className='flex w-[50%] items-center justify-end'>
+                          <div>
+                            <span
+                              className='flex cursor-pointer items-center justify-center'
+                              onClick={(e: any) => removeFile(index, e)}
+                            >
+                              <RiDeleteBinLine
+                                fill='red'
+                                opacity={0.7}
+                                size={15}
+                              />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </div>
+  }
+  return (
+    <div className='w-full'>
+      <div>
+        <div
+          className='flex w-full items-center justify-center px-1 py-0'
+          {...getRootProps()}
+        >
+          {viewType=='modal'?
+          <div className={`flex w-[95%] justify-start ${className}`}>
+            <Button
+              pin='round-round'
+              // width='max'
+              view='outlined-info'
+              size='l'
+              startContent={
+                <span className='flex h-full items-center justify-center'>
+                  <Icon className='flex items-center justify-center bg-transparent px-[0.15vw] py-[0.25vh]' size={20} data='FaCloudUploadAlt' />
+                </span>
+              }
+              onClick={e => {
+                setOpen(true)
+                e.stopPropagation()
+              }}
+            >
+              Upload
+            </Button>
+          </div>:null
+          }
+        </div>
+         {viewType=='modal'?<Modal
+          open={open}
+          onClose={() => {
+            setOpen(false)
+            // e.stopPropagation()
+          }}>
+          {viewTypeUI()}
+          </Modal>:  viewTypeUI() }
+
+        {preview && (
+          <Modal
+            open={previewModel}
+            onClose={() => {
+              setPreviewModel(false)
+              // e.stopPropagation()
+            }}
+            // contentOverflow='visible'
+          >
+            <Viewer
+              file={currentFile?.file as File}
+              url={currentFile?.url as string}
+              closeFn={setPreviewModel}
+            />
+          </Modal>
+        )}
+      </div>
+    </div>
+  )
+}
+
+
+export default DocumentUploader;
+
+const getFileIcon = (file: File | string) => {
+  let fileType = ''
+
+  if (typeof file === 'string') {
+    fileType = file.split('.').pop()?.toLowerCase() || ''
+  } else {
+    fileType = file.name.split('.').pop()?.toLowerCase() || ''
+  }
+
+  switch (fileType) {
+    case 'pdf':
+      return <FaFilePdf className='text-red-500' size={30} />
+    case 'doc':
+    case 'docx':
+      return <FaFileWord className='text-blue-500' size={30} />
+    case 'xls':
+    case 'xlsx':
+      return <FaFileExcel className='text-green-500' size={30} />
+    case 'ppt':
+    case 'pptx':
+      return <FaFilePowerpoint className='text-orange-500' size={30} />
+    case 'csv':
+      return <FaFileCsv className='text-green-500' size={30} />
+    case 'json':
+      return <BsFiletypeJson className='text-violet-500' size={30} />
+    case 'zip':
+    case 'rar':
+    case '7z':
+      return <FaFileArchive className='text-orange-500' size={30} />
+    case 'txt':
+      return <FaFileAlt className='text-gray-500' size={30} />
+    case 'html':
+      return <FaHtml5 className='text-orange-500' size={30} />
+    case 'css':
+      return <FaCss3Alt className='text-blue-500' size={30} />
+    case 'scss':
+      return <FaSass className='text-pink-500' size={30} />
+    case 'md':
+      return <FaMarkdown className='text-black' size={30} />
+    case 'env':
+      return <FaFileCode className='text-green-500' size={30} />
+    case 'js':
+      return <IoLogoJavascript className='text-yellow-500' size={30} />
+    case 'jsx':
+      return <SiReact className='text-blue-500' size={30} />
+    case 'ts':
+      return <SiTypescript className='text-blue-500' size={30} />
+    case 'tsx':
+      return (
+        <span className='flex items-center'>
+          <SiReact className='text-blue-500' size={25} />
+          <SiTypescript className='text-blue-500' size={15} />
+        </span>
+      )
+    case 'png':
+      return <BsFiletypePng className='text-green-500' size={30} />
+    case 'jpg':
+      return <BsFiletypeJpg className='text-teal-500' size={30} />
+    case 'avif':
+      return <BsImage className='text-cyan-400' size={30} />
+    case 'jfif':
+      return <BsImage className='text-lime-400' size={30} />
+    default:
+      return <FaFileAlt className='text-gray-500' size={30} />
+  }
+}
+
+const bytestoKb = (units: number) => {
+  let unit = units / 1024
+  return `${unit.toFixed(2)} KB`
+}
+
+const Viewer = ({ file, url, closeFn }: any) => {
+  const [sheetData, setSheetData] = useState<any[]>([])
+
+  useEffect(() => {
+    if (!file) return
+
+    // Determine file type for Excel or CSV
+    const isExcel =
+      file.type ===
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel' ||
+      (file.name && (file.name.endsWith('.xls') || file.name.endsWith('.xlsx')))
+
+    const isCSV =
+      file.type === 'text/csv' || (file.name && file.name.endsWith('.csv'))
+
+    if (!isExcel && !isCSV) {
+      setSheetData([])
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      const data = e.target?.result
+      if (!data) return
+
+      let workbook
+
+      if (isCSV) {
+        // Parse CSV
+        workbook = XLSX.read(data, { type: 'binary', raw: false })
+      } else {
+        // Parse Excel
+        workbook = XLSX.read(data, { type: 'binary' })
+      }
+
+      const sheetName = workbook.SheetNames[0]
+      const worksheet = workbook.Sheets[sheetName]
+      const jsonSheet = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+      setSheetData(jsonSheet)
+    }
+
+    reader.readAsBinaryString(file)
+  }, [file])
+
+  return (
+    <>
+      {file && (
+        <div
+          key={file.name}
+          className='h-[60vh] w-[53vw] overflow-hidden rounded-md border p-2'
+        >
+          <div className='flex items-center justify-between pb-2'>
+            <p className='text-sm font-semibold'>{file.name}</p>
+            <span
+              className='flex cursor-pointer items-center justify-center'
+              onClick={() => closeFn(false)}
+            >
+              <IoCloseCircleOutline fill='black' size={15} />
+            </span>
+          </div>
+
+          {/* Image */}
+          {file.type.includes('image') && (
+            <div className='scrollbar-none flex h-full w-full items-center justify-center overflow-scroll'>
+              <img
+                src={url}
+                alt={file.name}
+                className='rounded-md object-cover'
+              />
+            </div>
+          )}
+
+          {/* PDF */}
+          {file.type.includes('pdf') && (
+            <iframe
+              src={url}
+              width='100%'
+              height='345px'
+              className='rounded-md border'
+            ></iframe>
+          )}
+
+          {/* Text or JSON */}
+          {(file.type.includes('text') || file.type.includes('json')) &&
+            !(
+              file.type === 'text/csv' || // Don't double render CSV here
+              (file.name && file.name.endsWith('.csv'))
+            ) && (
+              <div className='flex h-[53vh] w-full items-center justify-center'>
+                <DocViewer
+                  url={url}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  viewer='url'
+                  googleCheckInterval={500}
+                  googleMaxChecks={5}
+                  overrideLocalhost='null'
+                  googleCheckContentLoaded={true}
+                  queryParams='HL=NL'
+                  viewerUrl=''
+                />
+              </div>
+            )}
+
+          {/* Excel or CSV preview */}
+          {(file.type ===
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+            file.type === 'application/vnd.ms-excel' ||
+            file.type === 'text/csv' ||
+            (file.name &&
+              (file.name.endsWith('.xls') ||
+                file.name.endsWith('.xlsx') ||
+                file.name.endsWith('.csv'))) ) &&
+            sheetData.length > 0 && (
+              <div className='overflow-auto max-h-[53vh] border rounded-md p-2'>
+                <table className='table-auto border-collapse border border-gray-300 w-full text-sm'>
+                  <tbody>
+                    {sheetData.map((row, i) => (
+                      <tr key={i} className={i === 0 ? 'font-bold bg-gray-100' : ''}>
+                        {row.map((cell: any, j: number) => (
+                          <td
+                            key={j}
+                            className='border border-gray-300 px-2 py-1'
+                          >
+                            {cell ?? ''}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+          {/* Unsupported */}
+          {!file.type.includes('image') &&
+            !file.type.includes('pdf') &&
+            !file.type.includes('text') &&
+            !(
+              file.type ===
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+              file.type === 'application/vnd.ms-excel' ||
+              file.type === 'text/csv' ||
+              (file.name &&
+                (file.name.endsWith('.xls') ||
+                  file.name.endsWith('.xlsx') ||
+                  file.name.endsWith('.csv')))
+            ) && (
+              <div className='flex h-[53vh] w-full items-center justify-center'>
+                <div className='flex flex-col items-center gap-1 p-2'>
+                  <BiHide
+                    size={35}
+                    color='red'
+                    opacity={0.5}
+                    strokeWidth={0.2}
+                  />
+                  <span className='text-xs text-gray-500'>
+                    Preview not available
+                  </span>
+                  <a
+                    href={url}
+                    download={file.name}
+                    className='text-sm text-blue-500 underline'
+                  >
+                    Download {file.name}
+                  </a>
+                </div>
+              </div>
+            )}
+        </div>
+      )}
+    </>
+  )
+}
+
+const Completed = () => {
+  return (
+    <svg
+      width='17'
+      height='16'
+      viewBox='0 0 17 16'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M8.39421 1.33334C4.72087 1.33334 1.72754 4.32668 1.72754 8.00001C1.72754 11.6733 4.72087 14.6667 8.39421 14.6667C12.0675 14.6667 15.0609 11.6733 15.0609 8.00001C15.0609 4.32668 12.0675 1.33334 8.39421 1.33334ZM11.5809 6.46668L7.80087 10.2467C7.70754 10.34 7.58087 10.3933 7.44754 10.3933C7.31421 10.3933 7.18754 10.34 7.09421 10.2467L5.20754 8.36001C5.01421 8.16668 5.01421 7.84668 5.20754 7.65334C5.40087 7.46001 5.72087 7.46001 5.91421 7.65334L7.44754 9.18668L10.8742 5.76001C11.0675 5.56668 11.3875 5.56668 11.5809 5.76001C11.7742 5.95334 11.7742 6.26668 11.5809 6.46668Z'
+        fill='#3EBF8F'
+      />
+    </svg>
+  )
+}
