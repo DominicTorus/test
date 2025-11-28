@@ -274,7 +274,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     return (
       <div key={index} className="relative">
         <div
-          className={getItemClasses(item, hasSubmenu)}
+          className={getItemClasses(item, hasSubmenu as boolean)}
           onClick={() => {
             if (hasSubmenu) {
               setActiveSubmenu(isSubmenuActive ? null : index);
@@ -301,7 +301,8 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
         >
           <div className="flex items-center gap-2">
             {item.icon && (
-              <Icon data={item.icon} size={16} className="flex-shrink-0" />
+              <>{item.icon}</>
+              // <Icon data={item.icon} size={16} className="flex-shrink-0" />
             )}
             <span>{item.text}</span>
           </div>

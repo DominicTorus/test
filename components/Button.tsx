@@ -16,7 +16,7 @@ import {
 import {
   getFontSizeClass,
   getBorderRadiusClass,
-} from "@/app/utils/branding";
+} from "@/utils/branding";
 
 type IconDisplay = "Icon only" | "Start with Icon" | "End with Icon";
 
