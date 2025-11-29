@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
-
+import { BiSort } from "react-icons/bi";
 interface RenderRowActionsProps {
   item: any;
   index: number;
@@ -373,8 +373,7 @@ export const Table: React.FC<TableProps> = ({
                   <div className="flex items-center gap-2">
                     {column.name}
                     {tableSorting && sortColumn === column.id && (
-                      <Icon
-                        data={sortDirection === "asc" ? "arrow-up" : "arrow-down"}
+                      <BiSort
                         size={14}
                       />
                     )}

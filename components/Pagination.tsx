@@ -197,9 +197,11 @@ export const Pagination: React.FC<PaginationProps> = ({
 
         {/* Previous Page */}
         <Button
-          className={buttonBaseClass}
+          // className={buttonBaseClass}
           onClick={() => handlePageChange(page - 1)}
           disabled={page <= 1}
+          view='outlined-success'
+          pin='brick-brick'
           aria-label="Previous page"
         >
           <Icon data="FaStepBackward" size={16} />
@@ -221,7 +223,9 @@ export const Pagination: React.FC<PaginationProps> = ({
           return (
             <Button
               key={pageNum}
-              className={pageNum === page ? activeButtonClass : buttonBaseClass}
+              view='outlined-success'
+              pin='brick-brick'
+              // className={pageNum === page ? activeButtonClass : buttonBaseClass}
               onClick={() => handlePageChange(pageNum)}
               aria-label={`Page ${pageNum}`}
               aria-current={pageNum === page ? "page" : undefined}
@@ -233,7 +237,9 @@ export const Pagination: React.FC<PaginationProps> = ({
 
         {/* Next Page */}
         <Button
-          className={buttonBaseClass}
+          // className={buttonBaseClass}
+          view='outlined-success'
+          pin='brick-brick'
           onClick={() => handlePageChange(page + 1)}
           disabled={page >= pageCount}
           aria-label="Next page"
