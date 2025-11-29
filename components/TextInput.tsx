@@ -253,8 +253,8 @@ export const TextInput: React.FC<TextInputProps> = ({
             fontFamily: 'var(--font-body)',
             ...getInputStyles(),
             ...(!errorMessage && view === "normal" ? {
-              outlineColor: branding.brandColor,
-              boxShadow: `0 0 0 2px ${branding.brandColor}20`
+              // outlineColor: branding.brandColor,
+              // boxShadow: `0 0 0 2px ${branding.brandColor}20`
             } : {})
           }}
           onFocus={(e) => {

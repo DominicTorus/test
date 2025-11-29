@@ -14,7 +14,7 @@ interface ModalProps {
   open: boolean;
   onClose: () => void;
   size?: ModalSize;
-  title?: string;
+  title?: string | React.ReactNode;
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
@@ -135,8 +135,6 @@ export const Modal: React.FC<ModalProps> = ({
             className={`
               flex items-center justify-between
               px-6 py-4
-              border-b
-              ${isHighContrast ? 'border-b-2' : ''}
               backdrop-blur-sm
             `}
             style={{
