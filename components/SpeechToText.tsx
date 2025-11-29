@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { TextInput } from './TextInput'
+import { Button } from './Button'
 import { FiMic, FiMicOff } from 'react-icons/fi'
-import { Magnifier } from '@gravity-ui/icons'
+import { Icon } from '@/components/Icon';
 import SpeechRecognition, {
   useSpeechRecognition
 } from 'react-speech-recognition'
@@ -14,7 +15,7 @@ interface TorusSpeechToTextInputProps extends Omit<any, 'onChange'> {
 
 export function TorusSpeechToTextInput(props: TorusSpeechToTextInputProps) {
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
-    useSpeechRecognition()
+  useSpeechRecognition()
   const [openMic, setOpenMic] = useState<any>(true)
   const [inputValue, setInputValue] = useState(props.value || '')
 
@@ -78,7 +79,7 @@ export function TorusSpeechToTextInput(props: TorusSpeechToTextInputProps) {
                 color: '#5f6368'
               }}
             >
-              <Magnifier />
+              <Icon data="FaSearch" size={18} />
             </button>
           </div>
         }
