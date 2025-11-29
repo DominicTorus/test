@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
-import { getFontSizeClass, getBorderRadiusClass } from"@/app/utils/branding";
+import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
 interface RenderRowActionsProps {
   item: any;
@@ -23,6 +23,7 @@ interface TableProps {
   tableSorting?: boolean;
   isHyperLink?: boolean;
   needLocking?: boolean;
+  emptyMessage?:string | React.ReactNode;
   data?: any[];
   columns?: any[];
   onRowClick?: (row: any) => void;
@@ -51,6 +52,7 @@ export const Table: React.FC<TableProps> = ({
   tableSorting = false,
   isHyperLink = false,
   needLocking = false,
+  emptyMessage = "No Data Available",
   data = [],
   columns = [],
   onRowClick,
@@ -410,7 +412,7 @@ export const Table: React.FC<TableProps> = ({
                   >
                     <div className="flex flex-col items-center justify-center space-y-2">
                       <span className={`${getFontSizeClass(branding.fontSize)} font-medium`}>
-                        No Data Available
+                        {emptyMessage}
                       </span>
                     </div>
                   </td>
