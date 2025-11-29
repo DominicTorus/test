@@ -29,6 +29,10 @@ export interface PaginationProps {
    */
   size?: 's' | 'm' | 'l';
   /**
+   * Alignment of pagination controls
+   */
+  alignment?: 'start' | 'middle' | 'end';
+  /**
    * Custom className
    */
   className?: string;
@@ -41,6 +45,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   total,
   onUpdate,
   size = 'm',
+  alignment = 'end',
   className = "",
 }) => {
   // Calculate total pages
@@ -48,8 +53,9 @@ export const Pagination: React.FC<PaginationProps> = ({
   // Calculate visible page numbers
   const getVisiblePages = (): (number | "ellipsis")[] => {
     const siblingCount = 1;
-    
-    if (pageCount <= 7) {
+
+    // Show all pages if 5 or fewer
+    if (pageCount <= 5) {
       return Array.from({ length: pageCount }, (_, i) => i + 1);
     }
 
@@ -59,27 +65,23 @@ export const Pagination: React.FC<PaginationProps> = ({
     const shouldShowLeftDots = leftSiblingIndex > 2;
     const shouldShowRightDots = rightSiblingIndex < pageCount - 1;
 
+    // Pattern: 1, 2, 3, ..., last
     if (!shouldShowLeftDots && shouldShowRightDots) {
-      const leftItemCount = 3 + 2 * siblingCount;
-      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
-      return [...leftRange, "ellipsis", pageCount];
+      return [1, 2, 3, "ellipsis", pageCount - 1, pageCount];
     }
 
+    // Pattern: 1, ..., secondLast, last
     if (shouldShowLeftDots && !shouldShowRightDots) {
-      const rightItemCount = 3 + 2 * siblingCount;
-      const rightRange = Array.from(
-        { length: rightItemCount },
-        (_, i) => pageCount - rightItemCount + i + 1
-      );
-      return [1, "ellipsis", ...rightRange];
+      return [1, 2, "ellipsis", pageCount - 2, pageCount - 1, pageCount];
     }
 
+    // Pattern: 1, 2, ..., current, ..., last
     if (shouldShowLeftDots && shouldShowRightDots) {
       const middleRange = Array.from(
         { length: rightSiblingIndex - leftSiblingIndex + 1 },
         (_, i) => leftSiblingIndex + i
       );
-      return [1, "ellipsis", ...middleRange, "ellipsis", pageCount];
+      return [1, 2, "ellipsis", ...middleRange, "ellipsis", pageCount - 1, pageCount];
     }
 
     return [];
@@ -122,14 +124,19 @@ export const Pagination: React.FC<PaginationProps> = ({
     hover:bg-gray-50 dark:hover:bg-gray-700
     disabled:opacity-50 disabled:cursor-not-allowed
     transition-colors duration-150
-    rounded
+    rounded-md
   `;
 
   const activeButtonClass = `
-    ${buttonBaseClass.replace('bg-white dark:bg-gray-800', '')}
+    inline-flex items-center justify-center
+    ${currentSize?.Button} mx-0.5
+    font-medium
     bg-blue-600 dark:bg-blue-700
-    text-white border-blue-600 dark:border-blue-700
+    text-white border border-blue-600 dark:border-blue-700
     hover:bg-blue-700 dark:hover:bg-blue-800
+    disabled:opacity-50 disabled:cursor-not-allowed
+    transition-colors duration-150
+    rounded-md
   `;
 
   const handlePageChange = (newPage: number) => {
@@ -142,8 +149,15 @@ export const Pagination: React.FC<PaginationProps> = ({
     onUpdate({ page: 1, pageSize: newPageSize }); // Reset to page 1 when changing page size
   };
 
+  // Alignment classes
+  const alignmentClasses = {
+    start: 'justify-start',
+    middle: 'justify-center',
+    end: 'justify-end'
+  };
+
   return (
-    <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-center gap-4 ${className}`}>
+    <div className={`flex flex-col sm:flex-row items-start sm:items-center ${alignmentClasses[alignment]} gap-4 ${className}`}>
       {/* Pagination Controls */}
       <div className="flex items-center gap-2">
         {/* Page Size Selector */}
@@ -170,7 +184,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         </div>
 
         {/* First Page */}
-        {pageCount > 7 && (
+        {/* {pageCount > 5 && (
           <Button
             className={buttonBaseClass}
             onClick={() => handlePageChange(1)}
@@ -179,7 +193,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           >
             <Icon data="FaFastBackward" size={16} />
           </Button>
-        )}
+        )} */}
 
         {/* Previous Page */}
         <Button
@@ -228,7 +242,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         </Button>
 
         {/* Last Page */}
-        {pageCount > 7 && (
+        {/* {pageCount > 5 && (
           <Button
             className={buttonBaseClass}
             onClick={() => handlePageChange(pageCount)}
@@ -237,7 +251,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           >
             <Icon data="FaFastForward" size={16} />
           </Button>
-        )}
+        )} */}
       </div>
     </div>
   );

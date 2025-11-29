@@ -5,7 +5,10 @@ import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
 import { getFontSizeClass } from "@/utils/branding";
-import * as ReactIcons from "react-icons/fa";
+import * as ReactIconsMd from "react-icons/md";
+import * as ReactIconsIo from "react-icons/io";
+import * as ReactIconsFa from "react-icons/fa";
+import * as ReactIconsIo5 from "react-icons/io5";
 
 interface IconProps {
   data?: string;
@@ -16,6 +19,18 @@ interface IconProps {
   headerPosition?: HeaderPosition;
   className?: string;
 }
+const getIconComponent = (iconName?: string) => {
+  if (!iconName) return null;
+  const MdIcon = (ReactIconsMd as any)[iconName];
+  if (MdIcon) return MdIcon;
+  const FaIcon = (ReactIconsFa as any)[iconName];
+  if (FaIcon) return FaIcon;
+  const Io5Icon = (ReactIconsIo5 as any)[iconName];
+  if (Io5Icon) return Io5Icon;
+  const IoIcon = (ReactIconsIo as any)[iconName];
+  if (IoIcon) return IoIcon;
+  return null;
+};
 
 export const Icon: React.FC<IconProps> = ({
   data,
@@ -28,10 +43,9 @@ export const Icon: React.FC<IconProps> = ({
 }) => {
   const { theme, branding } = useGlobal();
   const isDark = theme === "dark" || theme === "dark-hc";
-
-  // Dynamically get the icon component from react-icons
-  const IconComponent = data ? (ReactIcons as any)[data] : null;
-
+  
+  const IconComponent = getIconComponent(data);
+  
   const iconElement = IconComponent ? (
     <IconComponent
       className={className}

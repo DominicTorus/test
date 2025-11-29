@@ -192,25 +192,8 @@ const removeFile = async (
 
   const viewTypeUI=()=>{
     return           <div className='h-full w-full' {...getRootProps()}>
-            <div className={` h-[52vh] w-[37.55vw] `}>
-              <div className='flex items-center justify-between px-2 py-2'>
-                <div className='flex items-center justify-center gap-2'>
-                  <TbFileUpload size={20} color='black' />
-                  <div className='flex flex-col gap-0'>
-                    <div className='text-sm font-semibold'>Upload Document</div>
-                    <div className='text-xs font-semibold opacity-45'>
-                      Select and upload the required documents
-                    </div>
-                  </div>
-                </div>
-                      {viewType=='modal'?
-                <span
-                  className='flex cursor-pointer items-center justify-center'
-                  onClick={() => setOpen(false)}
-                >
-                  <IoCloseCircleOutline fill='black' size={15} />
-                </span> : null}
-              </div>
+            <div className={` `}>
+
               <input {...getInputProps()} className='hidden' />
 
               <input
@@ -329,7 +312,7 @@ const removeFile = async (
           </div>
   }
   return (
-    <div className='w-full'>
+    <div className='w-full h-full flex justify-center items-center'>
       <div>
         <div
           className='flex w-full items-center justify-center px-1 py-0'
@@ -359,6 +342,17 @@ const removeFile = async (
         </div>
          {viewType=='modal'?<Modal
           open={open}
+          title={              <div className='flex items-center justify-between px-2 py-2'>
+                <div className='flex items-center justify-center gap-2'>
+                  <TbFileUpload size={20} color='black' />
+                  <div className='flex flex-col gap-0'>
+                    <div className='text-sm font-semibold'>Upload Document</div>
+                    <div className='text-xs font-semibold opacity-45'>
+                      Select and upload the required documents
+                    </div>
+                  </div>
+                </div>
+              </div>}
           onClose={() => {
             setOpen(false)
             // e.stopPropagation()
@@ -513,18 +507,9 @@ const Viewer = ({ file, url, closeFn }: any) => {
       {file && (
         <div
           key={file.name}
-          className='h-[60vh] w-[53vw] overflow-hidden rounded-md border p-2'
+          className=' overflow-hidden rounded-md border p-2'
         >
-          <div className='flex items-center justify-between pb-2'>
             <p className='text-sm font-semibold'>{file.name}</p>
-            <span
-              className='flex cursor-pointer items-center justify-center'
-              onClick={() => closeFn(false)}
-            >
-              <IoCloseCircleOutline fill='black' size={15} />
-            </span>
-          </div>
-
           {/* Image */}
           {file.type.includes('image') && (
             <div className='scrollbar-none flex h-full w-full items-center justify-center overflow-scroll'>
