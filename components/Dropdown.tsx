@@ -72,6 +72,59 @@ export const Dropdown: React.FC<DropdownProps> = ({
     }
   }, [value]);
 
+  // Handle parent container overflow (including nested parents)
+  useEffect(() => {
+    if (!dropdownRef.current) return;
+
+    // Find all parent containers that have overflow settings
+    const parentsToModify: Array<{ element: HTMLElement; originalOverflow: string }> = [];
+    let currentElement = dropdownRef.current.parentElement;
+
+    // Traverse up the DOM tree to find all parents with overflow
+    while (currentElement) {
+      const styles = window.getComputedStyle(currentElement);
+      const hasOverflow = styles.overflow !== 'visible' || 
+                         styles.overflowY !== 'visible' || 
+                         styles.overflowX !== 'visible';
+
+      if (hasOverflow) {
+        parentsToModify.push({
+          element: currentElement,
+          originalOverflow: currentElement.style.overflow
+        });
+      }
+
+      // Stop at the grid container or after 10 levels
+      if (styles.display === 'grid' && parentsToModify.length > 0) {
+        break;
+      }
+      
+      if (parentsToModify.length >= 10) break;
+      
+      currentElement = currentElement.parentElement;
+    }
+
+    // Set overflow based on dropdown state
+    if (isOpen) {
+      parentsToModify.forEach(({ element }) => {
+        element.style.overflow = 'visible';
+      });
+    } else {
+      parentsToModify.forEach(({ element, originalOverflow }) => {
+        element.style.overflow = originalOverflow || 'auto';
+      });
+    }
+
+    // Cleanup: restore original overflow when component unmounts
+    return () => {
+      parentsToModify.forEach(({ element, originalOverflow }) => {
+        if (element) {
+          element.style.overflow = originalOverflow;
+        }
+      });
+    };
+  }, [isOpen]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -129,7 +182,11 @@ export const Dropdown: React.FC<DropdownProps> = ({
   };
 
   const dropdownElement = (
-    <div ref={dropdownRef} className={`relative w-full ${className}`} style={{ width }}>
+    <div 
+      ref={dropdownRef} 
+      className={`relative w-full ${className}`} 
+      style={{ width }}
+    >
       {filterable ? (
         <div className="relative w-full">
           <input
@@ -201,7 +258,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             borderColor: validationState === "none" && isOpen ? branding.brandColor : undefined,
           }}
         >
-          <span>
+          <span className="w-4/5 truncate">
             {selectedValues.length > 0
               ? isMultiple
                 ? `${selectedValues.length} selected`
@@ -234,7 +291,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             shadow-lg
             max-h-60
             overflow-auto
-            z-10
+            z-50
           `}
         >
           {filteredOptions.map((option, index) => {
