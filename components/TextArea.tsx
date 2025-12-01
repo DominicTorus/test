@@ -19,7 +19,7 @@ interface TextAreaProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
- onChange?: React.ChangeEventHandler<HTMLTextAreaElement> | undefined
+  onChange?: (value: any) => void;
   onBlur?: (value: any) => void;
   className?: string;
 }

@@ -11,9 +11,9 @@ interface AvatarProps {
   imageUrl?: string;
   icon?: string;
   text?: string;
-  size: AvatarSize;
-  view: AvatarView;
-  theme: AvatarTheme;
+  size?: AvatarSize;
+  view?: AvatarView;
+  theme?: AvatarTheme;
   shape?: AvatarShape;
   backgroundColor?: string;
   borderColor?: string;

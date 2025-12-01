@@ -17,7 +17,7 @@ interface ListProps {
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
-  onItemClick?: ( item: string) => void;
+  onItemClick?: (item: any) => void;
   className?: string;
 }
 
@@ -32,7 +32,7 @@ export const List: React.FC<ListProps> = ({
   tooltipProps,
   headerText,
   headerPosition = "top",
-  onItemClick,
+  onItemClick=() => {},
   className = "",
 }) => {
   const { theme, branding } = useGlobal();
@@ -42,7 +42,7 @@ export const List: React.FC<ListProps> = ({
 
   const handleItemClick = (index: number, item: string) => {
     setSelectedIndex(items.indexOf(item));
-    onItemClick?.(item);
+    onItemClick(item);
   };
 
   const isDark = theme === "dark" || theme === "dark-hc";

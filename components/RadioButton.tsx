@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { ComponentSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
@@ -15,12 +15,13 @@ interface RadioButtonProps {
   size: ComponentSize;
   disabled?: boolean;
   items: RadioButtonItem[];
-  value?: string;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
   headerText?: string;
   headerPosition?: HeaderPosition;
   onChange?: (value: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLElement>) => void;
   defaultValue?: string;
   className?: string;
 }
@@ -29,32 +30,23 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   size,
   disabled = false,
   items,
-  value,
   needTooltip = false,
   tooltipProps,
   headerText,
   headerPosition = "top",
   onChange,
+  onBlur,
+  onFocus,
   defaultValue,
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
-  const [selectedValue, setSelectedValue] = useState(value || defaultValue || items[0]?.value || "");
+  const [selectedValue, setSelectedValue] = useState(defaultValue || items[0]?.value || "");
 
-  // Sync with value prop changes (controlled mode)
-  useEffect(() => {
-    if (value !== undefined) {
-      setSelectedValue(value);
-    }
-  }, [value]);
-
-  const handleChange = (newValue: string) => {
+  const handleChange = (value: string) => {
     if (!disabled) {
-      // Only update internal state if not controlled
-      if (value === undefined) {
-        setSelectedValue(newValue);
-      }
-      onChange?.(newValue);
+      setSelectedValue(value);
+      onChange?.(value);
     }
   };
 
@@ -88,6 +80,8 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
           <button
             key={item.value}
             onClick={() => handleChange(item.value)}
+            onBlur={onBlur}
+            onFocus={onFocus}
             disabled={disabled}
             className={`
               ${getSizeClasses()}
