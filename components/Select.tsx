@@ -251,7 +251,7 @@ export const Select: React.FC<SelectProps> = ({
             </div>
           )}
           <Icon
-            data={isOpen ? "chevron-up" : "chevron-down"}
+            data={isOpen ? "FaAngleUp" : "FaAngleDown"}
             size={16}
             className="transition-transform"
           />
@@ -342,7 +342,7 @@ export const Select: React.FC<SelectProps> = ({
                       {option.icon && <Icon data={option.icon} size={16} />}
                       <span>{option.label}</span>
                     </div>
-                    {selected && <Icon data="check" size={16} />}
+                    {selected && <Icon data="FaCheckCircle" size={16} />}
                   </button>
                 );
               })

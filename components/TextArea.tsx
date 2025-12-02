@@ -8,12 +8,12 @@ import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
 interface TextAreaProps {
   disabled?: boolean;
-  minRows: number;
+  minRows?: number;
   maxRows: number;
   pin?: TextAreaPin;
   placeholder?: string;
   readOnly?: boolean;
-  size: ComponentSize;
+  size?: ComponentSize;
   value?: string;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;

@@ -8,7 +8,7 @@ import { getFontSizeClass } from "@/utils/branding";
 
 interface SwitchProps {
   checked: boolean;
-  size: SwitchSize;
+  size?: SwitchSize;
   disabled?: boolean;
   content?: string;
   needTooltip?: boolean;
@@ -21,7 +21,7 @@ interface SwitchProps {
 
 export const Switch: React.FC<SwitchProps> = ({
   checked,
-  size,
+  size = "m",
   disabled = false,
   content,
   needTooltip = false,
@@ -39,6 +39,8 @@ export const Switch: React.FC<SwitchProps> = ({
         return { container: "w-11 h-6", thumb: "w-5 h-5", translate: checked ? "translate-x-5" : "translate-x-0.5" };
       case "l":
         return { container: "w-14 h-7", thumb: "w-6 h-6", translate: checked ? "translate-x-7" : "translate-x-0.5" };
+      default:
+        return { container: "w-11 h-6", thumb: "w-5 h-5", translate: checked ? "translate-x-5" : "translate-x-0.5" };
     }
   };
 
