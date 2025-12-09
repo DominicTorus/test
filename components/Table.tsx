@@ -208,7 +208,7 @@ export const Table: React.FC<TableProps> = ({
                 w-full
                 px-4 py-2
                 [border-radius:var(--border-radius)]
-                [font-size:var(--font-size)]
+                
                 border-2
                 ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
               `}
@@ -296,7 +296,7 @@ export const Table: React.FC<TableProps> = ({
                       accentColor: 'var(--brand-color)',
                     }}
                   />
-                  <span className={`[font-size:var(--font-size)] ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                  <span className={` ${isDark ? "text-gray-200" : "text-gray-700"}`}>
                     {column.name}
                   </span>
                 </label>
@@ -309,7 +309,7 @@ export const Table: React.FC<TableProps> = ({
                 className={`
                   px-4 py-2
                   [border-radius:var(--border-radius)]
-                  [font-size:var(--font-size)]
+                  
                   font-medium
                   transition-colors
                   text-white
@@ -372,7 +372,7 @@ export const Table: React.FC<TableProps> = ({
                   className={`
                     px-4 py-3
                     text-left
-                    [font-size:var(--font-size)]
+                    
                     font-semibold
                     ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
                     ${isDark ? "text-gray-200" : "text-gray-700"}
@@ -397,7 +397,7 @@ export const Table: React.FC<TableProps> = ({
                   className={`
                     px-4 py-3
                     text-left
-                    [font-size:var(--font-size)]
+                    
                     font-semibold
                     ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
                     ${isDark ? "text-gray-200" : "text-gray-700"}
@@ -420,7 +420,7 @@ export const Table: React.FC<TableProps> = ({
                   className={`
                     px-4 py-3
                     text-left
-                    [font-size:var(--font-size)]
+                    
                     font-semibold
                     ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
                     ${isDark ? "text-gray-200" : "text-gray-700"}
@@ -437,7 +437,7 @@ export const Table: React.FC<TableProps> = ({
                   onClick={() => setShowColumnModal(!showColumnModal)}
                   className={`
                     
-                    [font-size:var(--font-size)]
+                    
                     flex items-center gap-1
                     transition-colors
                     ${isDark ? "bg-gray-600 text-white hover:bg-gray-500" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
@@ -460,7 +460,7 @@ export const Table: React.FC<TableProps> = ({
                     className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                   >
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <span className={`[font-size:var(--font-size)] font-medium`}>
+                      <span className={` font-medium`}>
                         {emptyMessage}
                       </span>
                     </div>
@@ -523,7 +523,7 @@ export const Table: React.FC<TableProps> = ({
                             key={column.id}
                             className={`
                               px-4 py-3
-                              [font-size:var(--font-size)]
+                              
                               ${isDark ? "text-gray-300" : "text-gray-700"}
                               ${isHyperLink ? "text-blue-500 underline" : ""}
                               ${wordWrap ? "break-words" : "whitespace-nowrap"}

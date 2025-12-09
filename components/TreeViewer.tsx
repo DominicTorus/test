@@ -437,7 +437,7 @@ const NestedObject = ({
                     view={'flat-info'}
                     size={'xs'}
                     iconDisplay='Icon only'
-                    icon={isExpanded ? 'FaAngleDown' : 'FaChevronUp'}
+                    icon={isExpanded ? 'FaChevronUp' : 'FaAngleDown' }
                   ></Button>
                   {isDynamic && (
                     <Button
