@@ -8,6 +8,7 @@ import { Icon } from "./Icon";
 import { ComponentSize, TextInputType, TextInputView, TextAreaPin, HeaderPosition, TooltipProps as TooltipPropsType, ComponentEvents } from "@/types/global";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 import { GravityIcon } from "@/types/icons";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 interface TextInputProps {
   nodeId?: string;
@@ -24,6 +25,7 @@ interface TextInputProps {
   topContent?: boolean;
   readOnly?: boolean;
   view?: TextInputView;
+  name?: string;
   value?: string;
   note?: string;
   validationState?: 'valid' | 'invalid';
@@ -56,6 +58,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   topContent = false,
   readOnly = false,
   view = "normal",
+  name="",
   value = "",
   note,
   validationState,
@@ -78,9 +81,15 @@ export const TextInput: React.FC<TextInputProps> = ({
   const [isDisabled, setIsDisabled] = useState(disabled);
   const [isVisible, setIsVisible] = useState(true);
 
-  const handleChange = (newValue: string) => {
+  // Sync internal value with prop value
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
     setInternalValue(newValue);
-    // onChange?.(newValue);
+    onChange?.(e);
 
     // Emit rise events when onChange occurs
     const onChangeEvent = events?.find(e => e.name === "onChange");
@@ -91,6 +100,17 @@ export const TextInput: React.FC<TextInputProps> = ({
           data: { value: newValue },
         });
       });
+    }
+  };
+
+  const handleClear = () => {
+    setInternalValue("");
+    if (onChange) {
+      const syntheticEvent = {
+        target: { value: "", name },
+        currentTarget: { value: "", name }
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
     }
   };
 
@@ -209,7 +229,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     <div className="w-full">
       {label && topContent && (
         <label
-          className={`block mb-2 ${getFontSizeClass(branding.fontSize)} font-medium ${
+          className={`block mb-2 [font-size:var(--font-size)] font-medium ${
             isDark ? "text-gray-200" : "text-gray-900"
           }`}
           style={{ fontFamily: 'var(--font-body)' }}
@@ -229,8 +249,9 @@ export const TextInput: React.FC<TextInputProps> = ({
         
         <input
           type={type}
-          value={value}
-          onChange={onChange}
+          name={name}
+          value={internalValue}
+          onChange={handleChange}
           placeholder={placeholder}
           disabled={isDisabled}
           readOnly={readOnly}
@@ -239,6 +260,7 @@ export const TextInput: React.FC<TextInputProps> = ({
           className={`
             w-full
             ${getSizeClasses()}
+            [font-size:var(--font-size)]
             ${getPinClasses()}
             ${view === "normal" ? "border-2" : view === "clear" ? "border-2 border-transparent" : "border-0 border-b-2"}
             ${(startContent || leftContent) ? (direction === "RTL" ? "pr-10" : "pl-10") : ""}
@@ -253,13 +275,13 @@ export const TextInput: React.FC<TextInputProps> = ({
             fontFamily: 'var(--font-body)',
             ...getInputStyles(),
             ...(!errorMessage && view === "normal" ? {
-              // outlineColor: branding.brandColor,
-              // boxShadow: `0 0 0 2px ${branding.brandColor}20`
+             // outlineColor: branding.brandColor,
+             // boxShadow: `0 0 0 2px ${branding.brandColor}20`
             } : {})
           }}
           onFocus={(e) => {
             if (!errorMessage && !validationState) {
-              e.currentTarget.style.borderColor = branding.brandColor;
+              e.currentTarget.style.borderColor = "var(--brand-color)";
               if (view === "clear") {
                 e.currentTarget.style.boxShadow = "none";
               }
@@ -282,10 +304,11 @@ export const TextInput: React.FC<TextInputProps> = ({
           <div className={`absolute ${direction === "RTL" ? "left-3" : "right-3"} flex items-center gap-2`}>
             {hasClear && internalValue && (
               <button
-                onClick={() => handleChange("")}
+                onClick={handleClear}
+                type="button"
                 className={`${isDark ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-700"} transition-colors`}
               >
-                <Icon data="close" size={16} />
+                <RiCloseCircleLine size={16} />
               </button>
             )}
             {endContent && (
@@ -311,9 +334,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return element;
+    if (!headerText) return <div className={className}>{element}</div>;
 
-    const headerClasses = `${getFontSizeClass(branding.fontSize)} font-semibold mb-1 ${
+    const headerClasses = `[font-size:var(--font-size)] font-semibold mb-1 ${
       isDark ? "text-gray-300" : "text-gray-700"
     }`;
 
@@ -327,21 +350,21 @@ export const TextInput: React.FC<TextInputProps> = ({
     switch (headerPosition) {
       case "top":
         return (
-          <div className="flex flex-col w-full">
+          <div className={`flex flex-col w-full ${className}`}>
             <div className={headerClasses}>{headerContent}</div>
             {element}
           </div>
         );
       case "bottom":
         return (
-          <div className="flex flex-col w-full">
+          <div className={`flex flex-col w-full ${className}`}>
             {element}
             <div className={`${headerClasses} mt-1 mb-0`}>{headerContent}</div>
           </div>
         );
       case "left":
         return (
-          <div className="flex items-center w-full">
+          <div className={`flex items-center w-full ${className}`}>
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "ml-4" : "mr-4"} whitespace-nowrap`}>
               {headerContent}
             </div>
@@ -350,7 +373,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         );
       case "right":
         return (
-          <div className="flex items-center w-full">
+          <div className={`flex items-center w-full ${className}`}>
             <div className="flex-1">{element}</div>
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "mr-4" : "ml-4"} whitespace-nowrap`}>
               {headerContent}

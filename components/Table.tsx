@@ -5,9 +5,11 @@ import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
 import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 import { BiSort } from "react-icons/bi";
+
 interface RenderRowActionsProps {
   item: any;
   index: number;
+  nodeName:string
 }
 
 interface TableProps {
@@ -205,8 +207,8 @@ export const Table: React.FC<TableProps> = ({
               className={`
                 w-full
                 px-4 py-2
-                ${getBorderRadiusClass(branding.borderRadius)}
-                ${getFontSizeClass(branding.fontSize)}
+                [border-radius:var(--border-radius)]
+                [font-size:var(--font-size)]
                 border-2
                 ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
               `}
@@ -221,7 +223,7 @@ export const Table: React.FC<TableProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className={`
-              ${getBorderRadiusClass(branding.borderRadius)}
+              [border-radius:var(--border-radius)]
               ${isDark ? "bg-gray-800 border-gray-600" : "bg-white border-gray-300"}
               border-2
               p-6
@@ -250,7 +252,7 @@ export const Table: React.FC<TableProps> = ({
                   flex-1
                   px-3 py-1.5
                   text-sm
-                  ${getBorderRadiusClass(branding.borderRadius)}
+                  [border-radius:var(--border-radius)]
                   ${isDark ? "bg-gray-700 text-gray-200 hover:bg-gray-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
                   transition-colors
                 `}
@@ -263,7 +265,7 @@ export const Table: React.FC<TableProps> = ({
                   flex-1
                   px-3 py-1.5
                   text-sm
-                  ${getBorderRadiusClass(branding.borderRadius)}
+                  [border-radius:var(--border-radius)]
                   ${isDark ? "bg-gray-700 text-gray-200 hover:bg-gray-600" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
                   transition-colors
                 `}
@@ -279,7 +281,7 @@ export const Table: React.FC<TableProps> = ({
                   className={`
                     flex items-center gap-3
                     p-3
-                    ${getBorderRadiusClass(branding.borderRadius)}
+                    [border-radius:var(--border-radius)]
                     cursor-pointer
                     transition-colors
                     ${isDark ? "hover:bg-gray-700" : "hover:bg-gray-50"}
@@ -291,10 +293,10 @@ export const Table: React.FC<TableProps> = ({
                     onChange={() => handleColumnToggle(column.id)}
                     className="w-4 h-4 cursor-pointer"
                     style={{
-                      accentColor: branding.brandColor,
+                      accentColor: 'var(--brand-color)',
                     }}
                   />
-                  <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-200" : "text-gray-700"}`}>
+                  <span className={`[font-size:var(--font-size)] ${isDark ? "text-gray-200" : "text-gray-700"}`}>
                     {column.name}
                   </span>
                 </label>
@@ -306,14 +308,14 @@ export const Table: React.FC<TableProps> = ({
                 onClick={() => setShowColumnModal(false)}
                 className={`
                   px-4 py-2
-                  ${getBorderRadiusClass(branding.borderRadius)}
-                  ${getFontSizeClass(branding.fontSize)}
+                  [border-radius:var(--border-radius)]
+                  [font-size:var(--font-size)]
                   font-medium
                   transition-colors
                   text-white
                 `}
                 style={{
-                  backgroundColor: branding.brandColor,
+                  backgroundColor: 'var(--brand-color)',
                 }}
               >
                 Apply
@@ -323,16 +325,20 @@ export const Table: React.FC<TableProps> = ({
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto border rounded-lg" style={{
+        maxHeight: '600px',
+        overflow: 'auto'
+      }}>
         <table
           className={`
             w-full
-            ${getBorderRadiusClass(branding.borderRadius)}
+            [border-radius:var(--border-radius)]
             ${isDark ? "bg-gray-800" : "bg-white"}
           `}
         >
           <thead
             className={`
+              sticky top-0 z-10
               ${isDark ? "bg-gray-700" : "bg-gray-100"}
             `}
           >
@@ -351,20 +357,22 @@ export const Table: React.FC<TableProps> = ({
                       onChange={handleSelectAllRows}
                       className="w-4 h-4 cursor-pointer"
                       style={{
-                        accentColor: branding.brandColor,
+                        accentColor: 'var(--brand-color)',
                       }}
                     />
                   </div>
                 </th>
               )}
-              {visibleColumns.map((column) => (
+              {visibleColumns.map((column) =>{
+                if(column?.type=="__ActionDetails__"&& tableActions != true){
+                return (
                 <th
                   key={column.id}
                   onClick={() => handleSort(column.id)}
                   className={`
                     px-4 py-3
                     text-left
-                    ${getFontSizeClass(branding.fontSize)}
+                    [font-size:var(--font-size)]
                     font-semibold
                     ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
                     ${isDark ? "text-gray-200" : "text-gray-700"}
@@ -379,7 +387,49 @@ export const Table: React.FC<TableProps> = ({
                     )}
                   </div>
                 </th>
-              ))}
+              )
+                }
+              if(column?.type!="__ActionDetails__"){
+                return (
+                <th
+                  key={column.id}
+                  onClick={() => handleSort(column.id)}
+                  className={`
+                    px-4 py-3
+                    text-left
+                    [font-size:var(--font-size)]
+                    font-semibold
+                    ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
+                    ${isDark ? "text-gray-200" : "text-gray-700"}
+                    ${column?.className}
+                  `}
+                >
+
+                    {column.name}
+                    {tableSorting && sortColumn === column.id && (
+                      <BiSort
+                        size={14}
+                      />
+                    )}
+
+                </th>
+              )
+                }
+              } )}
+              {(visibleColumns.find((cols:any)=>(cols?.type=='__ActionDetails__')) && tableActions==true)&&(<th
+                  className={`
+                    px-4 py-3
+                    text-left
+                    [font-size:var(--font-size)]
+                    font-semibold
+                    ${tableSorting ? "cursor-pointer hover:bg-opacity-80" : ""}
+                    ${isDark ? "text-gray-200" : "text-gray-700"}
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    Actions
+                  </div>
+                </th>)}
               {/* Column Visibility Control */}
               {tableSettings && 
               <th className="">
@@ -387,13 +437,13 @@ export const Table: React.FC<TableProps> = ({
                   onClick={() => setShowColumnModal(!showColumnModal)}
                   className={`
                     
-                    ${getBorderRadiusClass(branding.borderRadius)}
+                    [font-size:var(--font-size)]
                     flex items-center gap-1
                     transition-colors
                     ${isDark ? "bg-gray-600 text-white hover:bg-gray-500" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}
                   `}
                   style={{
-                    backgroundColor: showColumnModal ? branding.brandColor : undefined,
+                    backgroundColor: showColumnModal ? 'var(--brand-color)' : undefined,
                     color: showColumnModal ? 'white' : undefined,
                   }}
                 >
@@ -410,7 +460,7 @@ export const Table: React.FC<TableProps> = ({
                     className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
                   >
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <span className={`${getFontSizeClass(branding.fontSize)} font-medium`}>
+                      <span className={`[font-size:var(--font-size)] font-medium`}>
                         {emptyMessage}
                       </span>
                     </div>
@@ -436,7 +486,7 @@ export const Table: React.FC<TableProps> = ({
                     cursor-pointer
                   `}
                   style={{
-                    backgroundColor: isSelected ? `${branding.brandColor}20` : undefined,
+                    backgroundColor: isSelected ? `var(--brand-color)20` : undefined,
                   }}
                 >
                   {tableSelection && (
@@ -449,7 +499,7 @@ export const Table: React.FC<TableProps> = ({
                           onClick={(e) => e.stopPropagation()}
                           className="w-4 h-4 cursor-pointer"
                           style={{
-                            accentColor: branding.brandColor,
+                            accentColor: 'var(--brand-color)',
                           }}
                         />
                       </div>
@@ -457,23 +507,23 @@ export const Table: React.FC<TableProps> = ({
                   )}
                   {visibleColumns.map((column) =>
                   { 
-                    if(column.type== '__ActionDetails__' && renderRowActions)
+                    if(column.type== '__ActionDetails__'&& tableActions!=true && renderRowActions)
                     {
                       return(
                         <td
                           key={column.id}
                           >
-                          {renderRowActions({ item: row, index })}
+                          {renderRowActions({ item: row, index,nodeName:`${column?.controlType+column?.id}`})}
                           </td>
                           )
-                        }else {
+                        }
+                        else if(column.type!= '__ActionDetails__') {
                           return(
-                          
                           <td
                             key={column.id}
                             className={`
                               px-4 py-3
-                              ${getFontSizeClass(branding.fontSize)}
+                              [font-size:var(--font-size)]
                               ${isDark ? "text-gray-300" : "text-gray-700"}
                               ${isHyperLink ? "text-blue-500 underline" : ""}
                               ${wordWrap ? "break-words" : "whitespace-nowrap"}
@@ -484,6 +534,12 @@ export const Table: React.FC<TableProps> = ({
                           )
                         }
                   })}
+                  {
+                    (visibleColumns.find((cols:any)=>(cols?.type=='__ActionDetails__'))&&tableActions==true && renderRowActions)&&
+                    (
+                      <td>{renderRowActions({ item: row, index,nodeName:`${"ss"}`})}</td>
+                    )
+                  }
                 </tr>
               );
             }))}

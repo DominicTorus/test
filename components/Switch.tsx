@@ -8,7 +8,7 @@ import { getFontSizeClass } from "@/utils/branding";
 
 interface SwitchProps {
   checked: boolean;
-  size?: SwitchSize;
+  size: SwitchSize;
   disabled?: boolean;
   content?: string;
   needTooltip?: boolean;
@@ -21,7 +21,7 @@ interface SwitchProps {
 
 export const Switch: React.FC<SwitchProps> = ({
   checked,
-  size = "m",
+  size,
   disabled = false,
   content,
   needTooltip = false,
@@ -39,8 +39,6 @@ export const Switch: React.FC<SwitchProps> = ({
         return { container: "w-11 h-6", thumb: "w-5 h-5", translate: checked ? "translate-x-5" : "translate-x-0.5" };
       case "l":
         return { container: "w-14 h-7", thumb: "w-6 h-6", translate: checked ? "translate-x-7" : "translate-x-0.5" };
-      default:
-        return { container: "w-11 h-6", thumb: "w-5 h-5", translate: checked ? "translate-x-5" : "translate-x-0.5" };
     }
   };
 
@@ -56,7 +54,7 @@ export const Switch: React.FC<SwitchProps> = ({
     
     if (checked) {
       return {
-        backgroundColor: branding.selectionColor,
+        backgroundColor: "var(--selection-color)",
       };
     }
     
@@ -69,7 +67,7 @@ export const Switch: React.FC<SwitchProps> = ({
 
   const switchElement = (
     <label
-      className={`inline-flex items-center ${disabled ? "cursor-not-allowed" : "cursor-pointer"} ${className}`}
+      className={`inline-flex items-center ${disabled ? "cursor-not-allowed" : "cursor-pointer"} `}
     >
       <div
         className={`${sizes.container} rounded-full relative transition-colors duration-200 ease-in-out`}
@@ -82,7 +80,7 @@ export const Switch: React.FC<SwitchProps> = ({
       </div>
       {content && (
         <span
-          className={`${direction === "RTL" ? "mr-3" : "ml-3"} ${getFontSizeClass(branding.fontSize)} ${
+          className={`${direction === "RTL" ? "mr-3" : "ml-3"} [font-size:var(--font-size)] ${
             theme === "dark" || theme === "dark-hc" ? "text-gray-200" : "text-gray-900"
           } ${disabled ? "opacity-50" : ""}`}
         >
@@ -93,30 +91,30 @@ export const Switch: React.FC<SwitchProps> = ({
   );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return element;
+    if (!headerText) return <div className={className}>{element}</div>;
 
-    const headerClasses = `${getFontSizeClass(branding.fontSize)} font-semibold mb-1 ${
+    const headerClasses = `[font-size:var(--font-size)] font-semibold mb-1 ${
       theme === "dark" || theme === "dark-hc" ? "text-gray-300" : "text-gray-700"
     }`;
 
     switch (headerPosition) {
       case "top":
         return (
-          <div className="flex flex-col">
+          <div className={`flex flex-col ${className}`}>
             <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
         );
       case "bottom":
         return (
-          <div className="flex flex-col">
+          <div className={`flex flex-col ${className}`}>
             {element}
             <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
           </div>
         );
       case "left":
         return (
-          <div className="flex items-center">
+          <div className={`flex items-center ${className}`}>
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "ml-2" : "mr-2"}`}>
               {headerText}
             </div>
@@ -125,7 +123,7 @@ export const Switch: React.FC<SwitchProps> = ({
         );
       case "right":
         return (
-          <div className="flex items-center">
+          <div className={`flex items-center ${className}`}>
             {element}
             <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "mr-2" : "ml-2"}`}>
               {headerText}
