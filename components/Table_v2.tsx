@@ -455,7 +455,7 @@ export const Table_v2: React.FC<TableProps> = ({
             </tr>
           </thead>
           <tbody>
-              {loading ? (
+              {(loading && displayData.length !== 0) ? (
                 <tr>
                   <td
                     colSpan={visibleColumns.length + (tableSelection ? 1 : 0) + (tableSettings ? 1 : 0)}
