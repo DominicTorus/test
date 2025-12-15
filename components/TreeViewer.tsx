@@ -437,7 +437,7 @@ const NestedObject = ({
                     view={'flat-info'}
                     size={'xs'}
                     iconDisplay='Icon only'
-                    icon={isExpanded ? 'FaChevronUp' : 'FaAngleDown' }
+                    icon={isExpanded ? 'FaAngleDown' : 'FaChevronUp'}
                   ></Button>
                   {isDynamic && (
                     <Button
@@ -481,7 +481,8 @@ export const TreeViewer = ({
   handleClick,
   isEditable,
   path,
-  setData
+  setData,
+  className = ''
 }: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalPath, setModalPath] = useState('')
@@ -542,6 +543,7 @@ export const TreeViewer = ({
   /////////////////
   return (
     <div
+      className={className}
       style={{
         height: `100%`,
         width: `100%`,
