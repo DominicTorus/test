@@ -17,7 +17,8 @@ function createData(
   setModalValue: any = () => {},
   setIsModalOpen: any = () => {},
   setModalKey: any = () => {},
-  setModalTargetType: any = () => {}
+  setModalTargetType: any = () => {},
+  viewtype: string = 'collapsed'
 ): React.ReactNode {
   let obj: any = mainObject
   const handleChange = (value: any, path: any) => {
@@ -267,7 +268,8 @@ function createData(
                     setModalValue,
                     setIsModalOpen,
                     setModalKey,
-                    setModalTargetType
+                    setModalTargetType,
+                    viewtype
                   )}
                 </div>
               </div>
@@ -293,6 +295,7 @@ function createData(
             setIsModalOpen={setIsModalOpen}
             setModalKey={setModalKey}
             setModalTargetType={setModalTargetType}
+            viewtype={viewtype}
           />
         </div>
       )
@@ -313,7 +316,8 @@ const NestedObject = ({
   setModalValue = () => {},
   setIsModalOpen = () => {},
   setModalKey = () => {},
-  setModalTargetType = () => {}
+  setModalTargetType = () => {},
+  viewtype = 'collapsed'
 }: {
   mainObject: any
   data: any
@@ -326,10 +330,20 @@ const NestedObject = ({
   setIsModalOpen: any
   setModalKey: any
   setModalTargetType: any
+  viewtype?: string
 }) => {
-  const [expandedKeys, setExpandedKeys] = useState<{ [key: string]: boolean }>(
-    {}
-  )
+  // Initialize expandedKeys based on viewtype
+  const [expandedKeys, setExpandedKeys] = useState<{ [key: string]: boolean }>(() => {
+    if (viewtype === 'expanded') {
+      // Expand all keys initially
+      const allKeys: { [key: string]: boolean } = {}
+      Object.keys(data).forEach(key => {
+        allKeys[key] = true
+      })
+      return allKeys
+    }
+    return {}
+  })
 
   const toggleKey = (key: string) => {
     setExpandedKeys(prev => ({
@@ -437,7 +451,7 @@ const NestedObject = ({
                     view={'flat-info'}
                     size={'xs'}
                     iconDisplay='Icon only'
-                    icon={isExpanded ? 'FaAngleDown' : 'FaChevronUp'}
+                    icon={isExpanded ? 'FaChevronUp':'FaAngleDown' }
                   ></Button>
                   {isDynamic && (
                     <Button
@@ -463,7 +477,8 @@ const NestedObject = ({
                     setModalValue,
                     setIsModalOpen,
                     setModalKey,
-                    setModalTargetType
+                    setModalTargetType,
+                    viewtype
                   )}
                 </div>
               )}
@@ -481,6 +496,7 @@ export const TreeViewer = ({
   handleClick,
   isEditable,
   path,
+  viewtype='expanded',
   setData,
   className = ''
 }: any) => {
@@ -578,7 +594,8 @@ export const TreeViewer = ({
                 setModalValue,
                 setIsModalOpen,
                 setModalKey,
-                setModalTargetType
+                setModalTargetType,
+                viewtype
               )}
             </div>
           </div>
