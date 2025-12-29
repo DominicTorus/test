@@ -1,23 +1,25 @@
 'use client'
+import i18n from '@/app/components/i18n';
 import React, { useState,useContext,useEffect,useRef } from 'react';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useInfoMsg } from '@/app/components/infoMsgHandler';
 import { useRouter } from 'next/navigation';
-import { RadioGroup, RadioGroupOption, Modal, Text } from '@gravity-ui/uikit';
+import { RadioGroup } from '@/components/RadioGroup';
+import { Modal } from '@/components/Modal';
 import { AxiosService } from "@/app/components/axiosService";
 import { getCookie } from '@/app/components/cookieMgment';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { eventBus } from '@/app/eventBus';
 import { te_refreshDto } from "@/app/interfaces/interfaces";
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
-import i18n from '@/app/components/i18n';
+import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 const RadioGroupradiogroup = ({encryptionFlagCompData}:any) => {
-  const token: string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
+  const handleDfdRefresh = useHandleDfdRefresh();
   const prevRefreshRef = useRef(false);
   const toast:any=useInfoMsg();
   const routes = useRouter();
@@ -30,113 +32,87 @@ const RadioGroupradiogroup = ({encryptionFlagCompData}:any) => {
   let encryptionMethod: string = "";
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   const confirmMsgFlag: boolean = false;
-  const [allCode,setAllCode]=useState<any>("");
  /////////////
   //another screen
-  const {firstgroupc4acb, setfirstgroupc4acb}= useContext(TotalContext) as TotalContextProps;  
-  const {firstgroupc4acbProps, setfirstgroupc4acbProps}= useContext(TotalContext) as TotalContextProps;  
-  const {textinput2cc5d, settextinput2cc5d}= useContext(TotalContext) as TotalContextProps;  
-  const {uploade78d7, setuploade78d7}= useContext(TotalContext) as TotalContextProps;  
-  const {textarea87afb, settextarea87afb}= useContext(TotalContext) as TotalContextProps;  
-  const {radiof9609, setradiof9609}= useContext(TotalContext) as TotalContextProps;  
-  const {radiogroup5ad4f, setradiogroup5ad4f}= useContext(TotalContext) as TotalContextProps;  
-  const {switcha515a, setswitcha515a}= useContext(TotalContext) as TotalContextProps;  
-  const {pininputf6753, setpininputf6753}= useContext(TotalContext) as TotalContextProps;  
-  const {save67a1f, setsave67a1f}= useContext(TotalContext) as TotalContextProps;  
-  const {radiobutton6d7d6, setradiobutton6d7d6}= useContext(TotalContext) as TotalContextProps;  
-  const {checkbox1c08f, setcheckbox1c08f}= useContext(TotalContext) as TotalContextProps;  
-  const {signature75ba3, setsignature75ba3}= useContext(TotalContext) as TotalContextProps;  
-  const {viewer2e45c, setviewer2e45c}= useContext(TotalContext) as TotalContextProps;  
-  const {card63ac3, setcard63ac3}= useContext(TotalContext) as TotalContextProps;  
-  const {timepicker40a6b, settimepicker40a6b}= useContext(TotalContext) as TotalContextProps;  
-  const {slider6c8f7, setslider6c8f7}= useContext(TotalContext) as TotalContextProps;  
-  const {qrcode772a6, setqrcode772a6}= useContext(TotalContext) as TotalContextProps;  
-  const {image54de2, setimage54de2}= useContext(TotalContext) as TotalContextProps;  
-  const {dropdown7f41a, setdropdown7f41a}= useContext(TotalContext) as TotalContextProps;  
-  const {icon71de8, seticon71de8}= useContext(TotalContext) as TotalContextProps;  
-  const {text5d0f8, settext5d0f8}= useContext(TotalContext) as TotalContextProps;  
-  const {label9bd6f, setlabel9bd6f}= useContext(TotalContext) as TotalContextProps;  
-  const {listec3b4, setlistec3b4}= useContext(TotalContext) as TotalContextProps;  
-  const {datepickerbe904, setdatepickerbe904}= useContext(TotalContext) as TotalContextProps;  
-  const {jsonviewerfbb2e, setjsonviewerfbb2e}= useContext(TotalContext) as TotalContextProps;  
-  const {avatar24aed, setavatar24aed}= useContext(TotalContext) as TotalContextProps;  
-  const {companycard071eb, setcompanycard071eb}= useContext(TotalContext) as TotalContextProps;  
-  const {progressd7ccf, setprogressd7ccf}= useContext(TotalContext) as TotalContextProps;  
-  const {texttospeech63351, settexttospeech63351}= useContext(TotalContext) as TotalContextProps;  
-  const {speechtotext5f5c9, setspeechtotext5f5c9}= useContext(TotalContext) as TotalContextProps;  
-  const {tabsb7d72, settabsb7d72}= useContext(TotalContext) as TotalContextProps;  
+  const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
+  const {firstgroupc08a7Props, setfirstgroupc08a7Props}= useContext(TotalContext) as TotalContextProps;
+  const {button6c543, setbutton6c543}= useContext(TotalContext) as TotalContextProps;
+  const {avatard99b3, setavatard99b3}= useContext(TotalContext) as TotalContextProps;
+  const {radiogroupcf04e, setradiogroupcf04e}= useContext(TotalContext) as TotalContextProps;
+  const {datepickerbe7c3, setdatepickerbe7c3}= useContext(TotalContext) as TotalContextProps;
+  const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
+  const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
+  const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
+  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
+  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
+  const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
+  const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
+  const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
+  const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
+  const {qrcoded45d1, setqrcoded45d1}= useContext(TotalContext) as TotalContextProps;
+  const {radiobutton92d8e, setradiobutton92d8e}= useContext(TotalContext) as TotalContextProps;
+  const {radio65f38, setradio65f38}= useContext(TotalContext) as TotalContextProps;
+  const {speechtotextf8edf, setspeechtotextf8edf}= useContext(TotalContext) as TotalContextProps;
+  const {texttospeech35a79, settexttospeech35a79}= useContext(TotalContext) as TotalContextProps;
+  const {textf0149, settextf0149}= useContext(TotalContext) as TotalContextProps;
+  const {switch4a6e4, setswitch4a6e4}= useContext(TotalContext) as TotalContextProps;
+  const {textareaa5a38, settextareaa5a38}= useContext(TotalContext) as TotalContextProps;
+  const {timepicker8a8fa, settimepicker8a8fa}= useContext(TotalContext) as TotalContextProps;
+  const {signature63e12, setsignature63e12}= useContext(TotalContext) as TotalContextProps;
+  const {sliderde96f, setsliderde96f}= useContext(TotalContext) as TotalContextProps;
+  const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
+  const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   //////////////
-  const options: RadioGroupOption[] = [
-      {value: '0' ,content:'male'},
-      {value: '1' ,content:'female'},
+  const options: any[] = [
+      {value: 'si' ,content:'Sivam'},
+      {value: 'pa' ,content:'Parama'},
+      {value: 'ps' ,content:'paramasivam'},
   ];
-
-  const handleMapperValue=async()=>{
-    try{
-    const orchestrationData: any = await AxiosService.post(
-      '/UF/Orchestration',
-      {
-        key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1",
-        componentId: "5909e18973e149f19bb5db9d38fc4acb",
-        controlId: "7153c54a04dd457aa97e116cdcf5ad4f",
-        isTable: false,
-        from:"RadioRadioGroup",
-        accessProfile:accessProfile
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-    if(orchestrationData?.data?.error == true){
-      return;
-    }
-    setAllCode( orchestrationData?.data?.code);
-    }catch(err){
-      console.log(err);
-    }
-  }
-
+  let optionsValue:any=options.map(item=>item.content);   
   useEffect(()=>{
-    handleMapperValue();
-    setfirstgroupc4acb((pre:any)=>({...pre,radiogroup:""}));
-  },[radiogroup5ad4f?.refresh])
+    setfirstgroupc08a7((pre:any)=>({...pre,radiogroup:""}));
+  },[radiogroupcf04e?.refresh])
 
   const handleChange= async(e:any)=>{
-    setfirstgroupc4acb((prev: any) => ({ ...prev, radiogroup: e.target.value }));
-    let code = allCode;
+    setfirstgroupc08a7((prev: any) => ({ ...prev, radiogroup: optionsValue[e] }));
+    let code:any= ``;
     if (code == "") {
       //toast(code?.data?.errorDetails?.message, 'danger')
       //return
     }  else if (code != '') {
       let codeStates: any = {}
-            codeStates['firstgroup']  = firstgroupc4acb,
-            codeStates['setfirstgroup'] = setfirstgroupc4acb,
+            codeStates['firstgroup']  = firstgroupc08a7,
+            codeStates['setfirstgroup'] = setfirstgroupc08a7,
+            codeStates['secondgroup']  = secondgroup311a5,
+            codeStates['setsecondgroup'] = setsecondgroup311a5,
     codeExecution(code,codeStates);
     }
   }
 
-
  
-  if (radiogroup5ad4f?.isHidden) {
+  if (radiogroupcf04e?.isHidden) {
     return <></>
   }
   
 return (
   <div 
-    style={{gridColumn: `1 / 3`,gridRow: `33 / 53`, gap:``, height: `100%`, overflow: 'auto'}} >
-      <div>{keyset("RadioGroup")}</div>
-      <RadioGroup
-        className=""
-        value={firstgroupc4acb?.radiogroup || ""} 
-        size="l"
-          disabled= {radiogroup5ad4f?.isDisabled ? true : false}
+    style={{gridColumn: `18 / 21`,gridRow: `18 / 44`, gap:``, height: `100%`, overflow: 'auto'}} >
+    <RadioGroup
+      className=""
+        value={firstgroupc08a7?.radiogroup || ""} 
+          disabled= {radiogroupcf04e?.isDisabled ? true : false}
         direction="vertical"
-        defaultValue={options.length>0?options[0].value:""}
-        options={options}
+        // defaultValue={options.length>0?options[0].value:""}
+        items={options}
         onChange={handleChange}
-      />
+        needTooltip={true}  
+        tooltipProps={{title:"Tooltip",placement:"top-start"}}
+        contentAlign={"center"}
+        headerPosition='top'
+        headerText="Header"
+    />
   </div>
   )
 }

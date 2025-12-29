@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { HeaderPosition, TooltipProps as TooltipPropsType, ComponentSize } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
+import { getFontSizeClass, getBorderRadiusClass } from "@/app/utils/branding";
 
 // DateTime type based on common date libraries
 export interface DateTime {

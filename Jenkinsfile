@@ -8,7 +8,7 @@ pipeline {
     }
     environment {
         DOCKERHUB_USERNAME = "192.168.2.164:5000"
-        APP_NAME = "ct003-tg2-uf-v2"
+        APP_NAME = "ct003-tg1-uf-v5"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${APP_NAME}"
         BUILD_NUMBER = "${BUILD_NUMBER}"
         GITHUB_CREDENTIALS = "GIT_HUB_PAT"
@@ -35,12 +35,12 @@ pipeline {
             steps {
                 script {
                     def diff = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
-                    if (diff.split('\n').any { it.startsWith('apps/CT003/CG/TG2/v2/Next-uf/') }) {
+                    if (diff.split('\n').any { it.startsWith('apps/CT003/CG/TG1/v5/Next-uf/') }) {
                         env.NEXT_UF_CHANGED = "true"
-                        echo "Changes detected in apps/CT003/CG/TG2/v2/Next-uf"
+                        echo "Changes detected in apps/CT003/CG/TG1/v5/Next-uf"
                     } else {
                         env.NEXT_UF_CHANGED = "false"
-                        echo "No changes in apps/CT003/CG/TG2/v2/Next-uf. Skipping build and deployment stages."
+                        echo "No changes in apps/CT003/CG/TG1/v5/Next-uf. Skipping build and deployment stages."
                     }
                 }
             }
@@ -60,8 +60,8 @@ pipeline {
                         docker buildx build \
                           --build-arg BUILDKIT_INLINE_CACHE=1 \
                           --tag ${IMAGE_NAME}:${IMAGE_TAG} \
-                          --file apps/CT003/CG/TG2/v2/Next-uf/Dockerfile \
-                          apps/CT003/CG/TG2/v2/Next-uf \
+                          --file apps/CT003/CG/TG1/v5/Next-uf/Dockerfile \
+                          apps/CT003/CG/TG1/v5/Next-uf \
                           --push
                         """
                     }
@@ -75,7 +75,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "sed -i 's/docker_tag/${IMAGE_TAG}/g' apps/CT003/CG/TG2/v2/Next-uf/kubernetes/deploymentservice.yaml"
+                    sh "sed -i 's/docker_tag/${IMAGE_TAG}/g' apps/CT003/CG/TG1/v5/Next-uf/kubernetes/deploymentservice.yaml"
                 }
             }
         }
@@ -87,9 +87,9 @@ pipeline {
             steps {
                 script {
                     withKubeConfig(credentialsId: 'kubernetes-224', serverUrl: 'https://lb.kubesphere.local:6443') {
-                        sh "kubectl get ns ct003-tg2-uf-v2 || kubectl create ns ct003-tg2-uf-v2"
-                        sh "kubectl apply -f apps/CT003/CG/TG2/v2/Next-uf/kubernetes/deploymentservice.yaml"
-                        sh "kubectl apply -f apps/CT003/CG/TG2/v2/Next-uf/kubernetes/uf-ingress.yaml"
+                        sh "kubectl get ns ct003-tg1-uf-v5 || kubectl create ns ct003-tg1-uf-v5"
+                        sh "kubectl apply -f apps/CT003/CG/TG1/v5/Next-uf/kubernetes/deploymentservice.yaml"
+                        sh "kubectl apply -f apps/CT003/CG/TG1/v5/Next-uf/kubernetes/uf-ingress.yaml"
                     }
                 }
             }

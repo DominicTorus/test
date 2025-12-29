@@ -1,173 +1,235 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import { useGlobal } from "@/context/GlobalContext";
-import { Tooltip } from "./Tooltip";
-import { ComponentSize, TextAreaPin, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
-
+import React, { useState } from 'react'
+import { useGlobal } from '@/context/GlobalContext'
+import { Tooltip } from './Tooltip'
+import {
+  ComponentSize,
+  TextAreaPin,
+  HeaderPosition,
+  TooltipProps as TooltipPropsType
+} from '@/types/global'
+import { getFontSizeClass, getBorderRadiusClass } from '@/app/utils/branding'
+type ContentAlign = 'left' | 'right' | 'center'
 interface TextAreaProps {
-  disabled?: boolean;
-  minRows?: number;
-  maxRows: number;
-  pin?: TextAreaPin;
-  placeholder?: string;
-  readOnly?: boolean;
-  size?: ComponentSize;
-  value?: string;
-  needTooltip?: boolean;
-  tooltipProps?: TooltipPropsType;
-  headerText?: string;
-  headerPosition?: HeaderPosition;
-  onChange?: (value: any) => void;
-  onBlur?: (value: any) => void;
-  className?: string;
+  disabled?: boolean
+  pin?: TextAreaPin
+  placeholder?: string
+  readOnly?: boolean
+  value?: string
+  needTooltip?: boolean
+  tooltipProps?: TooltipPropsType
+  headerText?: string
+  headerPosition?: HeaderPosition
+  onChange?: (value: any) => void
+  onBlur?: (value: any) => void
+  className?: string
+  fillContainer?: boolean
+  contentAlign?: ContentAlign
 }
 
 export const TextArea: React.FC<TextAreaProps> = ({
   disabled = false,
-  minRows,
-  maxRows,
-  pin = "",
+  pin = '',
   placeholder,
   readOnly = false,
-  size,
-  value = "",
+  value = '',
   needTooltip = false,
   tooltipProps,
   headerText,
-  headerPosition = "top",
+  headerPosition = 'top',
   onChange,
   onBlur,
-  className = "",
+  className = '',
+  fillContainer = true,
+  contentAlign = 'left'
 }) => {
-  const { theme, direction, branding } = useGlobal();
-  const [internalValue, setInternalValue] = useState(value);
-  const getSizeClasses = () => {
-    const fontSize = getFontSizeClass(branding.fontSize);
-    switch (size) {
-      case "s":
-        return `px-3 py-2 ${fontSize === "text-xl" ? "text-base" : fontSize === "text-lg" ? "text-sm" : "text-xs"}`;
-      case "m":
-        return `px-4 py-2.5 ${fontSize}`;
-      case "l":
-        return `px-5 py-3 ${fontSize === "text-sm" ? "text-base" : fontSize === "text-base" ? "text-lg" : "text-xl"}`;
-      case "xl":
-        return `px-6 py-4 ${fontSize === "text-sm" ? "text-lg" : fontSize === "text-base" ? "text-xl" : "text-2xl"}`;
+  const { theme, direction, branding } = useGlobal()
+  const [internalValue, setInternalValue] = useState(value)
+
+  const getFillClasses = () => {
+    if (!fillContainer) return ''
+    return 'w-full h-full'
+  }
+
+  const getTextAlignClasses = () => {
+    switch (contentAlign) {
+      case 'left':
+        return 'text-left'
+      case 'right':
+        return 'text-right'
+      case 'center':
+        return 'text-center'
       default:
-        return `px-4 py-2.5 ${fontSize}`;
+        return 'text-center'
     }
-  };
+  }
 
   const getPinClasses = () => {
-    if (!pin) return "";
-    const baseRadius = getBorderRadiusClass(branding.borderRadius);
-    
-    if (pin === "clear-clear") {
-      return baseRadius;
+    if (!pin) return '[border-radius:var(--border-radius)]'
+    const baseRadius = getBorderRadiusClass(branding.borderRadius)
+
+    if (pin === 'clear-clear') {
+      return baseRadius
     }
-    
-    const [left, right] = pin.split("-");
+
+    const [left, right] = pin.split('-')
     const leftRadius =
-      left === "round" ? "rounded-l-2xl" :
-      left === "brick" ? "rounded-l-none" :
-      `rounded-l${baseRadius.replace("rounded", "")}`;
+      left === 'round'
+        ? 'rounded-l-2xl'
+        : left === 'brick'
+        ? 'rounded-l-none'
+        : `rounded-l${baseRadius.replace('rounded', '')}`
     const rightRadius =
-      right === "round" ? "rounded-r-2xl" :
-      right === "brick" ? "rounded-r-none" :
-      `rounded-r${baseRadius.replace("rounded", "")}`;
-    
-    return `${leftRadius} ${rightRadius}`;
+      right === 'round'
+        ? 'rounded-r-2xl'
+        : right === 'brick'
+        ? 'rounded-r-none'
+        : `rounded-r${baseRadius.replace('rounded', '')}`
+
+    return `${leftRadius} ${rightRadius}`
+  }
+
+  const isDark = theme === 'dark' || theme === 'dark-hc'
+
+  // Helper to convert hex to rgba
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex?.slice(1, 3), 16);
+    const g = parseInt(hex?.slice(3, 5), 16);
+    const b = parseInt(hex?.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
-  const isDark = theme === "dark" || theme === "dark-hc";
-
   const textAreaElement = (
-    <div className={`w-full `}>
+    <div className={`${getFillClasses()} ${getFontSizeClass(branding.fontSize)}`}>
       <textarea
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
         readOnly={readOnly}
-
-        rows={minRows}
-        style={{
-          maxHeight: `${maxRows * 1.5}em`,
-          resize: "vertical",
-        }}
         className={`
-          w-full
-          ${getSizeClasses()}
+          ${getFillClasses()}
           ${getPinClasses()}
-          ${className}
+          ${getTextAlignClasses()}
           border-2
-          ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-          ${isDark ? "bg-gray-800 text-white border-gray-600" : "bg-white text-gray-900 border-gray-300"}
-          transition-colors
-          focus:outline-none focus:ring-2 focus:ring-opacity-50
+          ${disabled ? 'cursor-not-allowed opacity-50' : ''}
+          ${
+            isDark
+              ? 'border-gray-600 bg-gray-800 text-white'
+              : 'border-gray-300 bg-white text-gray-900'
+          }
+          p-2 transition-all duration-200
+          focus:outline-none
+          ${className}
         `}
-        onFocus={(e) => {
-          e.currentTarget.style.borderColor = "var(--brand-color)";
-          e.currentTarget.style.boxShadow = `0 0 0 2px var(--brand-color) 20`;
+        onMouseEnter={e => {
+          if (!disabled && !readOnly && document.activeElement !== e.currentTarget) {
+            e.currentTarget.style.borderColor = branding.hoverColor
+          }
         }}
-        onBlur={onBlur}
+        onMouseLeave={e => {
+          if (!disabled && !readOnly && document.activeElement !== e.currentTarget) {
+            e.currentTarget.style.borderColor = isDark ? '#4B5563' : '#D1D5DB'
+          }
+        }}
+        onFocus={e => {
+          e.currentTarget.style.borderColor = branding.selectionColor
+          e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(branding.selectionColor, 0.2)}`
+        }}
+        onBlur={e => {
+          e.currentTarget.style.borderColor = isDark ? '#4B5563' : '#D1D5DB'
+          e.currentTarget.style.boxShadow = 'none'
+          onBlur?.(e)
+        }}
       />
     </div>
-  );
+  )
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return <div className={className} >{element}</div>;
+    if (!headerText)
+      return (
+        <div className={`${fillContainer ? 'h-full w-full' : ''} `}>
+          {element}
+        </div>
+      )
 
-    const headerClasses = ` font-semibold mb-1 ${
-      isDark ? "text-gray-300" : "text-gray-700"
-    }`;
+    const headerClasses = `font-semibold mb-1 overflow-hidden text-ellipsis whitespace-nowrap ${
+      isDark ? 'text-gray-300' : 'text-gray-700'
+    } 
+      ${getFontSizeClass(branding.fontSize)} ${className}`
 
     switch (headerPosition) {
-      case "top":
+      case 'top':
         return (
-          <div className={`flex flex-col w-full ${className}`}>
-            <div className={headerClasses}>{headerText}</div>
+          <div
+            className={`${
+              fillContainer
+                ? 'flex h-full w-full flex-col'
+                : 'inline-flex flex-col'
+            } ${headerClasses}`}
+          >
+            <div>{headerText}</div>
             {element}
           </div>
-        );
-      case "bottom":
+        )
+      case 'bottom':
         return (
-          <div className={`flex flex-col w-full ${className}`}>
+          <div
+            className={`${
+              fillContainer
+                ? 'flex h-full w-full flex-col'
+                : 'inline-flex flex-col'
+            }  ${headerClasses}`}
+          >
             {element}
-            <div className={`${headerClasses} mt-2 mb-0`}>{headerText}</div>
+            <div className='mt-1'>{headerText}</div>
           </div>
-        );
-      case "left":
+        )
+      case 'left':
         return (
-          <div className={`flex items-start gap-4 w-full ${className}`}>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
+          <div
+            className={`${
+              fillContainer ? 'flex h-full w-full' : 'inline-flex'
+            } items-center gap-4 ${headerClasses}`}
+          >
+            <div
+              className={`mb-0 min-w-0 max-w-[50%] sm:max-w-[40%] md:max-w-[35%] lg:max-w-[30%]`}
+            >
               {headerText}
             </div>
-            <div className="flex-1">{element}</div>
+            {element}
           </div>
-        );
-      case "right":
+        )
+      case 'right':
         return (
-          <div className={`flex items-start gap-4 w-full ${className}`}>
-            <div className="flex-1">{element}</div>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
+          <div
+            className={`${
+              fillContainer
+                ? 'flex h-full w-full'
+                : 'inline-flex flex-col'
+            } items-center gap-4 ${className} ${headerClasses}`}
+          >
+            {element}
+            <div
+              className={` mb-0 min-w-0 max-w-[50%] sm:max-w-[40%] md:max-w-[35%] lg:max-w-[30%]`}
+            >
               {headerText}
             </div>
           </div>
-        );
+        )
     }
-  };
+  }
 
-  const finalElement = renderWithHeader(textAreaElement);
+  const finalElement = renderWithHeader(textAreaElement)
 
   if (needTooltip && tooltipProps) {
     return (
       <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
         {finalElement}
       </Tooltip>
-    );
+    )
   }
 
-  return <>{finalElement}</>;
-};
+  return <>{finalElement}</>
+}

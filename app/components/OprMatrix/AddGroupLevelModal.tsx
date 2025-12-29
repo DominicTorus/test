@@ -1,10 +1,11 @@
-import React, { ChangeEvent, useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { Multiply } from '../svgApplication'
-import { isLightColor } from '../utils'
 import { useInfoMsg } from '../infoMsgHandler'
+import { Text } from '@/components/Text'
 import { Button } from '@/components/Button'
 import { Label } from '@/components/Label'
-import { TotalContext, TotalContextProps } from '@/app/globalContext'
+import { twMerge } from 'tailwind-merge'
+import { useTheme } from '@/hooks/useTheme'
 
 const AddGroupLevelModal = ({
   close,
@@ -44,10 +45,9 @@ const AddGroupLevelModal = ({
         }
   )
   const toast = useInfoMsg()
-  const { property } = useContext(TotalContext) as TotalContextProps
-  let brandColor: string = property?.brandColor ?? '#0736c4'
+  const { borderColor , bgColor , isDark , textColor } = useTheme()
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: any) => {
     let { name, value } = e.target
     setInputValue(prev => {
       if (name == 'code') {
@@ -67,40 +67,46 @@ const AddGroupLevelModal = ({
   }
 
   return (
-    <div className='flex h-fit w-[20vw] flex-col px-[.7vw] py-[1vh]'>
+    <div className='flex h-fit flex-col '>
       <div className='flex w-full items-center justify-between py-[.5vh]'>
-        <h1 style={{ fontSize: `0.8vw` }} className=''>
-          {modalTitle}
-        </h1>
-        <Button className={'flex items-center outline-none'} onClick={close}>
+        <Text variant='body-3'>{modalTitle}</Text>
+        <Button className={'!w-fit p-1 rounded-md'} onClick={close}>
           <Multiply height='.7vw' width='.7vw' />
         </Button>
       </div>
-      <p style={{ fontSize: `0.6vw` }} className='text-torus-text-opacity-50'>
+      <Text
+        variant='caption-1'
+        color='secondary'
+      >
         {modalSubText}
-      </p>
+      </Text>
 
       <div
-        style={{ fontSize: `0.8vw` }}
-        className='flex flex-col gap-[1vh] py-[1vh]'
+        className='flex flex-col gap-[1vh] py-[1vh] text-base'
       >
-        <Label className='font-semibold'>Name</Label>
+        <Label theme='clear' className='font-semibold !justify-start'>
+          Name
+        </Label>
+     
         <input
           id='name'
           name='name'
           type='text'
           placeholder={`Enter ${resourceField} name`}
-          className={`border-[var(--g-color-line-generic)] bg-[var(--g-color-base-background)] w-[18.5vw] rounded-lg border px-[.5vw] py-[.4vh] text-[var(--g-color-text-primary)] outline-none`}
+          className={twMerge(`rounded-lg border px-[.5vw] py-[.4vh] outline-none` , borderColor , bgColor , textColor)}
           onChange={handleInputChange}
           value={inputValue.name}
         />
-        <Label className='font-semibold'>Code</Label>
+        <Label theme='clear'  className='font-semibold !justify-start'>
+          Code
+        </Label>
+        
         <input
           id='code'
           name='code'
           type='text'
           placeholder={`Enter ${resourceField} code`}
-          className={`border-[var(--g-color-line-generic)] bg-[var(--g-color-base-background)] w-[18.5vw] rounded-lg border px-[.5vw] py-[.4vh] text-[var(--g-color-text-primary)] outline-none`}
+          className={twMerge(`rounded-lg border px-[.5vw] py-[.4vh] outline-none` , borderColor , bgColor , textColor)}
           onChange={handleInputChange}
           readOnly={resource?.code ? true : false}
           value={inputValue.code?.replace(`${parentCode}`, '')}
@@ -109,21 +115,14 @@ const AddGroupLevelModal = ({
       <div className='flex w-full justify-end gap-[.5vw] py-[1vh]'>
         <Button
           onClick={close}
-          style={{ fontSize: `0.8vw` }}
-          className={
-            'bg-torus-bg border-[var(--g-color-line-generic)] rounded-lg border px-[.5vw] py-[.5vh] outline-none'
-          }
+          view='raised'
+          className={'!w-fit rounded-md p-2'}
         >
           Cancel
         </Button>
         <Button
           onClick={handleAdd}
-          style={{
-            backgroundColor: brandColor,
-            color: isLightColor(brandColor),
-            fontSize: `0.8vw`
-          }}
-          className={'rounded-lg px-[.5vw] py-[.5vh] outline-none'}
+          className={'!w-fit rounded-md p-2'}
         >
           {resource?.code ? 'Update' : 'Create'}
         </Button>

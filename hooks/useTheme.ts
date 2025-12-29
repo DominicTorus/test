@@ -1,7 +1,7 @@
 import { useGlobal } from "@/context/GlobalContext";
 
 export const useTheme = () => {
-  const { theme, setTheme, branding, direction, language, typography } = useGlobal();
+  const { theme, setTheme, branding, direction, language } = useGlobal();
 
   const isDark = theme === "dark" || theme === "dark-hc";
   const isLight = theme === "light" || theme === "light-hc";
@@ -27,7 +27,6 @@ export const useTheme = () => {
     branding,
     direction,
     language,
-    typography,
     // Utility classes
     bgColor,
     textColor,

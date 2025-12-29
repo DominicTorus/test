@@ -6,14 +6,11 @@ import { Tooltip } from "./Tooltip";
 import { Icon } from "./Icon";
 import { Button } from "./Button";
 import { ComponentSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
-
-type ModalSize = "s" | "m" | "l" | "xl";
+import { getFontSizeClass, getBorderRadiusClass } from "@/app/utils/branding";
 
 interface ModalProps {
   open: boolean;
   onClose: () => void;
-  size?: ModalSize;
   title?: string | React.ReactNode;
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
@@ -30,7 +27,7 @@ interface ModalProps {
 export const Modal: React.FC<ModalProps> = ({
   open,
   onClose,
-  size = "xl",
+
   title,
   showCloseButton = true,
   closeOnOverlayClick = true,
@@ -74,22 +71,6 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!open) return null;
 
-  const getSizeClasses = () => {
-    const fontSize = getFontSizeClass(branding.fontSize);
-    switch (size) {
-      case "s":
-        return `max-w-md ${fontSize}`;
-      case "m":
-        return `max-w-lg ${fontSize}`;
-      case "l":
-        return `max-w-2xl ${fontSize === "text-sm" ? "text-base" : fontSize === "text-base" ? "text-lg" : "text-xl"}`;
-      case "xl":
-        return `max-w-4xl ${fontSize === "text-sm" ? "text-lg" : fontSize === "text-base" ? "text-xl" : "text-2xl"}`;
-      default:
-        return `max-w-lg ${fontSize}`;
-    }
-  };
-
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (closeOnOverlayClick && e.target === e.currentTarget) {
       onClose();
@@ -108,15 +89,12 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         className={`
-          ${getSizeClasses()}
-          ${getBorderRadiusClass(branding.borderRadius)}
+          ${className}
           animate-scaleIn
-          w-full
           flex flex-col
           ${isHighContrast ? 'border-2' : 'border'}
           transition-all duration-300 ease-in-out
           hover:shadow-2xl
-          ${className}
         `}
         style={{
           backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
@@ -134,7 +112,7 @@ export const Modal: React.FC<ModalProps> = ({
           <div
             className={`
               flex items-center justify-between
-              px-6 py-4
+            
               backdrop-blur-sm
             `}
             style={{
@@ -157,7 +135,7 @@ export const Modal: React.FC<ModalProps> = ({
               <button
                 onClick={onClose}
                 className={`
-                  p-2
+  
                   ${getBorderRadiusClass(branding.borderRadius)}
                   transition-all duration-200
                   ${isDark ? "hover:bg-gray-700 hover:shadow-lg" : "hover:bg-gray-100 hover:shadow-md"}

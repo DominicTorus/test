@@ -1,7 +1,8 @@
 /* {
-  "aKey": "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG2:AFVK:v2:bldc",
+  "aKey": "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v5:bldc",
   "ufKey": "Logs Screen",
   "screenName": "logs",
+  "screenLabel": "logs",
   "navbarData": [
     {
       "menuGroup": "admin",
@@ -32,7 +33,7 @@
       "screenDetails": [
         {
           "name": "menu",
-          "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1",
+          "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
           "allowedAccessProfile": [
             "Employee"
           ],
@@ -44,17 +45,34 @@
   ],
   "setupData": {
     "language": "Tamil",
+    "appInfo": {
+      "name": "TG1",
+      "code": "TG1",
+      "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:mongo:AFVK:v1",
+      "logType": "mongodb",
+      "logo": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png",
+      "appGrpName": "CG",
+      "appGrpCode": "CG"
+    },
     "fontSize": "Small",
+    "fontFamily": [
+      {
+        "label": "Roboto",
+        "fontUrl": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      }
+    ],
     "direction": "LTR",
+    "group-bg-color": "#ebebeb",
+    "page-bg-color": "#ffffff",
     "brandColor": "#adffaf",
-    "selectionColor": "#dbdbe1",
-    "hoverColor": "#eff1f5",
+    "selectionColor": "#F44336",
+    "hoverColor": "#0736C4",
     "borderRadius": "xl",
-    "topbarColor": "#2AE38F",
-    "menubarColor": "#00BFFF",
     "sidebarStyle": "condensed",
     "navigationStyles": "vertical",
     "theme": "dark",
+    "topbarColor": "#2AE38F",
+    "menubarColor": "#00BFFF",
     "layoutMode": "fluid",
     "mobileAppearance": {
       "brandColors": {
@@ -85,179 +103,70 @@
         "displayLarge": 48
       }
     },
-    "page-bg-color": "#ffffff",
-    "group-bg-color": "#ebebeb",
-    "appInfo": {
-      "name": "TG2",
-      "code": "TG2",
-      "logType": "mongodb",
-      "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:mongoDPDNew:AFVK:v1",
-      "logo": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/image.jfif",
-      "lastBuildVersion": "v5",
-      "lastBuildOn": "2025-10-17T07:49:52.398Z",
-      "accessUrl": "https://tgadev.gsstvl.com/ct003/cg/tg2/v5",
-      "applicationUniqueId": "4d470951-2fd8-4418-9731-31680b826c00",
-      "encryption": {
-        "type": ""
-      },
-      "appGrpName": "CG",
-      "appGrpCode": "CG"
-    },
     "tenantAppearancekey": "CK:TGA:FNGK:SETUP:FNK:SF:CATK:TENANT:AFGK:CT003:AFK:PROFILE:AFVK:v1:appearance",
     "selectedPresetKey": "1753084129653",
     "name": "Preset 1",
-    "fontFamily": [
-      {
-        "label": "Roboto",
-        "fontUrl": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-      },
-      {
-        "label": "Dancing Script",
-        "fontUrl": "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap"
-      }
-    ],
     "text-body-font": "Roboto",
-    "text-header-font": "Dancing Script",
+    "text-header-font": "Roboto",
     "text-display-font": "Roboto"
   },
-  "setupKey": "CK:TGA:FNGK:SETUP:FNK:SF:CATK:CT003:AFGK:CG:AFK:TG2:AFVK:v1:appearance",
+  "setupKey": "CK:TGA:FNGK:SETUP:FNK:SF:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v1:appearance",
   "allKeys": [
-    "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1"
+    "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   ],
   "loginDetails": {
-    "firstName": "Peer",
-    "lastName": "m",
-    "username": "",
-    "email": "peerm@torus.tech",
-    "mobile": "8124805539",
-    "loginId": "Peer@786",
-    "dateAdded": "2024-10-11T04:37:31.922Z",
+    "loginId": "sriram",
+    "firstName": "sriram",
+    "lastName": "s",
+    "email": "marip@torus.tech",
+    "mobile": "6345435345",
+    "2FAFlag": "N",
+    "scope": "client_admin",
     "status": "active",
-    "users": "Peer@786Peer m",
     "accessProfile": [
       "admin"
     ],
-    "lastActive": "2025-11-24T04:54:19.798Z",
-    "profile": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/Peer@786/pexels-pixabay-33109.jpg",
-    "quickLinks": [],
-    "client": "CT003",
+    "accessExpires": "2025-11-30",
+    "dateAdded": "2025-09-01T11:13:43.262Z",
+    "isRestricted": false,
+    "lastActive": "2025-09-24T13:22:03.016Z",
+    "users": "sriramsriram s",
+    "profile": "",
     "edit": "",
-    "noOfProductsService": 0,
-    "userUniqueId": "6828417e-5fe0-43bb-8c55-c465ee6581a0",
-    "touring": {
-      "isneedTouring": true,
-      "touringData": {
-        "/": {
-          "stepIndex": 5,
-          "isSkipped": false,
-          "completed": true,
-          "notVisited": []
-        },
-        "/logic-center": {
-          "stepIndex": 3,
-          "isSkipped": false,
-          "completed": true,
-          "notVisited": []
-        },
-        "Security": {
-          "stepIndex": 1,
-          "isSkipped": false,
-          "completed": true,
-          "notVisited": []
-        },
-        "artifactselector": {
-          "stepIndex": 1,
-          "isSkipped": false,
-          "completed": true,
-          "notVisited": []
-        },
-        "build": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/torus": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/company-profile": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/logs_hub": {
-          "stepIndex": 1,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/tenant": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "logs": {
-          "stepIndex": 1,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": [
-            0
-          ]
-        },
-        "/control-center/account-profile": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/appearance": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        }
-      }
-    }
+    "client": "CT261"
   },
   "webOnBoarding": {
-    "loadingImage": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif",
-    "loginType": "leftAligned",
-    "landingScreen": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1"
+    "loadingImage": "/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif",
+    "loginType": "standard",
+    "landingScreen": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   },
   "allKeyswithScreenNames": [
     {
+      "screenName": "menu",
       "screensName": "menu-v1",
-      "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1"
+      "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
     }
   ],
-  "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG2:AFK:updatemongoDPD:AFVK:v1",
+  "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1",
   "appGroupDesc": "CG",
   "logType": "mongodb",
-  "appDesc": "TG2",
-  "appLogo": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/image.jfif",
+  "appDesc": "TG1",
+  "appLogo": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png",
   "isOld": true,
-  "clientCode": "CT003"
+  "clientCode": "CT261"
 } */
-import './globals.css'
-import type { Metadata } from 'next'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/ReactToastify.min.css'
-import { GetSetupKey } from './utils/setUpKey'
-// import './utils/styles.css'
-// import '@gravity-ui/uikit/styles/fonts.css' // COMMENTED OUT - This was overriding custom fonts
-import GlobalContext from './globalContext'
-import ToasterClientProvider from './components/toastClientProvider'
-import { GlobalProvider } from '@/context/GlobalContext'
-import { EventBusProvider } from '@/context/EventBusContext'
-import { ThemeWrapper } from '@/components/ThemeWrapper'
+import './globals.css';
+import type { Metadata } from 'next';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/ReactToastify.min.css';
+import { GetSetupKey } from './utils/setUpKey';
+import GlobalContext from './globalContext';
+import { GlobalProvider } from '@/context/GlobalContext';
+import { EventBusProvider } from '@/context/EventBusContext';
+import { ThemeWrapper } from '@/components/ThemeWrapper';
 export const metadata: Metadata = {
-  title: 'TG2',
-  description: 'TG2 Generated by Torus'
+  title: 'TG1',
+  description: 'TG1 Generated by Torus'
 }
 
 export default function RootLayout({
@@ -272,9 +181,7 @@ export default function RootLayout({
           <GlobalProvider>
             <EventBusProvider>
               <ThemeWrapper>
-                <ToasterClientProvider>
                   <GetSetupKey>{children}</GetSetupKey>
-                </ToasterClientProvider>
               </ThemeWrapper>
             </EventBusProvider>
           </GlobalProvider>

@@ -11,7 +11,7 @@ import {
 import {
   getFontSizeClass,
   getBorderRadiusClass,
-} from "@/utils/branding";
+} from "@/app/utils/branding";
 
 export interface DropdownMenuItem {
   text: string;
@@ -218,7 +218,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     const fontSize = getFontSizeClass(branding.fontSize);
 
     return `
-      absolute z-50 mt-2 min-w-[160px] shadow-lg border
+      absolute z-50 mt-2 min-w-[160px] shadow-lg border rounded-md
       ${borderRadius}
       ${fontSize}
       ${isDark ? "border-gray-600" : "border-gray-300"}
@@ -229,7 +229,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
   const getItemClasses = (item: DropdownMenuItem, hasSubmenu: boolean) => {
     const baseClasses = `
-      flex items-center justify-between px-4 py-2 cursor-pointer
+      flex items-center justify-between px-4 py-2 cursor-pointer rounded-md
       transition-colors duration-150
       ${item.disabled ? "opacity-50 cursor-not-allowed" : ""}
     `;
@@ -249,9 +249,9 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     const hex = hexColor.replace("#", "");
 
     // Convert to RGB
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    const r = parseInt(hex?.substring(0, 2), 16);
+    const g = parseInt(hex?.substring(2, 4), 16);
+    const b = parseInt(hex?.substring(4, 6), 16);
 
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
@@ -302,7 +302,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
             }
           }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-md">
             {item.icon && (
               <>{item.icon}</>
               // <Icon data={item.icon} size={16} className="flex-shrink-0" />
@@ -321,7 +321,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
         {/* Render submenu */}
         {hasSubmenu && isSubmenuActive && (
           <div
-            className={`${getPopupClasses()} ${direction === "RTL" ? "right-full mr-2" : "left-full ml-2"} top-0`}
+            className={`${getPopupClasses()} ${direction === "RTL" ? "right-full mr-2" : "left-full ml-2"} rounded-md top-0`}
             style={getPopupStyles()}
           >
             {item.items!.map((subItem, subIndex) =>
@@ -343,7 +343,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className={`relative inline-block ${className}`}
+      className={`relative inline-block rounded-md ${className}`}
       dir={direction}
     >
       {/* Render switcher button */}

@@ -5,7 +5,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { Tooltip } from "./Tooltip";
 import { Icon } from "./Icon";
 import { ComponentSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
+import { getFontSizeClass, getBorderRadiusClass } from "@/app/utils/branding";
 
 export interface SelectOption {
   value: string;
@@ -247,7 +247,7 @@ export const Select: React.FC<SelectProps> = ({
                 ${isDark ? "hover:bg-gray-600" : "hover:bg-gray-200"}
               `}
             >
-              <Icon data="xmark" size={16} />
+              <Icon data="FaWindowClose" size={16} />
             </div>
           )}
           <Icon
@@ -339,10 +339,10 @@ export const Select: React.FC<SelectProps> = ({
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      {option.icon && <Icon data={option.icon} size={16} />}
+                      {option.icon && <Icon fillContainer={false} data={option.icon} size={16} />}
                       <span>{option.label}</span>
                     </div>
-                    {selected && <Icon data="FaCheckCircle" size={16} />}
+                    {selected && <Icon fillContainer={false} data="FaCheck" size={16} />}
                   </button>
                 );
               })
