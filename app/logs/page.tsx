@@ -8,7 +8,6 @@ import { deleteAllCookies, getCookie, setCookie } from '@/app/components/cookieM
 import decodeToken from '@/app/components/decodeToken'
 import Artifactdetails from './artifactdetails'
 import { TotalContext, TotalContextProps } from '../globalContext'
-import { dateTime } from '@gravity-ui/date-utils'
 import { useRouter } from 'next/navigation'
 
 const ParentComponent = () => {
@@ -29,11 +28,26 @@ const ParentComponent = () => {
   const decodedToken: any = decodeToken(token)
   const [user, setUser] = useState<string[]>([decodedToken?.loginId])
   const { encAppFalg,setEncAppFalg}= useContext(TotalContext) as TotalContextProps
-  const [range , setRange ] = useState({start: dateTime().subtract({days: 7}), end: dateTime()})
+   const today = new Date();
+  // 7 days back
+  const past = new Date();
+  past.setDate(today.getDate() - 7);
+  const [range, setRange] = useState<any>({
+    start: {
+      year: past.getFullYear(),
+      month: past.getMonth()+1,
+      day: past.getDate()
+    },
+    end: {
+      year: today.getFullYear(),
+      month: today.getMonth()+1,
+      day: today.getDate()
+    }
+  });
   const [ fabrics , setFabrics ] = useState<Array<string>>([])
   const [jsonViewerData, setJsonViewerData] = useState({})
   const router = useRouter()
-  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1';
+  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1';
   const encryptionFlagApp: boolean = false;    
   const [jsonData, setJsonData] = useState({
     data: [],
@@ -51,6 +65,11 @@ const ParentComponent = () => {
     AIF: ['AIFD'],
     CDF: ['DPD', 'IFD']
   };
+  const getDate = (date: any) =>{
+    if(!date) return ""
+    const { year, month, day } = date
+    return `${year}-${month}-${day}`
+  }
   let payload:any = useMemo(() => {
     return {
       tenant: 'CT003',
@@ -62,8 +81,8 @@ const ParentComponent = () => {
       appgroup: appGroup,
       app: app,
       user: user,
-      FromDate: range.start.format('YYYY-MM-DD'),
-      ToDate: range.end.format('YYYY-MM-DD'),
+      FromDate: range && range?.start ? getDate(range.start) : '',
+      ToDate: range && range?.end ? getDate(range.end) : '',
       page: jsonData.page,
       limit: jsonData.limit,
       searchParam: search
@@ -162,6 +181,7 @@ const ParentComponent = () => {
                 nodeData: {
                   name: processInfo.nodeName,
                   request: processInfo.request,
+                  queue: processInfo?.queue,
                   response: processInfo.response,
                   subFlowInfo : processInfo.subFlowInfo ? processInfo.subFlowInfo : undefined,
                   time: DateAndTime,
@@ -251,7 +271,7 @@ const ParentComponent = () => {
   const securityCheck = async () => {
   try {
     const encryptionDpd: string =
-      'CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpdatedMongodb:AFVK:v1'
+      'CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1'
     const encryptionMethod: string = ''
     let introspect: any
     if (encryptionFlagApp) {

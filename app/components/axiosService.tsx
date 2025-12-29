@@ -33,11 +33,11 @@ AxiosService.interceptors.request.use(
       delete config.data.method
       let ciphertext : any;
       if(method == "vault"){
-        const encrypt = { Credentials: encryptionData.credentials, value: config.data, context: "ct003_cg_tg1_v8" }
+        const encrypt = { Credentials: encryptionData.credentials, value: config.data, context: "ct003_cg_tg1_v5" }
         const vaultEncrypt = await localEncrypt(encrypt)
         ciphertext = await encryptData(vaultEncrypt)
       }else{
-        ciphertext = await clientEncrypt(encryptionData.credentials,config.data,"ct003_cg_tg1_v8")
+        ciphertext = await clientEncrypt(encryptionData.credentials,config.data,"ct003_cg_tg1_v5")
       }
       if(method == "AESGCM"){
         authTag = ciphertext?.authTag
@@ -72,7 +72,7 @@ AxiosService.interceptors.response.use(
         let vault = await decryptData(response.data, dpdKey)
         response.data = await localDecrypt(vault)
       }else{
-        response.data = await clientDecrypt(encryptionData.credentials,response.data,"ct003_cg_tg1_v8")
+        response.data = await clientDecrypt(encryptionData.credentials,response.data,"ct003_cg_tg1_v5")
       }
     }
     return response

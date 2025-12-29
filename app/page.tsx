@@ -13,17 +13,18 @@ export default function HomePage() {
   const token = getCookie('token');
   const decodedToken = decodeToken(token)
   const encryptionFlagApp: boolean = false;    
-  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1';
+  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1';
   const toast = useInfoMsg()
   let screenDetails: any = [
   {
-    "screensName": "test-v1",
-    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1"
+    "screenName": "menu",
+    "screensName": "menu-v1",
+    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   }
 ]
   const securityCheck = async () => {
     try {
-      const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpdatedMongodb:AFVK:v1";
+      const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1";
       const encryptionMethod: string = "";
       let introspect:any;
       if(encryptionFlagApp){

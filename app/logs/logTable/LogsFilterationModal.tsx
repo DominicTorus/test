@@ -3,14 +3,20 @@ import {
   Multiply,
   SearchIcon
 } from '@/app/components/svgApplication'
-import { RangeCalendar } from '@gravity-ui/date-components'
-import { dateTime, DateTime } from '@gravity-ui/date-utils'
-import { Avatar, Button, Checkbox, Popup , Loader, Text } from '@gravity-ui/uikit'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Calendar , Person } from '@gravity-ui/icons'
 import { getCookie } from '@/app/components/cookieMgment'
 import { checkDataAccess } from '@/app/utils/checkDAP'
 import { AxiosService } from '@/app/components/axiosService'
+import { CiCalendarDate } from 'react-icons/ci'
+import { Button } from '@/components/Button'
+import Popup from '@/components/Popup'
+import Spin from '@/components/Spin'
+import { Text } from '@/components/Text'
+import { Checkbox } from '@/components/Checkbox'
+import { Avatar } from '@/components/Avatar'
+import { useTheme } from '@/hooks/useTheme'
+import { twMerge } from 'tailwind-merge'
+import { RangeCalendar } from '@/components/RangeCalendar'
 
 const LogsFilterationModal = ({
   range,
@@ -23,24 +29,16 @@ const LogsFilterationModal = ({
   activeTab
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  range: {
-    start: DateTime
-    end: DateTime
-  }
-  setRange: React.Dispatch<
-    React.SetStateAction<{
-      start: DateTime
-      end: DateTime
-    }>
-  >
+  range: any
+  setRange: React.Dispatch<React.SetStateAction<any>>
   fabrics: Array<string>
   setFabrics: React.Dispatch<React.SetStateAction<Array<string>>>
   user: Array<string>
   setUser: React.Dispatch<React.SetStateAction<Array<string>>>
-  activeTab:string
+  activeTab: string
 }) => {
   const [isDateRangeOpen, setDateRangeOpen] = useState(false)
-  const [selectedDateRange, setSelectedDateRange] = useState(range)
+  const [selectedDateRange, setSelectedDateRange] = useState<any>(range)
   const [selectedKeys, setSelectedKeys] = useState<string[]>(fabrics)
   const [selectedUsers, setSelectedUsers] = useState<string[]>(user)
   const [searchTerm, setSearchTerm] = useState('')
@@ -49,6 +47,7 @@ const LogsFilterationModal = ({
   const token: string = getCookie('token')
 
   const isAdminUser = useMemo(() => checkDataAccess(token), [token])
+  const { isDark, borderColor, textColor, bgColor, branding } = useTheme()
 
   const calendarTriggerRef = useRef<HTMLDivElement>(null)
 
@@ -97,109 +96,125 @@ const LogsFilterationModal = ({
     getOrgAndUserData()
   }, [])
 
+  const showDate = (date: any) => {
+    if (!date) return ''
+    const { year, month, day } = date
+    return `${day}/${month}/${year}`
+  }
+
+  const toggleFabric = (key: string) => {
+    setSelectedKeys(prev =>
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    )
+  }
+
   return (
-    <div className='h-fit w-[50vw] lg:w-[30vw]'>
-      <div className='flex w-full items-center justify-between px-[0.7vw] py-[1vh]'>
-        <Text variant='subheader-2' className='flex gap-2'>
-          <FilterIcon fill='var(--g-color-text-primary)' /> Filter
+    <div className='h-fit w-full'>
+      <div className='flex w-full items-center justify-between px-2 py-1'>
+        <Text variant='subheader-2' className='flex !w-fit gap-2'>
+          <FilterIcon fill={isDark ? '#fff' : '#000'} /> Filter
         </Text>
         <Button
-          className='flex items-center justify-center'
+          className='!w-fit rounded-md p-2'
           onClick={() => setOpen(false)}
         >
           {' '}
-          <Multiply
-            width='12'
-            height='12'
-            fill={'var(--g-color-text-primary)'}
-          />
+          <Multiply width='12' height='12' fill={isDark ? '#fff' : '#000'} />
         </Button>
       </div>
-      <hr
-        style={{ borderColor: 'var(--g-color-line-generic)' }}
-        className='w-full'
-      />
+      <hr className={`w-full ${borderColor}`} />
       {/* Date Range Selection */}
       <div className='flex flex-col gap-3 px-2 py-3'>
-        <Text variant='subheader-1' >
-          SORT BY DATE
-        </Text>
+        <Text variant='subheader-1'>SORT BY DATE</Text>
         <div
           onClick={e => {
             setDateRangeOpen(!isDateRangeOpen)
             e.stopPropagation()
           }}
           ref={calendarTriggerRef}
-          className='flex w-fit cursor-pointer items-center gap-[2vw] rounded border px-[0.5vw] py-[0.5vh]'
-          style={{
-            borderColor: 'var(--g-color-line-generic)'
-          }}
+          className={twMerge(
+            'flex w-fit cursor-pointer items-center gap-[2vw] rounded border px-[0.5vw] py-[0.5vh]',
+            borderColor
+          )}
         >
           <div className='flex flex-col gap-1'>
-            <Text variant='body-2' color='secondary'>Select Date </Text>
-            <Text variant='body-2' >
-              {selectedDateRange.start.format('DD/MM/YYYY')} -{' '}
-              {selectedDateRange.end.format('DD/MM/YYYY')}
+            <Text variant='body-2' color='secondary'>
+              Select Date{' '}
+            </Text>
+            <Text variant='body-2'>
+              {showDate(selectedDateRange?.start)} -{' '}
+              {showDate(selectedDateRange?.end)}
             </Text>
           </div>
           <span className='flex self-end'>
-            <Calendar color='var(--g-color-text-primary)' opacity={0.5} />
+            <CiCalendarDate color={isDark ? '#fff' : '#000'} opacity={0.5} />
           </span>
         </div>
         <Popup
           anchorRef={calendarTriggerRef}
           open={isDateRangeOpen}
-          onOutsideClick={() => setDateRangeOpen(false)}
+          onClose={() => setDateRangeOpen(false)}
+          size='xl'
         >
           <RangeCalendar
             value={selectedDateRange}
-            onUpdate={setSelectedDateRange}
-            maxValue={dateTime()}
+            onChange={val => setSelectedDateRange(val)}
+            maxValue={{
+              year: new Date().getFullYear(),
+              month: new Date().getMonth() + 1,
+              day: new Date().getDate()
+            }}
+            minValue={{
+              year: new Date().getFullYear(),
+              month: new Date().getMonth() + 1,
+              day: new Date().getDate()
+            }}
           />
         </Popup>
       </div>
+
       {/* Fabric Selection */}
       <div className='flex flex-col gap-3 px-2 py-3'>
         <Text variant='subheader-1'>FABRICS</Text>
-        <div className='flex flex-col gap-[1.5vh]'>
+
+        <div className='flex flex-col gap-2'>
           {(activeTab === 'process'
             ? fabricList.filter(item => ['DF', 'PF'].includes(item.key))
             : fabricList
-          ).map((item, index) => (
-            <Checkbox
-              key={index}
-              content={item.label}
-              value={item.key}
-              onChange={e =>
-                setSelectedKeys(prev => {
-                  if (e.target.checked) {
-                    return [...prev, item.key]
-                  } else {
-                    return prev.filter(key => key !== item.key)
-                  }
-                })
-              }
-              checked={selectedKeys.includes(item.key)}
-            />
+          ).map(item => (
+            <label
+              key={item.key}
+              className='flex cursor-pointer items-center gap-2'
+            >
+              <input
+                type='checkbox'
+                className='h-4 w-4 cursor-pointer'
+                style={{ accentColor: branding.selectionColor }}
+                checked={selectedKeys.includes(item.key)}
+                onChange={() => toggleFabric(item.key)}
+              />
+              <Text>{item.label}</Text>
+            </label>
           ))}
         </div>
       </div>
+
       {/* if admin User  */}
       {isAdminUser && (
         <div className='flex flex-col gap-3 px-2 py-3'>
           <Text variant='subheader-1'>USERS</Text>
           {/* Search section */}
           <div
-            className={
-              'flex w-full items-center gap-[0.5vw] rounded border px-2'
-            }
-            style={{
-              borderColor: 'var(--g-color-line-generic)'
-            }}
+            className={twMerge(
+              'flex w-full items-center gap-[0.5vw] rounded border px-2',
+              borderColor,
+              bgColor,
+              textColor
+            )}
           >
             <span>
               <SearchIcon
-                fill={'var(--g-color-text-primary)'}
+                fill={isDark ? '#fff' : '#000'}
                 height='16'
                 width='16'
               />
@@ -208,11 +223,11 @@ const LogsFilterationModal = ({
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder={'Search'}
-              style={{
-                backgroundColor: 'var(--g-color-base-background)',
-                color: 'var(--g-color-text-primary)',
-              }}
-              className={`h-8 w-full rounded-md border-none font-medium outline-none`}
+              className={twMerge(
+                `h-8 w-full rounded-md border-none font-medium outline-none`,
+                bgColor,
+                textColor
+              )}
             />
           </div>
           {/* user list section */}
@@ -223,7 +238,12 @@ const LogsFilterationModal = ({
             }}
           >
             {loading ? (
-              <Loader className='flex w-full justify-center' />
+              <Spin
+                className='flex w-full justify-center'
+                spinning
+                color='success'
+                style='dots'
+              />
             ) : (
               userList
                 .filter(u =>
@@ -232,55 +252,65 @@ const LogsFilterationModal = ({
                     .includes(searchTerm.toLowerCase())
                 )
                 .map((userObj: any) => (
-                  <Checkbox
+                  <label
                     key={userObj?.loginId}
-                    content={
-                      <div key={userObj?.loginId} className='flex gap-[0.5vw]'>
-                        <Avatar
-                          imgUrl={userObj?.profile}
-                          size='m'
-                          className={`transition-all delay-75 duration-300 ease-in-out hover:scale-[1.2] `}
-                          icon={Person}
-                        />
-                        <div className='flex flex-col gap-1'>
-                          <Text variant='body-2'>
-                            {userObj?.firstName + ' ' + userObj?.lastName}
-                          </Text>
-                          <Text variant='body-1' >{userObj?.loginId}</Text>
-                        </div>
+                    className='flex cursor-pointer items-center gap-2'
+                  >
+                    <input
+                      type='checkbox'
+                      style={{ accentColor: branding.selectionColor }}
+                      className='h-4 w-4'
+                      onChange={e =>
+                        setSelectedUsers(prev => {
+                          if (!prev.includes(userObj?.loginId)) {
+                            return [...prev, userObj?.loginId]
+                          } else {
+                            return prev.filter(id => id !== userObj?.loginId)
+                          }
+                        })
+                      }
+                      checked={selectedUsers.includes(userObj?.loginId)}
+                    />
+                    <div
+                      key={userObj?.loginId}
+                      className='flex items-center gap-[0.5vw]'
+                    >
+                      <Avatar
+                        imageUrl={userObj?.profile as string}
+                        className={`transition-all delay-75 duration-300 ease-in-out hover:scale-[1.2] `}
+                        theme='normal'
+                        view='filled'
+                        icon='FaRegUser'
+                      />
+                      <div className='flex flex-col gap-1'>
+                        <Text variant='body-2'>
+                          {userObj?.firstName + ' ' + userObj?.lastName}
+                        </Text>
+                        <Text variant='body-1'>{userObj?.loginId}</Text>
                       </div>
-                    }
-                    value={userObj?.loginId}
-                    className='flex items-center gap-2 text-[0.72vw]'
-                    onChange={e =>
-                      setSelectedUsers(prev => {
-                        if (e.target.checked) {
-                          return [...prev, userObj?.loginId]
-                        } else {
-                          return prev.filter(id => id !== userObj?.loginId)
-                        }
-                      })
-                    }
-                    checked={selectedUsers.includes(userObj?.loginId)}
-                    style={{
-                      fontSize: '0.72vw'
-                    }}
-                  />
+                    </div>
+                  </label>
                 ))
             )}
           </div>
         </div>
       )}
-      <hr
-        style={{ borderColor: 'var(--g-color-line-generic)' }}
-        className='w-full'
-      />
+      <hr className={twMerge('w-full', borderColor)} />
 
-      <div className='flex justify-end gap-[1vw] px-2 py-3'>
-        <Button view='raised' onClick={() => setOpen(false)}>
+      <div className='flex justify-end gap-[1vw] pt-2'>
+        <Button
+          className='!w-fit rounded-md p-2'
+          view='raised'
+          onClick={() => setOpen(false)}
+        >
           Cancel
         </Button>
-        <Button onClick={handleUpdateFilterInputs}>Save</Button>
+        <Button
+          onClick={handleUpdateFilterInputs}
+          className='!w-fit rounded-md p-2'
+        >
+          Save
+        </Button>
       </div>
     </div>
   )

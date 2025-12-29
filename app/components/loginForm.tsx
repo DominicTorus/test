@@ -1,33 +1,35 @@
 
 'use client'
-import React, { useContext, useMemo, useState } from 'react'
-import { Logo } from '../components/Logo'
-import { isLightColor } from '../components/utils'
+import React, { useState } from 'react'
 import axios from 'axios'
-import { api_screenRouteDto, api_signinDto } from '../interfaces/interfaces'
+import { api_signinDto } from '../interfaces/interfaces'
 import { useInfoMsg } from '../components/infoMsgHandler'
 import { setCookie } from '../components/cookieMgment'
 import { useRouter } from 'next/navigation'
-import { Button, Icon, Spin, Text } from '@gravity-ui/uikit'
-import { DefaultLoginImage, GitHubIcon, GoogleIcon } from '../utils/svgApplications'
+import { DefaultLoginImage, FusionAuth } from '../utils/svgApplications'
 import { BsEyeFill, BsEyeSlash } from 'react-icons/bs'
 import Link from 'next/link'
-import { TotalContext, TotalContextProps } from '../globalContext'
 import { singleSignOn } from '../utils/serverUtils'
 import decodeToken from './decodeToken'
-import {Shield} from '@gravity-ui/icons';
+import { Text } from '@/components/Text'
+import { Button } from '@/components/Button'
+import Spin from '@/components/Spin'
+import { useGlobal } from '@/context/GlobalContext'
+import { useTheme } from '@/hooks/useTheme'
+import { twMerge } from 'tailwind-merge'
+import i18n from './i18n'
+import TorusFooter from '../utils/TorusFooter.png'
+import Image from 'next/image'
+import { getCdnImage } from '../utils/getAssets'
+
 interface LoginProps {
   logo?: string
   appName?: string
-  brandColor?: string
   loginType?: 'standard' | 'rightAligned' | 'leftAligned'
   image?: string
 }
 
-const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "standard", image }: LoginProps) => {
-  const { selectedTheme, setSelectedTheme } = useContext(
-    TotalContext
-  ) as TotalContextProps
+const LoginForm = ({ logo, appName = "TG1", loginType = "standard", image }: LoginProps) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     email: '',
     password: ''
@@ -37,12 +39,16 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
   const baseUrl: any = process.env.NEXT_PUBLIC_API_BASE_URL
   const toast = useInfoMsg()
   const router = useRouter()
-  const onBoardingKey:string = "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1"
+  const { branding } = useGlobal()
+  const { brandColor } = branding
+  const { bgColor, borderColor, textColor } = useTheme()
+  const onBoardingKey : string = "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   const tenant = process.env.NEXT_PUBLIC_TENANT_CODE
   const [imageandLogoValid, setImageandLogoValid] = useState({
     image: image ? true : false,
     logo: logo ? true : false
   })
+  const keyset: any = i18n.keyset('language')
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -54,14 +60,13 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
       if (tenant && formData.email && formData.password) {
         setLoading(true)
 
-        setCookie('cfg_theme','light')
-        setSelectedTheme('light')
-        
+        setCookie('cfg_theme','dark')
+
         const api_signinBody: api_signinDto = {
           client: tenant,
           username: formData.email,
           password: formData.password,
-          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v8:bldc",
+          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v5:bldc",
           ufClientType: 'UFW'
         }
         const api_signin = await axios.post(
@@ -91,8 +96,9 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
           let screenDetails: any = {
             keys:[
   {
-    "screensName": "test-v1",
-    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1"
+    "screenName": "menu",
+    "screensName": "menu-v1",
+    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   }
 ]
           }
@@ -153,151 +159,189 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
     }
   }
 
+  const bgImage = loginType === 'standard' && image ? getCdnImage(image) : undefined
+  // const bgImage = `https://cdndfsdev.toruslowcode.com/buckets/torus/9.1/CT003/resources/images/Login%20-%20%20FinOne.png`
+
   return (
     <div
-      className={'flex h-screen w-screen overflow-y-auto'}
+      className={'flex h-screen w-screen overflow-y-auto '}
       style={{
         flexDirection: loginType == 'leftAligned' ? 'row-reverse' : 'row'
       }}
     >
       {loginType !== 'standard' && (
-        <div className='hidden md:flex h-full w-1/2 flex-col items-center justify-center'>
+        <div className='hidden h-full w-1/2 flex-col items-center justify-center md:flex'>
           {imageandLogoValid.image ? (
             <img
               className='h-full w-full'
-              src={image}
+              src={getCdnImage(image as string)}
               alt='login'
               onError={() =>
                 setImageandLogoValid({ ...imageandLogoValid, image: false })
               }
             />
           ) : (
-            <DefaultLoginImage />
+            <DefaultLoginImage
+              className='h-[80%] w-[80%]'
+              brandColor={brandColor}
+            />
           )}
         </div>
       )}
 
       <div
         style={{
-          background: `linear-gradient(to bottom, ${brandColor}, #ffffff)`
+          backgroundImage:
+            loginType === 'standard' && image
+              ? ` url(${bgImage})`
+              : `linear-gradient(to bottom, ${brandColor}, #ffffff)`,
+          backgroundSize:
+            loginType === 'standard' && image ? 'cover' : undefined,
+          backgroundPosition:
+            loginType === 'standard' && image ? 'center' : undefined
         }}
-        className={`flex justify-center p-5 h-full overflow-y-auto ${
+        className={`flex h-full justify-center overflow-y-auto p-5 ${
           loginType !== 'standard' ? 'w-full md:w-1/2' : 'w-full'
         }`}
       >
-        <div className='flex h-full flex-col items-center justify-center gap-[5.24vh]'>
-          <div className='flex flex-col items-center gap-[1.24vh]'>
-            {imageandLogoValid.logo ? (
-              <img
-                className='h-[16px] w-[20px]'
-                width={100}
-                height={100}
-                src={logo}
-                alt='logo'
-                onError={() =>
-                  setImageandLogoValid({ ...imageandLogoValid, logo: false })
-                }
-              />
-            ) : (
-              <Logo />
-            )}
-            <Text variant='header-2' color='brand'>
-              {appName}
-            </Text>
-            <Text variant='body-1'>
-              Create an account or log in to explore about our app
-            </Text>
-          </div>
-          <div
-            className={`flex h-fit min-w-[400px] flex-col gap-5 rounded-lg bg-white px-5`}
-          >
-            <Text variant='header-2' className='py-2'>
-              Login
-            </Text>
-            <div className='flex flex-col gap-2'>
-              <Text variant='body-2' color='secondary'>
-                Email Address
-              </Text>
-              <input
-                type='text'
-                name='email'
-                className='rounded-full bg-[#F4F5FA] p-3 outline-none'
-                placeholder='Enter your email'
-                onChange={handleInputChange}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleFormSubmit()
+        <div className='flex h-full flex-col justify-between'>
+          <div className='flex h-4/5 flex-col items-center justify-center lg:gap-4 xl:gap-6 2xl:gap-8'>
+            <div className='flex flex-col items-center justify-center gap-2'>
+              {imageandLogoValid.logo ? (
+                <img
+                  className='h-8 w-12 2xl:h-10 2xl:w-16'
+                  width={100}
+                  height={100}
+                  src={getCdnImage(logo as string)}
+                  alt='logo'
+                  onError={() =>
+                    setImageandLogoValid({ ...imageandLogoValid, logo: false })
                   }
-                }}
-              />
-            </div>
-            <div className='flex flex-col gap-2 relative'>
-              <Text variant='body-2' color='secondary'>
-                Password
+                />
+              ) : (
+                <></>
+              )}
+              <Text variant='display-3'>
+                <div className='text-2xl font-bold'>{appName}</div>
               </Text>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name='password'
-                className='rounded-full bg-[#F4F5FA] p-3 outline-none'
-                placeholder='Enter your password'
-                onChange={handleInputChange}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    handleFormSubmit()
-                  }
-                }}
-              />
-              <button
-                type='button'
-                onClick={() => setShowPassword(prev => !prev)}
-                className='absolute bottom-3 right-4 focus:outline-none'
-              >
-                {showPassword ? (
-                  <BsEyeFill className='h-[17px] w-[17px]' />
-                ) : (
-                  <BsEyeSlash className='h-[17px] w-[17px]' />
-                )}
-              </button>
             </div>
-            <Link href='/forgot-password' className='text-black/50'>
-              Forgot Password
-            </Link>
-            <Button
-              onClick={handleFormSubmit}
-              size='xl'              
+            <div
+              className={twMerge(
+                `flex h-fit min-w-[350px] flex-col gap-3 rounded-xl px-5 pb-3 pt-4 2xl:pt-6 2xl:pb-6 shadow 2xl:min-w-[400px]`,
+                bgColor,
+                borderColor,
+                textColor
+              )}
             >
-              {loading ? <Spin size='s' style={{marginTop : "10px"}}/> : 'Login'}
-            </Button>
-
-            {process.env.NEXT_PUBLIC_NEXT_AUTH_NEEDED === 'true' && (
-              <div className='flex w-full'>
-                <Button
-                  onClick={() => singleSignOn('fusionauth')}
-                  width='max'
-                  size='l'
-                  view='raised'
-                >
-                <Icon data={Shield} />
-                  ViaFusionAuth
-                </Button>
-              </div>
-            )}
-
-            <div className='flex justify-center'>
-              <Text>
-                Don&apos;t have an account?{' '}
-                <a
-                href="https://outlook.office.com/mail/deeplink/compose?to=support@torus.tech"
-                target="_blank"
-                rel="noopener noreferrer"
-                >
-                <Text color='brand'
-                >
-                  Contact Admin
+              <div className='flex flex-col items-center'>
+                <Text variant='header-2' className='py-2'>
+                  <div className='text-xl font-bold'>
+                    Log in to your account
+                  </div>
                 </Text>
-                </a>
-              </Text>
+                <Text variant='body-1' color='secondary'>
+                  Enter your details to continue
+                </Text>
+              </div>
+              <div className='flex flex-col gap-2'>
+                <input
+                  type='text'
+                  name='email'
+                  className={twMerge(
+                    'rounded-lg border p-1.5 text-sm 2xl:text-base outline-none 2xl:p-3',
+                    borderColor
+                  )}
+                  placeholder='Your Email/Username'
+                  onChange={handleInputChange}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleFormSubmit()
+                    }
+                  }}
+                />
+              </div>
+              <div className='relative flex flex-col gap-2'>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name='password'
+                  className={twMerge(
+                    'rounded-lg border p-1.5 text-sm 2xl:text-base outline-none 2xl:p-3',
+                    borderColor
+                  )}
+                  placeholder='Password'
+                  onChange={handleInputChange}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      handleFormSubmit()
+                    }
+                  }}
+                />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className='absolute bottom-3 right-4 focus:outline-none'
+                >
+                  {showPassword ? (
+                    <BsEyeFill className='h-[17px] w-[17px]' />
+                  ) : (
+                    <BsEyeSlash className='h-[17px] w-[17px]' />
+                  )}
+                </button>
+              </div>
+              <Link href='/forgot-password' className='self-end'>
+                <Text color='brand' className="text-sm 2xl:text-base" variant='body-2'>Forgot Password</Text>
+              </Link>
+              <Button
+                onClick={handleFormSubmit}
+                className='h-10 rounded-lg 2xl:h-12 w-full'
+              >
+                {loading ? (
+                  <Spin
+                    className='flex w-full justify-center'
+                    spinning
+                    color='success'
+                    style='dots'
+                  />
+                ) : (
+                  'Login'
+                )}
+              </Button>
+
+              {process.env.NEXT_PUBLIC_NEXT_AUTH_NEEDED === 'true' && (
+                <div className='flex w-full justify-center'>
+                  <Button
+                    onClick={() => singleSignOn('fusionauth')}
+                    view='outlined'
+                    className='h-8 !w-fit rounded-lg p-2'
+                  >
+                    <span className='flex gap-2'>
+                      <FusionAuth fill={brandColor} />
+                      FusionAuth
+                    </span>
+                  </Button>
+                </div>
+              )}
+
+              <div className='flex justify-center pb-2'>
+                <Text className='flex items-center gap-1 text-nowrap text-sm 2xl:text-base' variant='body-2'>
+                  Don&apos;t have an account?{' '}
+                  <a
+                    href='https://outlook.office.com/mail/deeplink/compose?to=support@torus.tech'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <Text color='brand' className="text-sm 2xl:text-base" variant='body-2'>Contact Admin</Text>
+                  </a>
+                </Text>
+              </div>
             </div>
+          </div>
+          <div className='h-16 w-24 self-center'>
+            <Image
+              className='mr-auto w-[100%] rounded-tl-[3.5%]  '
+              src={TorusFooter}
+              alt='bankmaster'
+            />
           </div>
         </div>
       </div>
@@ -305,4 +349,4 @@ const Login = ({ logo, appName = "TG1", brandColor = "#adffaf", loginType = "sta
   )
 }
 
-export default Login
+export default LoginForm

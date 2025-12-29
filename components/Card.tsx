@@ -1,0 +1,245 @@
+"use client";
+
+import React from "react";
+import { useGlobal } from "@/context/GlobalContext";
+import { Tooltip } from "./Tooltip";
+import { Icon } from "./Icon";
+import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
+import { getFontSizeClass } from "@/app/utils/branding";
+
+type CardTheme = "normal" | "info" | "success" | "warning" | "danger" | "utility" | "brand";
+type CardView = "outlined" | "clear" | "filled" | "raised";
+type CardType = "selection" | "action" | "container";
+type ContentAlign = "left" | "center" | "right";
+
+interface CardProps {
+  theme?: CardTheme;
+  view?: CardView;
+  type?: CardType;
+  disabled?: boolean;
+  selected?: boolean;
+  title?: string;
+  prefixValue?: string;
+  icon?: string | React.ReactNode;
+  needTooltip?: boolean;
+  tooltipProps?: TooltipPropsType;
+  headerText?: string;
+  headerPosition?: HeaderPosition;
+  children?: string | React.ReactNode;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  className?: string;
+  style?: React.CSSProperties;
+  fillContainer?: boolean;
+  contentAlign?: ContentAlign;
+}
+
+export const Card: React.FC<CardProps> = ({
+  theme: cardTheme = "normal",
+  view = "filled",
+  type = "container",
+  disabled = false,
+  selected = false,
+  title,
+  prefixValue,
+  icon,
+  needTooltip = false,
+  tooltipProps,
+  headerText,
+  headerPosition = "top",
+  children,
+  onClick,
+  className = "",
+  style = {},
+  fillContainer = true,
+  contentAlign = "center"
+}) => {
+  const { theme, direction, branding } = useGlobal();
+
+  const getThemeColors = () => {
+    const isDark = theme === "dark" || theme === "dark-hc";
+
+    switch (cardTheme) {
+      case "info":
+        return { bg: isDark ? "#1E3A8A" : "#DBEAFE", border: "#3B82F6", text: isDark ? "#BFDBFE" : "#1E40AF" };
+      case "success":
+        return { bg: isDark ? "#166534" : "#DCFCE7", border: "#22C55E", text: isDark ? "#BBF7D0" : "#166534" };
+      case "warning":
+        return { bg: isDark ? "#854D0E" : "#FEF3C7", border: "#F59E0B", text: isDark ? "#FDE68A" : "#854D0E" };
+      case "danger":
+        return { bg: isDark ? "#991B1B" : "#FEE2E2", border: "#EF4444", text: isDark ? "#FECACA" : "#991B1B" };
+      case "utility":
+        return { bg: isDark ? "#374151" : "#F3F4F6", border: "#6B7280", text: isDark ? "#D1D5DB" : "#374151" };
+      case "brand":
+        return { bg: "var(--brand-color)", border: "var(--brand-color)", text: isDark ? "#F9FAFB" : "#111827" };
+      default:
+        return { bg: isDark ? "#1F2937" : "#FFFFFF", border: isDark ? "#4B5563" : "##E5E7EB", text: isDark ? "#F9FAFB" : "#111827" };
+    }
+  };
+
+  const colors = getThemeColors();
+  const isDark = theme === "dark" || theme === "dark-hc";
+  const getFillClasses = () => {
+    if (!fillContainer) return "";
+    return "w-full h-full";
+  };
+
+  const getContentAlignClasses = () => {
+    switch (contentAlign) {
+      case "left":
+        return "justify-start";
+      case "right":
+        return "justify-end";
+      case "center":
+      default:
+        return "justify-center";
+    }
+  };
+
+  const getIconSize = () => {
+    if (fillContainer) {
+      // When fillContainer is true, scale icon with branding fontSize
+      const baseFontSize = fontSizeClass;
+      switch (baseFontSize) {
+        case "text-sm":
+          return 22;
+        case "text-base":
+          return 30;
+        case "text-lg":
+          return 38;
+        case "text-xl":
+          return 46;
+      }
+    }
+  };
+
+  const fontSizeClass = getFontSizeClass(branding.fontSize);
+
+  const cardElement = (
+    <div
+      onClick={disabled ? undefined : onClick}
+      className={`
+        flex flex-col justify-around
+        ${view === "outlined" ? "border-2" : view === "raised" ? "shadow-lg" : view === "filled" ? "border" : ""}
+        ${selected ? "ring-2 ring-offset-2" : ""}
+        ${disabled ? "opacity-50 cursor-not-allowed" : onClick ? "cursor-pointer hover:shadow-md" : ""}
+        ${type === "selection" && selected ? "border-2" : ""}
+        transition-all duration-200
+        ${getContentAlignClasses()}
+        ${fontSizeClass}
+        ${getFillClasses()}
+        ${className}
+      `}
+      style={{
+        backgroundColor: view === "filled" ? colors.bg : view === "clear" ? "transparent" : isDark ? "#1F2937" : "#FFFFFF",
+        borderColor: selected ? "var(--selection-color)" : view === "outlined" || view === "filled" ? colors.border : "transparent",
+        color: colors.text,
+        fontFamily: "var(--font-body)",
+        borderRadius: "var(--border-radius)",
+        boxSizing: "border-box",
+        padding: "min(12px, 3%)",
+        gap: "min(12px, 2%)",
+        ...(selected ? { '--tw-ring-color': 'var(--selection-color)' } as any : {}),
+        ...style,
+      }}
+    >
+      {/* Title Section */}
+      {title && (
+        <div className={`font-semibold border-b flex-shrink-0`}
+        style={{
+          borderColor: isDark ? "#374151" : "#E5E7EB",
+          paddingBottom: "min(8px, 2%)"
+        }}>
+          {title}
+        </div>
+      )}
+
+      {/* Icon and Prefix Section */}
+      {(icon || prefixValue) && (
+        <div className={`flex items-center flex-shrink-0 ${getContentAlignClasses()}`} style={{ gap: "min(8px, 2%)" }}>
+          {icon && (
+            <div className="flex items-center justify-center flex-shrink-0">
+              {typeof icon === "string" ? (
+                <Icon data={icon} fillContainer={false} size={getIconSize()} className="flex-shrink-0 align-middle" />
+              ) : (
+                icon
+              )}
+            </div>
+          )}
+          {prefixValue && (
+            <span className="font-semibold flex items-center">{prefixValue}</span>
+          )}
+        </div>
+      )}
+
+      {/* Content Section */}
+      <div className={`flex flex-end min-h-0 ${getContentAlignClasses()}`}>
+        {children}
+      </div>
+    </div>
+  );
+
+  const renderWithHeader = (element: React.ReactNode) => {
+    if (!headerText) return element;
+
+    const headerClasses = `${fontSizeClass} font-semibold mb-2 ${
+      isDark ? "text-gray-300" : "text-gray-700"
+    } ${className}`;
+
+    switch (headerPosition) {
+        case "top":
+          return (
+            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
+              <div className={headerClasses}>{headerText}</div>
+              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
+            </div>
+          );
+        case "bottom":
+          return (
+            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
+              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
+              <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
+            </div>
+          );
+        case "left":
+          return (
+            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
+              <div
+                className={`${headerClasses} mb-0 ${
+                  direction === "RTL" ? "ml-2" : "mr-2"
+                } flex-shrink-0`}
+              >
+                {headerText}
+              </div>
+              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
+            </div>
+          );
+        case "right":
+          return (
+            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
+              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
+              <div
+                className={`${headerClasses} mb-0 ${
+                  direction === "RTL" ? "mr-2" : "ml-2"
+                } flex-shrink-0`}
+              >
+                {headerText}
+              </div>
+            </div>
+          );
+        default:
+          return element;
+      }
+    };
+
+  const finalElement = renderWithHeader(cardElement);
+
+  if (needTooltip && tooltipProps) {
+    return (
+      <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
+        {finalElement}
+      </Tooltip>
+    );
+  }
+
+  return <>{finalElement}</>;
+};

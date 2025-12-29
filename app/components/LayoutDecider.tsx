@@ -8,10 +8,12 @@ import { TotalContext, TotalContextProps } from '../globalContext'
 import { AxiosService } from './axiosService'
 import { deleteAllCookies, getCookie } from './cookieMgment'
 import { useInfoMsg } from './infoMsgHandler'
-import { MenuItem, ScreenDetail } from '../interfaces/interfaces'
+import { MenuItem } from '../interfaces/interfaces'
 import decodeToken from './decodeToken'
-import { useGravityThemeClass } from '../utils/useGravityUITheme'
 import axios from 'axios'
+import { useGlobal } from '@/context/GlobalContext'
+import { useTheme } from '@/hooks/useTheme'
+import { twMerge } from 'tailwind-merge'
 const LayoutDecider = ({
   mode = 'detached',
   navigationStyles = 'vertical',
@@ -32,25 +34,21 @@ const LayoutDecider = ({
   const [fullView, setFullView] = useState(
     sidebarStyle == 'default' || sidebarStyle == 'condensed' ? true : false
   )
-  const { property, setProperty, userDetails , setUserDetails,encAppFalg , setEncAppFalg } = useContext(
-    TotalContext
-  ) as TotalContextProps
+  const {userDetails, setUserDetails } = useContext(TotalContext) as TotalContextProps
+  const { branding,  } = useGlobal();
+  const {borderColor} = useTheme()
+  const { brandColor, hoverColor, selectionColor } = branding;
   const encryptionFlagApp: boolean = false;    
-  const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpdatedMongodb:AFVK:v1";
+  const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1";
   const encryptionMethod: string = "";
-  const brandColor = property?.brandColor || '#1F2D3D'
-  const hoverColor = property?.hoverColor || '#1F2D3D'
-  const selectionColor = property?.selectionColor || '#1F2D3D'
-  const sidebarColor = property?.menubarColor || '#1F2D3D'
- // const topbarColor = property?.topbarColor || ''
   const logo = "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png"
   const appName = "TG1"
   const toast = useInfoMsg()
   const [loading, setLoading] = useState(true)
   const [updatedNavData, setUpdatedNavData] = useState<MenuItem[]>([])
-  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v8:bldc"
+  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v5:bldc"
   const [rawNavData, setRawNavData] = useState<MenuItem[] | null>(null);
-  /*const navData: MenuItem[] = [
+  const navData: MenuItem[] = [
   {
     "menuGroup": "admin",
     "menuGroupLabel": "Admin",
@@ -76,13 +74,11 @@ const LayoutDecider = ({
     "icon": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/resources/icons/admin-svgrepo-com.svg"
   },
   {
-    "menuGroup": "menu",
     "menuGroupLabel": "Menu",
     "screenDetails": [
       {
-        "name": "test",
-        "label": "test",
-        "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:Company:AFVK:v1",
+        "name": "menu",
+        "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
         "allowedAccessProfile": [
           "Employee"
         ],
@@ -91,11 +87,10 @@ const LayoutDecider = ({
     ],
     "items": []
   }
-]*/
+]
   const token:string = getCookie('token'); 
   const decodedTokenObj: any = decodeToken(token)
   const user = decodedTokenObj?.selectedAccessProfile
-  const themeClass = useGravityThemeClass()
   const getSideNavClassName = useMemo(() => {
     if (
       navigationStyles === 'horizontal' ||
@@ -362,31 +357,24 @@ const LayoutDecider = ({
   }
 
    if (loading == true){
-    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><img src="https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/splashImage/Material loading.gif" alt="loadingImage" /></div>);
+    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><img src="/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif" alt="loadingImage" /></div>);
   }
   return (
-    <div className={`flex h-screen w-screen flex-col`}>
-      <div className={`g-root flex-shrink-0 ${themeClass}`}>
+    <div className={`flex h-screen w-screen flex-col overflow-auto`}>
+      <div className={`g-root flex-shrink-0`}>
         <TopNav
           navData={updatedNavData}
           listMenuItems={listMenuItems()}
           mode={mode}
-          selectionColor={selectionColor}
           brandColor={brandColor}
-          hoverColor={hoverColor}
-       //   topbarColor={topbarColor}
           appName={appName}
           logo={logo}
           userDetails={userDetails}
         />
       </div>
-      <div className='flex h-[95%] flex-1'>
+      <div className='flex h-[90%] 2xl:h-[95%] flex-1'>
         <div
-          className={`cursor-pointer transition-all duration-700 ease-in-out ${getSideNavClassName}`}
-          style={{
-            //backgroundColor: `${sidebarColor}`,
-            borderColor: 'var(--g-color-line-generic)'
-          }}
+          className={twMerge(`cursor-pointer transition-all duration-700 ease-in-out ${getSideNavClassName}` , borderColor)}
         >
           <SideNav
             navData={updatedNavData}
@@ -401,10 +389,7 @@ const LayoutDecider = ({
           />
         </div>
         <div
-          className={`flex-1 overflow-auto ${childrenClassName} pageStyle border`}
-          style={{
-            borderColor: 'var(--g-color-line-generic)'
-          }}
+          className={twMerge(`flex-1 overflow-auto ${childrenClassName} pageStyle border` , borderColor)}
         >
           {children}
         </div>
