@@ -1,225 +1,166 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { useGlobal } from '@/context/GlobalContext'
-import { Tooltip } from './Tooltip'
-import {
-  ComponentSize,
-  HeaderPosition,
-  TooltipProps as TooltipPropsType
-} from '@/types/global'
-import { getFontSizeClass, getBorderRadiusClass } from '@/app/utils/branding'
+import React, { useState } from "react";
+import { useGlobal } from "@/context/GlobalContext";
+import { Tooltip } from "./Tooltip";
+import { ComponentSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
+import { getFontSizeClass, getBorderRadiusClass } from "@/utils/branding";
 
 interface RadioButtonItem {
-  value: string
-  content: string
-  // Tailwind/CSS class string for this item
-  className?: string
+  value: string;
+  content: string;
 }
-type ContentAlign = 'left' | 'center' | 'right'
+
 interface RadioButtonProps {
-  disabled?: boolean
-  items: RadioButtonItem[]
-  needTooltip?: boolean
-  tooltipProps?: TooltipPropsType
-  headerText?: string
-  headerPosition?: HeaderPosition
-  defaultValue?: string
-  className?: string
-  fillContainer?: boolean
-  contentAlign?: ContentAlign
-  onChange?: (value: string) => void
-  onBlur?: (e: React.FocusEvent<HTMLElement>) => void
-  onFocus?: (e: React.FocusEvent<HTMLElement>) => void
+  size: ComponentSize;
+  disabled?: boolean;
+  items: RadioButtonItem[];
+  needTooltip?: boolean;
+  tooltipProps?: TooltipPropsType;
+  headerText?: string;
+  headerPosition?: HeaderPosition;
+  onChange?: (value: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLElement>) => void;
+  defaultValue?: string;
+  className?: string;
 }
 
 export const RadioButton: React.FC<RadioButtonProps> = ({
+  size,
   disabled = false,
   items,
   needTooltip = false,
   tooltipProps,
   headerText,
-  headerPosition = 'top',
-  defaultValue,
-  className = '',
-  fillContainer = true,
-  contentAlign = 'center',
+  headerPosition = "top",
   onChange,
   onBlur,
-  onFocus
+  onFocus,
+  defaultValue,
+  className = "",
 }) => {
-  const { theme, direction, branding } = useGlobal()
-  const [selectedValue, setSelectedValue] = useState(
-    defaultValue || items[0]?.value || ''
-  )
+  const { theme, direction, branding } = useGlobal();
+  const [selectedValue, setSelectedValue] = useState(defaultValue || items[0]?.value || "");
 
   const handleChange = (value: string) => {
     if (!disabled) {
-      setSelectedValue(value)
-      onChange?.(value)
+      setSelectedValue(value);
+      onChange?.(value);
     }
-  }
+  };
 
-  const getFillClasses = () => {
-    if (!fillContainer) return ''
-    return 'w-full h-full'
-  }
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case 'left':
-        return 'justify-start'
-      case 'right':
-        return 'justify-end'
-      case 'center':
+  const getSizeClasses = () => {
+    const fontSize = getFontSizeClass(branding.fontSize);
+    switch (size) {
+      case "xs":
+        return `px-2 py-1 ${fontSize === "text-xl" ? "text-sm" : fontSize === "text-lg" ? "text-xs" : "text-xs"}`;
+      case "s":
+        return `px-3 py-1.5 ${fontSize === "text-xl" ? "text-base" : fontSize === "text-lg" ? "text-sm" : "text-xs"}`;
+      case "m":
+        return `px-4 py-2 ${fontSize}`;
+      case "l":
+        return `px-5 py-2.5 ${fontSize === "text-sm" ? "text-base" : fontSize === "text-base" ? "text-lg" : "text-xl"}`;
+      case "xl":
+        return `px-6 py-3 ${fontSize === "text-sm" ? "text-lg" : fontSize === "text-base" ? "text-xl" : "text-2xl"}`;
       default:
-        return 'justify-center'
+        return `px-4 py-2 ${fontSize}`;
     }
-  }
-  const isDark = theme === 'dark' || theme === 'dark-hc'
-  const fontSizeClass = getFontSizeClass(branding.fontSize)
+  };
 
-  // Helper to convert hex to rgba
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex?.slice(1, 3), 16)
-    const g = parseInt(hex?.slice(3, 5), 16)
-    const b = parseInt(hex?.slice(5, 7), 16)
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`
-  }
+  const isDark = theme === "dark" || theme === "dark-hc";
 
   const radioButtonElement = (
-    <div
-      className={`
-        overflow-hidden p-1 [border-radius:var(--border-radius)]
-        ${fillContainer ? 'flex' : 'inline-flex'}
-        ${getFillClasses()}
-      `}
-    >
-      {items.map(item => {
-        const isSelected = selectedValue === item.value
+    <div className={`inline-flex [border-radius:var(--border-radius)] overflow-hidden ${
+      isDark ? "bg-gray-800" : "bg-gray-100"
+    } p-1 ${direction === "RTL" ? "flex-row-reverse" : ""}`}>
+      {items.map((item) => {
+        const isSelected = selectedValue === item.value;
         return (
           <button
             key={item.value}
             onClick={() => handleChange(item.value)}
-            onBlur={(e) => {
-              e.currentTarget.style.boxShadow = 'none'
-              onBlur?.(e)
-            }}
-            onFocus={(e) => {
-              if (!disabled) {
-                e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(branding.selectionColor, 0.2)}`
-              }
-              onFocus?.(e)
-            }}
-            onMouseEnter={(e) => {
-              if (!disabled && !isSelected) {
-                e.currentTarget.style.backgroundColor = hexToRgba(branding.hoverColor, 0.1)
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!disabled && !isSelected) {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }
-            }}
+            onBlur={onBlur}
+            onFocus={onFocus}
             disabled={disabled}
             className={`
-              flex items-center
-              px-4 py-2 ${getContentAlignClasses()}
-              text-ellipsis
-              whitespace-nowrap transition-all [border-radius:var(--border-radius)]
-              ${fontSizeClass}
-              ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              ${getFillClasses()}
-              ${
-                isSelected
-                  ? `text-white`
-                  : isDark
-                  ? 'text-gray-300'
-                  : 'text-gray-700'
+              ${getSizeClasses()}
+              [border-radius:var(--border-radius)]
+              font-medium
+              transition-all
+              ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+              ${isSelected
+                ? `text-white`
+                : isDark ? "text-gray-300 hover:text-white" : "text-gray-700 hover:text-gray-900"
               }
             `}
-            dir={direction}
             style={{
-              backgroundColor: isSelected ? branding.selectionColor : 'transparent'
+              backgroundColor: isSelected ? "var(--brand-color)" : "transparent",
             }}
           >
             {item.content}
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText)
-      return (
-        <div
-          className={`h-full w-full 
-            ${getFontSizeClass(branding.fontSize)} 
-            ${isDark ? 'bg-gray-800' : 'bg-gray-100'} 
-            ${direction === 'RTL' ? 'flex-row-reverse' : ''}
-            ${className}
-          `}
-        >
-          {element}
-        </div>
-      )
+    if (!headerText) return <div className={className}>{element}</div>;
 
-    const headerClasses = `
-      flex h-full w-full overflow-hidden text-ellipsis whitespace-nowrap 
-      ${isDark ? 'text-gray-300' : 'text-gray-700'}
-      ${direction === 'RTL' ? 'flex-row-reverse' : ''}
-      ${getFontSizeClass(branding.fontSize)}
-      ${className}
-      `
+    const headerClasses = ` font-semibold mb-2 ${
+      isDark ? "text-gray-300" : "text-gray-700"
+    }`;
 
     switch (headerPosition) {
-      case 'top':
+      case "top":
         return (
-          <div className={`${headerClasses} flex-col `}>
-            <div className='font-semibold '>{headerText}</div>
+          <div className={`inline-flex flex-col ${className}`}>
+            <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
-        )
-      case 'bottom':
+        );
+      case "bottom":
         return (
-          <div className={`${headerClasses} flex-col`}>
+          <div className={`inline-flex flex-col ${className}`}>
             {element}
-            <div className='mt-1 font-semibold'>{headerText}</div>
+            <div className={`${headerClasses} mt-2 mb-0`}>{headerText}</div>
           </div>
-        )
-      case 'left':
+        );
+      case "left":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
-            <div className={`mb-0 min-w-0 overflow-hidden font-semibold`}>
+          <div className={`inline-flex items-center gap-4 ${className}`}>
+            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {headerText}
             </div>
             {element}
           </div>
-        )
-      case 'right':
+        );
+      case "right":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
+          <div className={`inline-flex items-center gap-4 ${className}`}>
             {element}
-            <div className={`mb-0 min-w-0 overflow-hidden font-semibold`}>
+            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {headerText}
             </div>
           </div>
-        )
+        );
     }
-  }
-  const finalElement = renderWithHeader(radioButtonElement)
+  };
+
+  const finalElement = renderWithHeader(radioButtonElement);
 
   if (needTooltip && tooltipProps) {
     return (
       <Tooltip
         title={tooltipProps.title}
         placement={tooltipProps.placement}
-        triggerClassName='inline-flex'
+        triggerClassName="inline-flex"
       >
         {finalElement}
       </Tooltip>
-    )
+    );
   }
 
-  return <>{finalElement}</>
-}
+  return <>{finalElement}</>;
+};

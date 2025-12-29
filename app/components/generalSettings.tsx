@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   DarkHCTheme,
   DarkTheme,
@@ -7,50 +7,43 @@ import {
 } from './svgApplication'
 import { fetchAMDKey } from '../utils/fetchAMDKey.api'
 import { getCookie, setCookie } from './cookieMgment'
-import { getLanguagesJson } from '../utils/getLanguagesJson.api'
-import { useGlobal } from '@/context/GlobalContext'
-import { useTheme } from '@/hooks/useTheme'
-import { Select } from '@/components/Select'
+import { Select } from '@gravity-ui/uikit'
 import { Text } from '@/components/Text'
-import i18n from './i18n'
-import { twMerge } from 'tailwind-merge'
+import { getLanguagesJson } from '../utils/getLanguagesJson.api'
+import { TotalContext, TotalContextProps } from '../globalContext'
+import { useGravityThemeClass } from '../utils/useGravityUITheme'
 
-const GeneralSettings = ({ currentLang , setCurrentLang} : {
-  currentLang: string
-  setCurrentLang: React.Dispatch<React.SetStateAction<string>>
-}) => {
+const GeneralSettings = () => {
   const [languageOptions, setLanguageOptions] = useState([])
   const [selectedLanguage, setSelectedLanguage] = useState([
     getCookie('cfg_lang')
   ])
   const token = getCookie('token')
-  const { branding } = useGlobal()
-  const { borderColor, theme, setTheme } = useTheme()
-  const { brandColor } = branding
-  // const [currentLang, setCurrentLang] = useState(getCookie('cfg_lang')) // 'en'
-  const keyset = useMemo(() => {
-   return i18n.keyset('language')
-  }, [currentLang]) // i18n.keyset('language')
+  const { property, setProperty, selectedTheme, setSelectedTheme } = useContext(
+    TotalContext
+  ) as TotalContextProps
+  let brandcolor: string = property?.brandColor ?? '#0736c4'
+  const themeClass = useGravityThemeClass()
 
   const themeOptions = [
     {
       label: 'Light',
-      icon: <LightTheme width='200px' />,
+      icon: <LightTheme width='200px'/>,
       code: 'light'
     },
     {
       label: 'Dark',
-      icon: <DarkTheme width='200px' />,
+      icon: <DarkTheme width='200px'/>,
       code: 'dark'
     },
     {
       label: 'Light with High Contrast',
-      icon: <LightHCTheme width='200px' />,
+      icon: <LightHCTheme width='200px'/>,
       code: 'light-hc'
     },
     {
       label: 'Dark with High Contrast',
-      icon: <DarkHCTheme width='200px' />,
+      icon: <DarkHCTheme width='200px'/>,
       code: 'dark-hc'
     }
   ]
@@ -75,38 +68,38 @@ const GeneralSettings = ({ currentLang , setCurrentLang} : {
     setSelectedLanguage(value)
     setCookie('cfg_lang', value)
     const languageJson = await getLanguagesJson(value, token)
-    i18n.registerKeysets(value, languageJson);
-    i18n.setLang(value);
-    setCurrentLang(value) // Add this to trigger re-render
   }
 
   const handleThemeChange = (value: any) => {
-    setTheme(value)
+    setSelectedTheme(value)
     setCookie('cfg_theme', value)
   }
 
   return (
-    <div className={`g-root h-full w-full overflow-auto`}>
+    <div className={`g-root h-full w-full ${themeClass} overflow-auto`}>
       <div className='flex w-full items-center justify-between'>
         <div className='flex flex-col gap-2'>
-          <Text variant='header-1'>{keyset('General')}</Text>
+          <Text variant='header-1'>General</Text>
           <Text variant='body-2' color='secondary'>
             {' '}
-            {keyset('Manage appearance, language, and basic preferences.')}
+            Manage appearance, language, and basic preferences.
           </Text>
         </div>
       </div>
       {/* Divider Line */}
-      <hr className={twMerge('my-2 w-full border' , borderColor)}/>
+      <hr
+        className='my-2 w-full border'
+        style={{ borderColor: 'var(--g-color-line-generic)' }}
+      />
       {/* Theme Selection */}
-      <div className='flex flex-col gap-4'>
-        <div className='flex flex-col gap-2'>
-          <Text variant='subheader-2'>{keyset('Interface Theme')}</Text>
+      <div className='flex flex-col gap-[2.49vh]'>
+        <div className='flex flex-col gap-[0.62vh]'>
+          <Text variant='subheader-2'>{'Interface Theme'}</Text>
           <Text variant='body-2' color='secondary'>
-            {keyset('Select the Theme of the application.')}
+            {'Select the Theme of the application'}.
           </Text>
         </div>
-        <div className='flex flex-wrap gap-2'>
+        <div className='flex gap-2 flex-wrap'>
           {themeOptions.map(val => (
             <div
               key={val.label}
@@ -118,60 +111,63 @@ const GeneralSettings = ({ currentLang , setCurrentLang} : {
                 className={`relative rounded-md rounded-tl-xl outline-none`}
                 style={{
                   border:
-                    theme == val.code
-                      ? `4px solid ${brandColor}`
+                    selectedTheme == val.code
+                      ? `4px solid ${brandcolor}`
                       : 'none'
                 }}
               >
                 {val.icon}
                 <div className='absolute bottom-3 right-4'>
-                  {theme === val.code && (
+                  {selectedTheme === val.code && (
                     <input
                       type='checkbox'
                       readOnly
                       checked={true}
                       className='transition-color fade-in h-4 w-4 cursor-pointer rounded-lg outline-none duration-700'
                       style={{
-                        color: `${brandColor}`,
-                        borderColor: `${brandColor}`,
-                        accentColor: `${brandColor}`
+                        color: `${brandcolor}`,
+                        borderColor: `${brandcolor}`,
+                        accentColor: `${brandcolor}`
                       }}
                     />
                   )}
                 </div>
               </div>
               <Text variant='body-1' color='secondary'>
-                {keyset(val.label)}
+                {val.label}
               </Text>
             </div>
           ))}
         </div>
       </div>
       {/* Divider Line */}
-      <hr className={twMerge('my-2 w-full border' , borderColor)}/>
+      <hr
+        className='my-2 w-full border'
+        style={{ borderColor: 'var(--g-color-line-generic)' }}
+      />
       {/* Language Selection */}
-      <div className='flex flex-wrap items-center'>
-        <div className='flex flex-col w-1/3'>
-          <Text variant='subheader-2'>{keyset('Language')}</Text>
+      <div className='flex items-center flex-wrap'>
+        <div className='flex w-1/2 lg:w-1/3 flex-col'>
+          <Text variant='subheader-2'>{'Language'}</Text>
           <Text variant='body-2' color='secondary' className='text-nowrap'>
-            {keyset('Select the language of the application.')}
+            {'Select the language of the application'}.
           </Text>
         </div>
         <div className='w-[200px]'>
           <Select
-            size='s'
             value={selectedLanguage}
-            onChange={handleLanguageChange}
-            options={languageOptions.map((item: any) => ({
-              value: item.value,
-              label: item.content
-            }))}
-            placeholder={keyset('Select Language')}
+            onUpdate={handleLanguageChange}
+            options={languageOptions}
+            width={'max'}
+            placeholder='Select Language'
           />
         </div>
       </div>
       {/* Divider Line */}
-      <hr className={twMerge('my-2 w-full border' , borderColor)}/>
+      <hr
+        className='my-2 w-full border'
+        style={{ borderColor: 'var(--g-color-line-generic)' }}
+      />
     </div>
   )
 }

@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap');  
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
+/* Import Dancing Script font for testing */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,11 +8,12 @@
 
 /* CSS Variables for Typography - These will be set dynamically by setUpKey.tsx */
 :root {
-  --g-font-family-sans: "Inter", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  --g-font-family-Roboto:"Roboto", sans-serif;
-  --font-body:var(--g-font-family-Roboto);
-  --font-header:var(--g-font-family-Roboto);  
-  --font-display:var(--g-font-family-Roboto);}
+  --font-family-DancingScript: 'Dancing Script';
+  --font-family-Roboto: 'Roboto';
+  --font-body: var(--font-family-DancingScript);
+  --font-header: var(--font-family-DancingScript);
+  --font-display: var(--font-family-Roboto);
+}
 
 
 /* .pc-Grid .container-fluid, .pc-Grid .container {
@@ -177,10 +178,10 @@ html.dark-hc body {
   color: #ffffff;
 }
 
-/* html.dark *,
+html.dark *,
 html.dark-hc * {
   border-color: #374151;
-} */
+}
 
 /* Light theme styling */
 html.light {
@@ -193,9 +194,9 @@ html.light body {
   color: #000000;
 }
 
-/* html.light * {
+html.light * {
   border-color: #e5e7eb;
-} */
+}
 
 /* Page container theme support */
 html.dark main,

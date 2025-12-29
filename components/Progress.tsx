@@ -3,11 +3,12 @@
 import React from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
-import { ProgressTheme, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass } from "@/app/utils/branding";
+import { ProgressTheme, ProgressSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
+import { getFontSizeClass } from "@/utils/branding";
 
 interface ProgressProps {
   theme: ProgressTheme;
+  size: ProgressSize;
   isDynamic?: boolean;
   text?: string;
   value: number;
@@ -20,6 +21,7 @@ interface ProgressProps {
 
 export const Progress: React.FC<ProgressProps> = ({
   theme: progressTheme,
+  size,
   isDynamic = false,
   text,
   value,
@@ -30,6 +32,17 @@ export const Progress: React.FC<ProgressProps> = ({
   className = "",
 }) => {
   const { theme, direction, branding } = useGlobal();
+
+  const getHeightClass = () => {
+    switch (size) {
+      case "xs":
+        return "h-1";
+      case "s":
+        return "h-2";
+      case "m":
+        return "h-3";
+    }
+  };
 
   const getProgressColor = () => {
     switch (progressTheme) {
@@ -48,46 +61,31 @@ export const Progress: React.FC<ProgressProps> = ({
     }
   };
 
-  // Helper to convert hex to rgba for hover effect
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex?.slice(1, 3), 16);
-    const g = parseInt(hex?.slice(3, 5), 16);
-    const b = parseInt(hex?.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
   const isDark = theme === "dark" || theme === "dark-hc";
   const clampedValue = Math.min(100, Math.max(0, value));
-  const fontSizeClass = getFontSizeClass(branding.fontSize);
-  const progressColor = getProgressColor();
 
   const progressElement = (
-    <div className={`w-full h-full flex flex-col ${className}`}>
+    <div className={`w-full ${className}`}>
       <div className="flex justify-between items-center mb-1">
         {text && (
-          <span className={`${fontSizeClass} ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+          <span className={`${getFontSizeClass(branding.fontSize)} ${isDark ? "text-gray-200" : "text-gray-900"}`}>
             {text}
           </span>
         )}
         {isDynamic && (
-          <span className={`${fontSizeClass} font-semibold ${isDark ? "text-gray-200" : "text-gray-900"}`}>
+          <span className={`${getFontSizeClass(branding.fontSize)} font-semibold ${isDark ? "text-gray-200" : "text-gray-900"}`}>
             {clampedValue}%
           </span>
         )}
       </div>
       <div
-        className={`w-full flex-1 ${isDark ? "bg-gray-700" : "bg-gray-200"} rounded-full overflow-hidden transition-all duration-200`}
-        style={{
-          borderRadius: "var(--border-radius)",
-        }}
+        className={`w-full ${getHeightClass()} ${isDark ? "bg-gray-700" : "bg-gray-200"} rounded-full overflow-hidden`}
       >
         <div
-          className="h-full transition-all duration-300 ease-out"
+          className="h-full rounded-full transition-all duration-300 ease-out"
           style={{
             width: `${clampedValue}%`,
-            backgroundColor: progressColor,
-            borderRadius: "var(--border-radius)",
-            boxShadow: `0 0 8px ${hexToRgba(progressColor, 0.4)}`,
+            backgroundColor: getProgressColor(),
           }}
         />
       </div>
@@ -104,31 +102,31 @@ export const Progress: React.FC<ProgressProps> = ({
     switch (headerPosition) {
       case "top":
         return (
-          <div className="flex flex-col w-full h-full">
+          <div className="flex flex-col w-full">
             <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
         );
       case "bottom":
         return (
-          <div className="flex flex-col w-full h-full">
+          <div className="flex flex-col w-full">
             {element}
             <div className={`${headerClasses} mt-2 mb-0`}>{headerText}</div>
           </div>
         );
       case "left":
         return (
-          <div className="flex items-center w-full h-full gap-4">
+          <div className="flex items-center w-full gap-4">
             <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {headerText}
             </div>
-            <div className="flex-1 h-full">{element}</div>
+            <div className="flex-1">{element}</div>
           </div>
         );
       case "right":
         return (
-          <div className="flex items-center w-full h-full gap-4">
-            <div className="flex-1 h-full">{element}</div>
+          <div className="flex items-center w-full gap-4">
+            <div className="flex-1">{element}</div>
             <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {headerText}
             </div>
@@ -144,7 +142,7 @@ export const Progress: React.FC<ProgressProps> = ({
       <Tooltip
         title={tooltipProps.title}
         placement={tooltipProps.placement}
-        triggerClassName="block w-full h-full"
+        triggerClassName="block w-full"
       >
         {finalElement}
       </Tooltip>

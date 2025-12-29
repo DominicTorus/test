@@ -4,16 +4,14 @@ import React from "react";
 import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { Icon } from "./Icon";
-import { AvatarView, AvatarTheme, AvatarShape, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass } from "@/app/utils/branding";
+import { AvatarSize, AvatarView, AvatarTheme, AvatarShape, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
 // import { GravityIcon } from "@/types/icons";
-
-type ContentAlign = "left" | "center" | "right";
 
 interface AvatarProps {
   imageUrl?: string;
   icon?: string;
   text?: string;
+  size?: AvatarSize;
   view?: AvatarView;
   theme?: AvatarTheme;
   shape?: AvatarShape;
@@ -28,14 +26,13 @@ interface AvatarProps {
   headerText?: string;
   headerPosition?: HeaderPosition;
   className?: string;
-  fillContainer?: boolean;
-  contentAlign?: ContentAlign;
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
   imageUrl,
   icon,
   text,
+  size="l",
   view,
   theme: avatarTheme,
   shape = "circle",
@@ -50,10 +47,23 @@ export const Avatar: React.FC<AvatarProps> = ({
   headerText,
   headerPosition = "top",
   className = "",
-  fillContainer = true,
-  contentAlign = "center",
 }) => {
-  const { theme, direction, branding } = useGlobal();
+  const { theme } = useGlobal();
+
+  const getSizeClasses = () => {
+    switch (size) {
+      case "xs":
+        return "w-6 h-6 text-xs";
+      case "s":
+        return "w-8 h-8 text-sm";
+      case "m":
+        return "w-10 h-10 text-base";
+      case "l":
+        return "w-12 h-12 text-lg";
+      case "xl":
+        return "w-16 h-16 text-xl";
+    }
+  };
 
   const getBackgroundColor = () => {
     if (backgroundColor) return backgroundColor;
@@ -88,23 +98,6 @@ export const Avatar: React.FC<AvatarProps> = ({
     return isDark ? "white" : "#1F2937";
   };
 
-  const getFillClasses = () => {
-    if (!fillContainer) return "";
-    return "w-full h-full";
-  };
-
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case "left":
-        return "justify-start";
-      case "right":
-        return "justify-end";
-      case "center":
-      default:
-        return "justify-center";
-    }
-  };
-
   const getBorderStyle = () => {
     if (view === "outlined") {
       return {
@@ -123,40 +116,18 @@ export const Avatar: React.FC<AvatarProps> = ({
     return {};
   };
 
-   const getIconSize = () => {
-    if (fillContainer) {
-      // When fillContainer is true, scale icon with branding fontSize
-      const baseFontSize = fontSizeClass;
-      switch (baseFontSize) {
-        case "text-sm":
-          return 22;
-        case "text-base":
-          return 30;
-        case "text-lg":
-          return 38;
-        case "text-xl":
-          return 46;
-      }
-    }
-  };
-
-  const fontSizeClass = getFontSizeClass(branding.fontSize);
-
   const avatarElement = (
     <div
       className={`
+        ${getSizeClasses()}
         ${shape === "circle" ? "rounded-full" : "rounded-lg"}
-        flex items-center
+        flex items-center justify-center
         font-semibold
         overflow-hidden
         transition-all
         ${view === "outlined" ? "border-2" : ""}
         ${className}
-        ${getFillClasses()}
-        ${fontSizeClass}
-        ${getContentAlignClasses()}
-        `}
-      dir={direction}
+      `}
       style={{
         backgroundColor: imageUrl ? "transparent" : getBackgroundColor(),
         color: getTextColor(),
@@ -167,7 +138,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         <img
           src={imageUrl}
           alt={alt}
-          className={`h-full object-contain ${contentAlign === "center" ? "w-full" : ""}`}
+          className="w-full h-full object-cover"
           onError={(e) => {
             if (fallbackImgUrl) {
               e.currentTarget.src = fallbackImgUrl;
@@ -175,19 +146,11 @@ export const Avatar: React.FC<AvatarProps> = ({
           }}
         />
       ) : icon ? (
-        <Icon
-          data={icon}
-          size={getIconSize()}
-          className={fillContainer ? "w-full h-full" : ""}
-        />
+        <Icon data={icon} size={size === "xs" ? 12 : size === "s" ? 14 : size === "m" ? 16 : size === "l" ? 20 : 24} />
       ) : text ? (
         <span>{text.charAt(0).toUpperCase()}</span>
       ) : (
-        <Icon
-          data="user"
-          size={getIconSize()}
-          className={fillContainer ? "w-full h-full" : ""}
-        />
+        <Icon data="user" size={size === "xs" ? 12 : size === "s" ? 14 : size === "m" ? 16 : size === "l" ? 20 : 24} />
       )}
     </div>
   );
@@ -196,55 +159,41 @@ export const Avatar: React.FC<AvatarProps> = ({
     if (!headerText) return element;
 
     const isDark = theme === "dark" || theme === "dark-hc";
-    const headerClasses = `${fontSizeClass} font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"} ${className}`;
+    const headerClasses = `text-sm font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`;
 
     switch (headerPosition) {
-        case "top":
-          return (
-            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={headerClasses}>{headerText}</div>
-              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
-            </div>
-          );
-        case "bottom":
-          return (
-            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
-              <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
-            </div>
-          );
-        case "left":
-          return (
-            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
-              <div
-                className={`${headerClasses} mb-0 ${
-                  direction === "RTL" ? "ml-2" : "mr-2"
-                } flex-shrink-0`}
-              >
-                {headerText}
-              </div> 
-              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
-            </div>
-          );
-        case "right":
-          return (
-            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
-              <div
-                className={`${headerClasses} mb-0 ${
-                  direction === "RTL" ? "mr-2" : "ml-2"
-                } flex-shrink-0`}
-              >
-                {headerText}
-              </div>
-            </div>
-          );
-        default:
-          return element;
-      }
-    };
+      case "top":
+        return (
+          <div className="flex flex-col items-center">
+            <div className={headerClasses}>{headerText}</div>
+            {element}
+          </div>
+        );
+      case "bottom":
+        return (
+          <div className="flex flex-col items-center">
+            {element}
+            <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
+          </div>
+        );
+      case "left":
+        return (
+          <div className="flex items-center gap-2">
+            <div className={`${headerClasses} mb-0`}>{headerText}</div>
+            {element}
+          </div>
+        );
+      case "right":
+        return (
+          <div className="flex items-center gap-2">
+            {element}
+            <div className={`${headerClasses} mb-0`}>{headerText}</div>
+          </div>
+        );
+    }
+  };
 
-  const finalElement = renderWithHeader(avatarElement);
+  const finalElement = (<div className={className}>{renderWithHeader(avatarElement)}</div>);
 
   if (needTooltip && tooltipProps) {
     return (

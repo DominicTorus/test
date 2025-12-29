@@ -8,11 +8,13 @@ import { HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global
 interface ListItem {
   title: string;
   disabled?: boolean;
+  group?: boolean;
 }
 
 interface ListProps {
   sortable: boolean;
   items: string[] | ListItem[];
+  itemsHeight?: number;
   selecteditemindex?: number;
   dynamic?: boolean;
   filterable?: boolean;
@@ -22,13 +24,12 @@ interface ListProps {
   headerPosition?: HeaderPosition;
   onItemClick?: (item: any) => void;
   className?: string;
-  fillContainer?: boolean;
-  contentAlign?: ContentAlign;
 }
-type ContentAlign = "left" | "center" | "right";
+
 export const List: React.FC<ListProps> = ({
   sortable,
   items: initialItems,
+  itemsHeight,
   selecteditemindex,
   dynamic = false,
   filterable = false,
@@ -38,14 +39,12 @@ export const List: React.FC<ListProps> = ({
   headerPosition = "top",
   onItemClick=() => {},
   className = "",
-  fillContainer = true,
-  contentAlign = "center",
 }) => {
   const { theme } = useGlobal();
   const [items, setItems] = useState(initialItems);
   const [selectedIndex, setSelectedIndex] = useState(selecteditemindex);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   const isListItem = (item: string | ListItem): item is ListItem => {
     return typeof item === 'object' && 'title' in item;
   };
@@ -58,7 +57,7 @@ export const List: React.FC<ListProps> = ({
     return isListItem(item) ? item.disabled === true : false;
   };
 
-  const handleItemClick = (index: number, item: string| ListItem) => {
+  const handleItemClick = (index: number, item: string | ListItem) => {
     if (isItemDisabled(item)) return;
     setSelectedIndex(index);
     onItemClick(item);
@@ -100,25 +99,8 @@ export const List: React.FC<ListProps> = ({
     />
   );
 
-  const getFillClasses = () => {
-    if (!fillContainer) return "";
-    return "w-full h-full";
-  };
-
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case "left":
-        return "text-left";
-      case "right":
-        return "text-right";
-      case "center":
-      default:
-        return "text-center";
-    }
-  };
-
   const listElement = (
-    <div className={`${fillContainer ? "flex" : "inline-flex"} flex-col ${getFillClasses()}`}>
+    <div className="w-full">
       {searchInput}
       <ul
         className={`
@@ -126,18 +108,18 @@ export const List: React.FC<ListProps> = ({
           ${isDark ? "bg-gray-800" : "bg-white"}
           border-2
           ${isDark ? "border-gray-600" : "border-gray-300"}
-          ${fillContainer ? "flex-1 min-h-0" : ""}
           ${className}
         `}
-
         style={{
+          maxHeight: itemsHeight ? `${itemsHeight}px` : "auto",
           borderRadius: "var(--border-radius)",
         }}
       >
         {filteredItems.map((item, index) => {
           const isSelected = selectedIndex === index;
-      const disabled = isItemDisabled(item);
+          const disabled = isItemDisabled(item);
           const title = getItemTitle(item);
+
           return (
             <li
               key={index}
@@ -148,7 +130,6 @@ export const List: React.FC<ListProps> = ({
                 ${isDark ? "border-gray-700" : "border-gray-200"}
                 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
                 transition-colors
-                ${getContentAlignClasses()}
                 ${isSelected
                   ? `text-white`
                   : isDark ? "text-gray-200 hover:[background-color:var(--hover-color)]" : "text-gray-700 hover:[background-color:var(--hover-color)]"
@@ -169,7 +150,7 @@ export const List: React.FC<ListProps> = ({
   );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return <div className={`${getFillClasses()} ${className}`}>{element}</div>;
+    if (!headerText) return element;
 
     const headerClasses = `font-semibold mb-2 ${
       isDark ? "text-gray-300" : "text-gray-700"
@@ -180,32 +161,32 @@ export const List: React.FC<ListProps> = ({
     switch (headerPosition) {
       case "top":
         return (
-          <div className={`${fillContainer ? "flex" : "inline-flex"} flex-col ${getFillClasses()} ${className}`}>
+          <div className="flex flex-col w-full">
             <div className={headerClasses} style={headerStyle}>{headerText}</div>
-            <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
+            {element}
           </div>
         );
       case "bottom":
         return (
-          <div className={`${fillContainer ? "flex" : "inline-flex"} flex-col ${getFillClasses()} ${className}`}>
-            <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
+          <div className="flex flex-col w-full">
+            {element}
             <div className={`${headerClasses} mt-2 mb-0`} style={headerStyle}>{headerText}</div>
           </div>
         );
       case "left":
         return (
-          <div className={`${fillContainer ? "flex" : "inline-flex"} items-start ${getFillClasses()} gap-4 ${className}`}>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap flex-shrink-0`} style={headerStyle}>
+          <div className="flex items-start gap-4 w-full">
+            <div className={`${headerClasses} mb-0 whitespace-nowrap`} style={headerStyle}>
               {headerText}
             </div>
-            <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
+            <div className="flex-1">{element}</div>
           </div>
         );
       case "right":
         return (
-          <div className={`${fillContainer ? "flex" : "inline-flex"} items-start ${getFillClasses()} gap-4 ${className}`}>
-            <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap flex-shrink-0`} style={headerStyle}>
+          <div className="flex items-start gap-4 w-full">
+            <div className="flex-1">{element}</div>
+            <div className={`${headerClasses} mb-0 whitespace-nowrap`} style={headerStyle}>
               {headerText}
             </div>
           </div>
@@ -213,13 +194,13 @@ export const List: React.FC<ListProps> = ({
     }
   };
 
-  const finalElement = (<div className={`${fillContainer ? "w-full h-full" : ""} `}>{renderWithHeader(listElement)}</div>);
+  const finalElement = (<div className={className}>{renderWithHeader(listElement)}</div>);
 
   if (needTooltip && tooltipProps) {
     return (
-      <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}  >
-              {finalElement}
-            </Tooltip>
+      <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
+        {finalElement}
+      </Tooltip>
     );
   }
 

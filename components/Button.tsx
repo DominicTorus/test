@@ -7,22 +7,19 @@ import { Icon } from "@/components/Icon";
 import { Tooltip } from "@/components/Tooltip";
 import {
   ButtonView,
+  ButtonSize,
   ButtonPin,
   HeaderPosition,
   TooltipProps as TooltipPropsType,
   ComponentEvents,
 } from "@/types/global";
-import {
-  getFontSizeClass,
-  getBorderRadiusClass,
-} from "@/app/utils/branding";
 
 type IconDisplay = "Icon only" | "Start with Icon" | "End with Icon";
-type ContentAlign = "left" | "center" | "right";
 
 interface ButtonProps {
   nodeId?: any;
   view?: ButtonView;
+  size?: ButtonSize;
   icon?: string;
   disabled?: boolean;
   pin?: ButtonPin;
@@ -39,13 +36,12 @@ interface ButtonProps {
   className?: string;
   startContent?: React.ReactNode;
   endContent?: React.ReactNode;
-  fillContainer?: boolean;
-  contentAlign?: ContentAlign;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   nodeId,
   view = "action",
+  size = "s",
   icon,
   disabled = false,
   pin = "circle-circle",
@@ -62,10 +58,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   className = "",
   startContent,
   endContent,
-  fillContainer = true,
-  contentAlign = "center"
 }, ref) => {
-  const { theme, direction, branding } = useGlobal();
+  const { theme, direction } = useGlobal();
   const { emit, subscribe, subscribeGlobal } = useEventBus();
 
   // Setup event listeners
@@ -163,45 +157,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     }
   }, [disabled, onFocus, events, emit, nodeId]);
 
-  // const getSizeClasses = () => {
-  //   const baseFontSize = getFontSizeClass(branding.fontSize);
-  //   switch (baseFontSize) {
-  //     case "xs":
-  //       return `px-2 py-1 ${
-  //         baseFontSize === "text-xl"
-  //           ? "text-base"
-  //           : baseFontSize === "text-lg"
-  //           ? "text-sm"
-  //           : "text-xs"
-  //       }`;
-  //     case "s":
-  //       return `px-3 py-1.5 ${
-  //         baseFontSize === "text-xl"
-  //           ? "text-lg"
-  //           : baseFontSize === "text-lg"
-  //           ? "text-base"
-  //           : "text-sm"
-  //       }`;
-  //     case "m":
-  //       return `px-4 py-2 ${baseFontSize}`;
-  //     case "l":
-  //       return `px-5 py-2.5 ${
-  //         baseFontSize === "text-sm"
-  //           ? "text-base"
-  //           : baseFontSize === "text-base"
-  //           ? "text-lg"
-  //           : "text-xl"
-  //       }`;
-  //     case "xl":
-  //       return `px-6 py-3 ${
-  //         baseFontSize === "text-sm"
-  //           ? "text-lg"
-  //           : baseFontSize === "text-base"
-  //           ? "text-xl"
-  //           : "text-2xl"
-  //       }`;
-  //   }
-  // };
+  const getSizeClasses = () => {
+    switch (size) {
+      case "xs":
+        return "px-2 py-1 [font-size:calc(var(--font-size)*0.75)]";
+      case "s":
+        return "px-3 py-1.5 [font-size:calc(var(--font-size)*0.875)]";
+      case "m":
+        return "px-4 py-2 [font-size:var(--font-size)]";
+      case "l":
+        return "px-5 py-2.5 [font-size:calc(var(--font-size)*1.25)]";
+      case "xl":
+        return "px-6 py-3 [font-size:calc(var(--font-size)*1.5)]";
+    }
+  };
 
   const getViewClasses = () => {
     const isDark = theme === "dark" || theme === "dark-hc";
@@ -301,32 +270,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const getPinClasses = () => {
     const [left, right] = pin.split("-");
-    const baseRadius = "var(--border-radius)";
 
     // Override based on pin style
     if (pin === "circle-circle") {
-      return "rounded-full";
+      return "[border-radius:9999px]";
     }
 
     const leftRadius =
       left === "round"
-        ? "rounded-l-full"
+        ? "[border-top-left-radius:9999px] [border-bottom-left-radius:9999px]"
         : left === "brick"
-        ? "rounded-l-none"
+        ? "[border-top-left-radius:0px] [border-bottom-left-radius:0px]"
         : left === "circle"
-        ? "rounded-l-full"
-        : `rounded-l${baseRadius.replace("rounded", "")}`;
+        ? "[border-top-left-radius:9999px] [border-bottom-left-radius:9999px]"
+        : "[border-top-left-radius:var(--border-radius)] [border-bottom-left-radius:var(--border-radius)]";
     const rightRadius =
       right === "round"
-        ? "rounded-r-full"
+        ? "[border-top-right-radius:9999px] [border-bottom-right-radius:9999px]"
         : right === "brick"
-        ? "rounded-r-none"
+        ? "[border-top-right-radius:0px] [border-bottom-right-radius:0px]"
         : right === "circle"
-        ? "rounded-r-full"
-        : `rounded-r${baseRadius.replace("rounded", "")}`;
+        ? "[border-top-right-radius:9999px] [border-bottom-right-radius:9999px]"
+        : "[border-top-right-radius:var(--border-radius)] [border-bottom-right-radius:var(--border-radius)]";
 
     if (pin === "clear-clear") {
-      return baseRadius;
+      return "[border-radius:var(--border-radius)]";
     }
 
     return `${leftRadius} ${rightRadius}`;
@@ -335,7 +303,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   const getButtonStyles = (): React.CSSProperties => {
     const styles: React.CSSProperties = {};
 
-    // Apply brand color for normal and flat views
+    // Apply brand color for normal and flat views using CSS variables
     if (view === "normal") {
       styles.backgroundColor = "var(--brand-color)";
       if (!disabled) {
@@ -347,7 +315,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     } else if (view === "flat") {
       styles.color = "var(--brand-color)";
     }else if (view === "action") {
-      styles.backgroundColor = `var(--brand-color)`;
+      styles.backgroundColor = "var(--brand-color)";
     }else if (view === "normal-contrast") {
       styles.backgroundColor = "var(--brand-color)";
     }
@@ -369,67 +337,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const renderIcon = () => {
     if (!icon) return null;
-
-    // Get icon size based on fillContainer and branding.fontSize
-    const getIconSize = () => {
-      if (fillContainer) {
-        // When fillContainer is true, scale icon with branding fontSize
-        const baseFontSize = getFontSizeClass(branding.fontSize);
-        switch (baseFontSize) {
-          case "text-sm":
-            return 22;
-          case "text-base":
-            return 30;
-          case "text-lg":
-            return 38;
-          case "text-xl":
-            return 46;
-        }
-      }
-    };
-
     return (
       <Icon
         data={icon}
-        className="inline-block flex-shrink-0"
-        size={getIconSize()}
+        className="inline-block"
+        size={
+          size === "xs" ? 14 : size === "s" ? 16 : size === "m" ? 18 : size === "l" ? 20 : 24
+        }
       />
     );
   };
 
-  const getFillClasses = () => {
-    if (!fillContainer) return "";
-    return "w-full h-full";
-  };
-
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case "left":
-        return "justify-start";
-      case "right":
-        return "justify-end";
-      case "center":
-      default:
-        return "justify-center";
-    }
-  };
-
   const renderContent = () => {
     const iconElement = renderIcon();
-
-    // Apply expanded font size when fillContainer is true
-    // Don't apply default font size if className is provided (to allow override)
-    const textClassName = fillContainer
-      ? `flex-1 text-center`
-      : "truncate";
-
-    const textElement = children && <span className={textClassName}>{children}</span>;
+    const textElement = children && <span>{children}</span>;
 
     if (iconDisplay === "Icon only") {
       return (
         <>
           {startContent}
-          {fillContainer ? <div className="flex items-center justify-center">{iconElement}</div> : iconElement}
+          {iconElement}
           {endContent}
         </>
       );
@@ -437,31 +364,27 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       return (
         <>
           {startContent}
-          {fillContainer ? <div className="flex items-center justify-center">{iconElement}</div> : iconElement}
+          {iconElement}
           {textElement && (
-            <span className={fillContainer ? "flex items-center justify-center" : (direction === "RTL" ? "mr-2" : "ml-2")}>{textElement}</span>
+            <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{textElement}</span>
           )}
           {endContent}
         </>
-      )
+      );
     } else {
       // "End with Icon"
       return (
         <>
           {startContent}
-          {textElement && (
-            <span className={fillContainer ? " flex items-center justify-center" : ""}>{textElement}</span>
-          )}
+          {textElement}
           {iconElement && (
-            <span className={fillContainer ? "flex items-center justify-center" : (direction === "RTL" ? "mr-2" : "ml-2")}>{iconElement}</span>
+            <span className={direction === "RTL" ? "mr-2" : "ml-2"}>{iconElement}</span>
           )}
           {endContent}
         </>
       );
     }
   };
-
-  const fontSizeClass = getFontSizeClass(branding.fontSize);
 
   const buttonElement = (
     <button
@@ -471,15 +394,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       disabled={disabled}
       style={getButtonStyles()}
       className={`
-        inline-flex items-center font-medium
+        inline-flex items-center justify-center font-medium
+        ${getSizeClasses()}
         ${getViewClasses()}
         ${getPinClasses()}
         ${getHoverStyles()}
-        ${getContentAlignClasses()}
-        ${getFillClasses()}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         ${isRecordLevel ? "relative overflow-hidden" : ""}
-        ${fontSizeClass}
         ${className}
       `}
       dir={direction}
@@ -489,11 +410,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         }
       }}
       onMouseLeave={(e) => {
-          if (!disabled && (view.startsWith("outlined") || view.startsWith( "flat") || view === "raised")) {
-            e.currentTarget.style.backgroundColor = "transparent";
-          } else if (view.startsWith("normal") || view === "action") {
-            e.currentTarget.style.backgroundColor = "var(--brand-color)";
-          }
+        if (!disabled && (view.startsWith("outlined") || view.startsWith( "flat") || view === "raised")) {
+          e.currentTarget.style.backgroundColor = "transparent";
+        } else if (view.startsWith("normal") || view === "action") {
+          e.currentTarget.style.backgroundColor = "var(--brand-color)";
+        }
       }}
     >
       {renderContent()}
@@ -503,61 +424,73 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     </button>
   );
 
+  const getHeaderFontSize = () => {
+    switch (size) {
+      case "xs":
+        return "[font-size:calc(var(--font-size)*0.75)]";
+      case "s":
+        return "[font-size:calc(var(--font-size)*0.875)]";
+      case "m":
+        return "[font-size:var(--font-size)]";
+      case "l":
+        return "[font-size:calc(var(--font-size)*1.25)]";
+      case "xl":
+        return "[font-size:calc(var(--font-size)*1.5)]";
+    }
+  };
+
   const renderWithHeader = (element: React.ReactNode) => {
     if (!headerText) return element;
 
-    const headerClasses = `${fontSizeClass} font-semibold mb-1 ${
+    const headerClasses = `${getHeaderFontSize()} font-semibold mb-1 ${
       theme === "dark" || theme === "dark-hc" ? "text-gray-300" : "text-gray-700"
-    }
-    ${className}`;
+    }`;
 
     switch (headerPosition) {
-        case "top":
-          return (
-            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={headerClasses}>{headerText}</div>
-              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
+      case "top":
+        return (
+          <div className="flex flex-col">
+            <div className={headerClasses}>{headerText}</div>
+            {element}
+          </div>
+        );
+      case "bottom":
+        return (
+          <div className="flex flex-col">
+            {element}
+            <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
+          </div>
+        );
+      case "left":
+        return (
+          <div className="flex items-center">
+            <div
+              className={`${headerClasses} mb-0 ${
+                direction === "RTL" ? "ml-2" : "mr-2"
+              }`}
+            >
+              {headerText}
             </div>
-          );
-        case "bottom":
-          return (
-            <div className={`flex flex-col ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={fillContainer ? "flex-1 min-h-0" : ""}>{element}</div>
-              <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
+            {element}
+          </div>
+        );
+      case "right":
+        return (
+          <div className="flex items-center">
+            {element}
+            <div
+              className={`${headerClasses} mb-0 ${
+                direction === "RTL" ? "mr-2" : "ml-2"
+              }`}
+            >
+              {headerText}
             </div>
-          );
-        case "left":
-          return (
-            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
-              <div
-                className={`${headerClasses} mb-0 ${
-                  direction === "RTL" ? "ml-2" : "mr-2"
-                } flex-shrink-0`}
-              >
-                {headerText}
-              </div>
-              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
-            </div>
-          );
-        case "right":
-          return (
-            <div className={`flex items-center ${fillContainer ? "w-full h-full" : ""}`}>
-              <div className={fillContainer ? "flex-1 min-w-0 h-full" : ""}>{element}</div>
-              <div
-                className={`${headerClasses} mb-0 ${
-                  direction === "RTL" ? "mr-2" : "ml-2"
-                } flex-shrink-0`}
-              >
-                {headerText}
-              </div>
-            </div>
-          );
-        default:
-          return element;
-      }
-    };
+          </div>
+        );
+    }
+  };
 
-  const finalElement = renderWithHeader(buttonElement);
+  const finalElement = (<div className={className}>{renderWithHeader(buttonElement)}</div>);
 
   if (needTooltip && tooltipProps) {
     return (

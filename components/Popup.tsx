@@ -258,18 +258,13 @@ export const Popup: React.FC<PopupProps> = ({
   const popupRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0, placement });
   const [isVisible, setIsVisible] = useState(false);
-  const [isPositioned, setIsPositioned] = useState(false);
 
   // Handle visibility animation
   useEffect(() => {
     if (open) {
       setIsVisible(true);
-      setIsPositioned(false);
     } else {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setIsPositioned(false);
-      }, animationDuration);
+      const timer = setTimeout(() => setIsVisible(false), animationDuration);
       return () => clearTimeout(timer);
     }
   }, [open, animationDuration]);
@@ -282,7 +277,7 @@ export const Popup: React.FC<PopupProps> = ({
 
     const updatePosition = () => {
       if (!anchorRef.current || !popupRef.current) return;
-
+      
       const newPosition = calculatePopupPosition(
         anchorRef.current,
         popupRef.current,
@@ -290,9 +285,8 @@ export const Popup: React.FC<PopupProps> = ({
         offset,
         preventFlip
       );
-
+      
       setPosition(newPosition);
-      setIsPositioned(true);
     };
 
     // Initial calculation
@@ -305,7 +299,7 @@ export const Popup: React.FC<PopupProps> = ({
       }
     };
 
-    window.addEventListener("scroll", onClose as any, true);
+    window.addEventListener("scroll", handleUpdate, true);
     window.addEventListener("resize", handleUpdate);
 
     return () => {
@@ -355,13 +349,13 @@ export const Popup: React.FC<PopupProps> = ({
 
   const sizeClass = sizeClasses[size];
   const arrowClasses = getArrowClasses(position.placement, hasArrow);
-
+  
   const popupClassName = [
     "absolute bg-white dark:bg-gray-800",
     "border border-gray-200 dark:border-gray-600",
     "rounded-lg shadow-lg",
-    "transition-opacity duration-200 ease-in-out",
-    open && isPositioned ? "opacity-100" : "opacity-0",
+    "transition-all duration-200 ease-in-out",
+    open ? "opacity-100 scale-100" : "opacity-0 scale-95",
     sizeClass,
     className
   ].filter(Boolean).join(" ");
@@ -373,8 +367,8 @@ export const Popup: React.FC<PopupProps> = ({
       className={popupClassName}
       style={{
         position: "absolute",
-        top: isPositioned ? position.top : -9999,
-        left: isPositioned ? position.left : -9999,
+        top: position.top,
+        left: position.left,
         zIndex,
         transformOrigin: "center",
         ...style

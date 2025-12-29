@@ -1,23 +1,13 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { SetupScreenContext, SetupScreenContextType } from './setup'
+import { TotalContext, TotalContextProps } from '@/app/globalContext'
 import { useInfoMsg } from '@/app/components/infoMsgHandler'
-import { EditIcon, Preview } from './svgApplication'
+import { Pagination } from '@gravity-ui/uikit'
+import { useGravityThemeClass } from '../utils/useGravityUITheme'
+import { EditIcon } from './svgApplication'
 import OrgMatrixTreeComponent from './AccessTemplateTable/OrgMatrixTreeComponent'
-import { Text } from '@/components/Text'
-import { useTheme } from '@/hooks/useTheme'
-import { useGlobal } from '@/context/GlobalContext'
-import { Pagination } from '@/components/Pagination'
-import i18n from './i18n'
-import { twMerge } from 'tailwind-merge'
-import { Button } from '@/components/Button'
 
-const AccessTemplateTable = ({
-  isView = false,
-  setIsView
-}: {
-  isView: boolean
-  setIsView: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+const AccessTemplateTable = ({}) => {
   const toast = useInfoMsg()
   const {
     securityData,
@@ -29,12 +19,13 @@ const AccessTemplateTable = ({
     setTemplateToBeUpdated,
     setIndexOfTemplateToBeUpdated
   } = React.useContext(SetupScreenContext) as SetupScreenContextType
+  const { property, setProperty } = useContext(
+    TotalContext
+  ) as TotalContextProps
+  let brandcolor: string = property?.brandColor ?? '#0736c4'
   const [currentPage, setCurrentPage] = useState(1)
   const accessTemplatePerPage = 10
-  const { branding } = useGlobal()
-  const { borderColor, isDark, hoverBgColor } = useTheme()
-  const { brandColor } = branding
-  const keyset = i18n.keyset('language')
+  const themeClass = useGravityThemeClass()
 
   const filteredData = Object.entries(securityData)
     .filter(([key, value]) => {
@@ -99,29 +90,45 @@ const AccessTemplateTable = ({
     setSelectedRows(copyOfSelectedRows)
   }
 
+  const handleChangeValue = (item: any, key: string, value: string) => {
+    const copyOfDisplayedData = structuredClone(securityData)
+    const foundIndex = copyOfDisplayedData.findIndex(
+      (obj: any) => obj.createdOn === item.createdOn
+    )
+    if (
+      securityData.find((item: any) => item.accessProfile === value) &&
+      key == 'accessProfile'
+    ) {
+      toast('Please provide unique access template name', 'warning')
+      return
+    }
+    copyOfDisplayedData[foundIndex][key] = value
+    onUpdateSecurityData(copyOfDisplayedData)
+  }
+
+  const accessPrivilegeData = ['Full', 'Limited']
+
   if (templateToBeUpdated) {
-    return <OrgMatrixTreeComponent isView={isView} setIsView={setIsView} />
+    return <OrgMatrixTreeComponent />
   }
 
   return (
-    <div className={`g-root h-full w-full`}>
-      <Text variant='body-2' className='mb-4 text-xl font-bold'>
-        {keyset('Access Template')}
-      </Text>
-      <div className='h-[73vh] w-[80vw] 2xl:w-[unset] overflow-x-auto'>
+    <div className={`g-root h-full w-full ${themeClass}`}>
+      <h2 className='mb-4 text-xl font-bold'>Access Template</h2>
+      <div className='h-[73vh] w-full overflow-x-auto'>
         <table className='min-w-full rounded text-left'>
-          <thead
-            className={twMerge(
-              'rounded-full',
-              isDark ? 'bg-gray-700' : 'bg-gray-100'
-            )}
-          >
-            <tr>
+          <thead>
+            <tr
+              className='rounded border'
+              style={{
+                borderColor: 'var(--g-color-line-generic)'
+              }}
+            >
               <th className='px-1 py-4'>
                 <input
                   type='checkbox'
                   className='cursor-pointer'
-                  style={{ accentColor: brandColor ?? 'unset' }}
+                  style={{ accentColor: brandcolor ?? 'unset' }}
                   checked={selectedRows.has('all')}
                   onChange={() => {
                     selectedRows.has('all')
@@ -133,25 +140,21 @@ const AccessTemplateTable = ({
                   )}
                 />
               </th>
-              <th className='w-[150px] px-4 py-4'>
-                {keyset('Access Template')}
-              </th>
-              <th className='w-[100px] px-4 py-4'>
-                {keyset('Data Access Privilege')}
-              </th>
-              <th className='w-[100px] px-2 py-4'>{keyset('No.ofusers')}</th>
-              <th className='w-[220px] px-4 py-4'>{keyset('Created On')}</th>
-              <th className='w-[250px] px-4 py-4 lg:w-[600px]'></th>
+              <th className='w-[250px] px-4 py-4'>Access Template</th>
+              <th className='w-[200px] px-4 py-4'>Data Access Privilege</th>
+              <th className='w-[220px] px-2 py-4'>No.ofusers</th>
+              <th className='w-[220px] px-4 py-4'>Created On</th>
+              <th className='w-[600px] px-4 py-4'></th>
             </tr>
           </thead>
           <tbody>
             {currentGroups.map((template: any, index: number) => (
-              <tr key={index} className={twMerge('', hoverBgColor)}>
+              <tr key={index}>
                 <td className='w-8 px-1 py-1'>
                   <input
                     type='checkbox'
                     className='cursor-pointer'
-                    style={{ accentColor: brandColor ?? 'unset' }}
+                    style={{ accentColor: brandcolor ?? 'unset' }}
                     checked={
                       selectedRows.has(template.accessProfile) ||
                       selectedRows.has('all')
@@ -162,20 +165,14 @@ const AccessTemplateTable = ({
                 </td>
                 <td className='w-[250px] px-1  py-1'>
                   <div
-                    className={twMerge(
-                      `ml-3 w-[12.29vw] cursor-default truncate rounded border p-3`,
-                      borderColor
-                    )}
+                    className={`ml-3 w-[12.29vw] cursor-default truncate rounded border border-[var(--g-color-line-generic)] p-3`}
                   >
                     {template?.accessProfile}
                   </div>
                 </td>
                 <td className='w-[200px] px-1 py-1'>
                   <div
-                    className={twMerge(
-                      `ml-3 w-[12.29vw] cursor-default truncate rounded border p-3`,
-                      borderColor
-                    )}
+                    className={`ml-3 w-[12.29vw] cursor-default truncate rounded border border-[var(--g-color-line-generic)] p-3`}
                   >
                     {template.dap === 'f'
                       ? 'Full'
@@ -187,50 +184,31 @@ const AccessTemplateTable = ({
                 <td className='px-1 py-1 text-center'>
                   {template['no.ofusers']}
                 </td>
-                <td className='w-[220px] px-4 py-1'>{template.createdOn}</td>
-                <td className='flex w-[250px] items-center justify-end px-1 py-1 xl:w-[600px]'>
-                  <div className='flex gap-3 items-center'>
-                    <Button
-                      onClick={() => {
-                        setTemplateToBeUpdated(template)
-                        setIndexOfTemplateToBeUpdated(template.originalIndex)
-                        setIsView(true)
-                      }}
-                      className='px-0.5 rounded-md'
-                    >
-                      <span className='flex items-center gap-1'>
-                        <Preview
-                          height='28px'
-                          width='28px'
-                          fill={isDark ? 'white' : 'black'}
-                        />
-                        {keyset('view')}
-                      </span>
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        if (template?.['no.ofusers'] !== 0) {
-                          toast(
-                            "This Template is Assigned to the User, So it can't be edited.",
-                            'warning'
-                          )
-                          return
-                        }
-                        setTemplateToBeUpdated(template)
-                        setIndexOfTemplateToBeUpdated(template.originalIndex)
-                      }}
-                      className='px-1.5 py-0.5 rounded-md'
-                    >
-                      <span className='flex items-center gap-2'>
-                        <EditIcon
-                          fill={isDark ? 'white' : 'black'}
-                          height='15px'
-                          width='15px'
-                        />
-                        {keyset('edit')}
-                      </span>
-                    </Button>
-                  </div>
+                <td className='w-[220px] px-1 py-1'>{template.createdOn}</td>
+                <td className='flex w-[600px] items-center justify-end px-1 py-1'>
+                  <button
+                    className='g-button g-button_view_normal g-button_size_m g-button_pin_round-round flex items-center'
+                    onClick={() => {
+                      if (template?.['no.ofusers'] !== 0) {
+                        toast(
+                          "This Template is Assigned to the User, So it can't be edited.",
+                          'warning'
+                        )
+                        return
+                      }
+                      setTemplateToBeUpdated(template)
+                      setIndexOfTemplateToBeUpdated(
+                        securityData.indexOf(template)
+                      )
+                    }}
+                  >
+                    <EditIcon
+                      fill='var(--g-color-text-primary)'
+                      height='0.8vw'
+                      width='0.8vw'
+                    />
+                    edit
+                  </button>
                 </td>
               </tr>
             ))}
@@ -242,7 +220,7 @@ const AccessTemplateTable = ({
         page={currentPage}
         pageSize={accessTemplatePerPage}
         total={securityData.length}
-        onUpdate={data => setCurrentPage(data.page)}
+        onUpdate={setCurrentPage}
       />
     </div>
   )

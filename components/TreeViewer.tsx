@@ -1,19 +1,11 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react'
-import i18n from '@/app/components/i18n'
-import { useInfoMsg } from '@/app/components/infoMsgHandler'
-import { TotalContext, TotalContextProps } from '@/app/globalContext'
-import { getCookie } from '@/app/components/cookieMgment'
-import { useGlobal } from '@/context/GlobalContext'
-import { HeaderPosition, TooltipProps as TooltipPropsType } from '@/types/global'
-
 import { Icon } from './Icon'
 import { TextInput } from './TextInput'
 import { TextArea } from './TextArea'
 import { Button } from './Button'
 import { Modal } from './Modal'
 import { Text } from './Text'
-import { Tooltip } from './Tooltip'
 function createData(
   mainObject: any,
   data: any,
@@ -122,7 +114,7 @@ function createData(
             onClick={() => handleClick(content, path + '/' + content)}
             className='cursor-pointer rounded-full p-1 text-blue-600 transition-colors hover:bg-blue-200'
             view={'flat-success'}
-            
+            size={'xs'}
             icon={'FaSourcetree'}
           ></Button>
           <div className='flex-1'>
@@ -138,7 +130,7 @@ function createData(
                   value={content || ''}
                   onChange={(e: any) => handleChange(e, path)}
                   className='w-full  text-black'
-                 
+                  size='s'
                 />
               ) : (
                 <Text className='rounded border  px-2 py-1 text-black' variant={'body-1'} >
@@ -151,7 +143,7 @@ function createData(
             <Button
               onClick={() => handleDelete(path)}
               view={'normal'}
-           
+              size={'xs'}
               icon={'FaRegTimesCircle'}
               iconDisplay='Icon only'
             ></Button>
@@ -162,7 +154,7 @@ function createData(
           <Button
             onClick={() => handleClick(content, path + '/' + content)}
             view={'flat-success'}
-            
+            size={'xs'}
             icon={'FaSourcetree'}
             iconDisplay='Icon only'
           ></Button>
@@ -181,7 +173,7 @@ function createData(
                 value={content || ''}
                 onChange={(e: any) => handleChange(e, path)}
                 className='w-full  text-black'
-                
+                size='s'
               />
             ) : (
               <Text className='rounded border  px-2 py-1 text-black' variant={'body-1'}>
@@ -193,7 +185,7 @@ function createData(
             <Button
               onClick={() => handleDelete(path)}
               view={'normal'}
-              
+              size={'xs'}
               icon={'FaRegTimesCircle'}
               iconDisplay='Icon only'
             ></Button>
@@ -224,7 +216,7 @@ function createData(
                   setIsModalOpen(true)
                 }}
                 view={'normal'}
-                
+                size={'xs'}
                 icon={'FaPlus'}
                 iconDisplay='Icon only'
               >
@@ -247,7 +239,7 @@ function createData(
                     <Button
                       onClick={() => handleClick(item, path + '/' + idx)}
                      view={'flat-success'}
-                      
+                      size={'xs'}
                       icon={'FaSourcetree'}
                       iconDisplay='Icon only'
                     ></Button>
@@ -256,7 +248,7 @@ function createData(
                     <Button
                       onClick={() => handleDelete(path + '/' + idx)}
                       view={'normal'}
-                      
+                      size={'xs'}
                       icon={'TiDeleteOutline'}
                       iconDisplay='Icon only'
                     >
@@ -415,7 +407,7 @@ const NestedObject = ({
               setIsModalOpen(true)
             }}
             view={'normal'}
-            
+            size={'xs'}
             icon={'FaPlus'}
             iconDisplay='Icon only'
           >
@@ -438,7 +430,7 @@ const NestedObject = ({
                   <Button
                     onClick={() => handleClick(data[key], path + '/' + key)}
                     view={'flat-success'}
-                    
+                    size={'xs'}
                     icon={'FaSourcetree'}
                     iconDisplay='Icon only'
                   ></Button>
@@ -457,7 +449,7 @@ const NestedObject = ({
                   <Button
                     onClick={() => toggleKey(key)}
                     view={'flat-info'}
-                    
+                    size={'xs'}
                     iconDisplay='Icon only'
                     icon={isExpanded ? 'FaChevronUp':'FaAngleDown' }
                   ></Button>
@@ -465,7 +457,7 @@ const NestedObject = ({
                     <Button
                       onClick={() => handleDelete(path + '/' + key)}
                       view={'normal'}
-                      
+                      size={'xs'}
                       icon={'TiDeleteOutline'}
                       iconDisplay='Icon only'
                     ></Button>
@@ -498,36 +490,16 @@ const NestedObject = ({
   )
 }
 
-interface TreeViewerProps {
-  mainData: any
-  data: any
-  handleClick?: (val: any, path: string) => void
-  isEditable?: boolean
-  path?: string
-  viewtype?: 'collapsed' | 'expanded'
-  setData?: any
-  className?: string
-  needTooltip?: boolean
-  tooltipProps?: TooltipPropsType
-  headerText?: string
-  headerPosition?: HeaderPosition
-}
-
 export const TreeViewer = ({
   mainData,
   data,
   handleClick,
   isEditable,
   path,
-  viewtype = 'expanded',
+  viewtype='expanded',
   setData,
-  className = '',
-  needTooltip = false,
-  tooltipProps,
-  headerText,
-  headerPosition = 'top'
-}: TreeViewerProps) => {
-  const { theme } = useGlobal()
+  className = ''
+}: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalPath, setModalPath] = useState('')
   const [modalValue, setModalValue] = useState<any>('')
@@ -585,9 +557,7 @@ export const TreeViewer = ({
   }
 
   /////////////////
-  const isDark = theme === 'dark' || theme === 'dark-hc'
-
-  const treeViewerElement = (
+  return (
     <div
       className={className}
       style={{
@@ -607,6 +577,9 @@ export const TreeViewer = ({
             <div className='rounded-t-lg border-b border-gray-200 bg-gray-50 px-6 py-4'>
               <h2 className='flex items-center gap-1 text-lg font-semibold text-gray-800'>
                 🌳 Tree View
+                <span className='text-sm font-normal text-gray-500'>
+                  (Interactive)
+                </span>
               </h2>
             </div>
             <div className='flex-1 overflow-y-auto p-6'>
@@ -656,7 +629,7 @@ export const TreeViewer = ({
                 onChange={(e: any) => setModalKey(e.target.value)}
                 placeholder='e.g., "username", "age", "settings"'
                 className='w-full'
-
+                size='s'
               />
             </div>
           )}
@@ -695,6 +668,9 @@ export const TreeViewer = ({
               onChange={(e: any) => setModalValue(e.target.value)}
               placeholder='Enter your JSON value here...'
               className='w-full font-mono'
+              minRows={4}
+              maxRows={8}
+              size={'s'}
             />
           </div>
 
@@ -702,11 +678,11 @@ export const TreeViewer = ({
             <Button
               onClick={() => setIsModalOpen(false)}
               view='outlined'
-
+              size='s'
             >
               Cancel
             </Button>
-            <Button onClick={handleAddFromModal} view='action'>
+            <Button onClick={handleAddFromModal} view='action' size='s'>
               Add {modalTargetType === 'array' ? 'Item' : 'Property'}
             </Button>
           </div>
@@ -714,65 +690,6 @@ export const TreeViewer = ({
       </Modal>
     </div>
   )
-
-  const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return element
-
-    const headerClasses = `font-semibold mb-2 ${
-      isDark ? 'text-gray-300' : 'text-gray-700'
-    }`
-
-    switch (headerPosition) {
-      case 'top':
-        return (
-          <div className='flex h-full flex-col'>
-            <div className={headerClasses}>{headerText}</div>
-            {element}
-          </div>
-        )
-      case 'bottom':
-        return (
-          <div className='flex h-full flex-col'>
-            {element}
-            <div className={`${headerClasses} mb-0 mt-2`}>{headerText}</div>
-          </div>
-        )
-      case 'left':
-        return (
-          <div className='flex h-full items-center gap-4'>
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
-              {headerText}
-            </div>
-            {element}
-          </div>
-        )
-      case 'right':
-        return (
-          <div className='flex h-full items-center gap-4'>
-            {element}
-            <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
-              {headerText}
-            </div>
-          </div>
-        )
-    }
-  }
-
-  const finalElement = renderWithHeader(treeViewerElement)
-
-  if (needTooltip && tooltipProps) {
-    return (
-      <Tooltip
-        title={tooltipProps.title}
-        placement={tooltipProps.placement}
-        triggerClassName='h-full'
-      >
-        <div className='h-full'>{finalElement}</div>
-      </Tooltip>
-    )
-  }
-
-  return <div className='h-full'>{finalElement}</div>
 }
 
 

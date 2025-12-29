@@ -2,16 +2,14 @@ import { FaRegFolderOpen } from 'react-icons/fa'
 import { DeleteIcon, DownArrow, EditIcon, PlusIcon } from '../svgApplication'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { useOPRMatrix } from '.'
-import { useMemo, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import { hexWithOpacity } from '../utils'
 import { twMerge } from 'tailwind-merge'
+import { TotalContext, TotalContextProps } from '@/app/globalContext'
+import { Modal, Popup } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
 import { useInfoMsg } from '../infoMsgHandler'
 import AddGroupLevelModal from './AddGroupLevelModal'
-import { Modal } from '@/components/Modal'
-import { useGlobal } from '@/context/GlobalContext'
-import { useTheme } from '@/hooks/useTheme'
-import Popup from '@/components/Popup'
-import { highlightText } from '../AccessTemplateTable/SearchHelpers'
 
 // ============= RENDER GROUP (REUSABLE) =============
 const RenderGroup = ({
@@ -41,6 +39,8 @@ const RenderGroup = ({
   contextKey: string
   path: string
 }) => {
+  const { property } = useContext(TotalContext) as TotalContextProps
+  let brandColor: string = property?.brandColor ?? '#0736c4'
   const {
     toggleDropdown,
     collapsedItems,
@@ -54,9 +54,6 @@ const RenderGroup = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const popoverButtonElement = useRef(null)
-  const { branding } = useGlobal()
-  const { isDark } = useTheme()
-  const { brandColor } = branding
 
   const isCurrentContext = useMemo(
     () => isSearchOpen == contextKey && searchTerm,
@@ -113,14 +110,17 @@ const RenderGroup = ({
               isOpen ? 'rotate-[360deg]' : 'rotate-[270deg]'
             }`}
           >
-            <DownArrow fill={isDark ? 'white' : 'black'} />
+            <DownArrow fill='var(--g-color-text-primary)' />
           </span>
           <FaRegFolderOpen />
-          <span className='text-xs'>
-            {isSearchOpen === contextKey && searchTerm
-              ? highlightText(displayName, searchTerm, brandColor)
-              : displayName}{' '}
-            - <span>{displayCode.replace(codePrefix, '')}</span>
+          <span>
+            {displayName} -{' '}
+            <span
+              style={{ fontSize: '0.6vw' }}
+              className='text-torus-text-opacity-50'
+            >
+              {displayCode.replace(codePrefix, '')}
+            </span>
           </span>
         </div>
 
@@ -131,33 +131,27 @@ const RenderGroup = ({
           )}
         >
           {/* Three Dots Popover */}
-          {contextKey !== 'org' && (
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                setIsPopoverOpen(prev => !prev)
-              }}
-              ref={popoverButtonElement}
-              className='flex rotate-90 items-center rounded p-[0.3vw] outline-none'
-            >
-              <BsThreeDotsVertical />
-            </button>
-          )}
+          <Button
+            onClick={e => {
+              e.stopPropagation()
+              setIsPopoverOpen(prev => !prev)
+            }}
+            ref={popoverButtonElement}
+            className='flex rotate-90 items-center rounded p-[0.3vw] outline-none'
+          >
+            <BsThreeDotsVertical />
+          </Button>
 
           <Popup
             anchorRef={popoverButtonElement}
             open={isPopoverOpen}
             onClose={handlePopoverClose}
-            disablePortal={true}
-            placement='left'
-            className='w-[11vw]'
           >
             <div className='flex flex-col gap-[0.58vh] px-[0.46vw] py-[0.58vh]'>
               <div
                 className='hover:bg-torus-bg-hover flex cursor-pointer items-center gap-[0.5vw] rounded p-[0.29vw] leading-[2.22vh] outline-none'
                 onClick={e => {
                   e.stopPropagation()
-                  setIsPopoverOpen(false)
                   setIsAddModalOpen(true)
                 }}
                 style={{ fontSize: '0.7vw' }}
@@ -165,7 +159,7 @@ const RenderGroup = ({
                 <PlusIcon
                   height='.8vw'
                   width='.8vw'
-                  fill={isDark ? 'white' : 'black'}
+                  fill='var(--g-color-text-primary)'
                 />
                 Add {resourceField}
               </div>
@@ -174,7 +168,6 @@ const RenderGroup = ({
                 className='hover:bg-torus-bg-hover flex cursor-pointer items-center gap-[0.5vw] rounded p-[0.29vw] leading-[2.22vh] outline-none'
                 onClick={e => {
                   e.stopPropagation()
-                  setIsPopoverOpen(false)
                   setIsEditModalOpen(true)
                 }}
                 style={{ fontSize: '0.7vw' }}
@@ -208,8 +201,7 @@ const RenderGroup = ({
                 setIsAddModalOpen(false)
                 setIsPopoverOpen(false)
               }}
-              showCloseButton={false}
-              className='w-[400px]'
+              disableOutsideClick
             >
               <AddGroupLevelModal
                 close={() => {
@@ -222,26 +214,25 @@ const RenderGroup = ({
           </div>
 
           {/* Edit Modal */}
-          <div onClick={e => e.stopPropagation()}>
-            {editContentProps && (
-              <Modal
-                open={isEditModalOpen}
-                onClose={() => {
+           <div onClick={e => e.stopPropagation()}>
+          {editContentProps && (
+            <Modal
+              open={isEditModalOpen}
+              onClose={() => {
+                setIsEditModalOpen(false)
+                setIsPopoverOpen(false)
+              }}
+              disableOutsideClick
+            >
+              <AddGroupLevelModal
+                close={() => {
                   setIsEditModalOpen(false)
                   setIsPopoverOpen(false)
                 }}
-                showCloseButton={false}
-                className='w-[400px]'
-              >
-                <AddGroupLevelModal
-                  close={() => {
-                    setIsEditModalOpen(false)
-                    setIsPopoverOpen(false)
-                  }}
-                  {...editContentProps}
-                />
-              </Modal>
-            )}
+                {...editContentProps}
+              />
+            </Modal>
+          )}
           </div>
         </div>
       </div>

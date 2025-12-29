@@ -1,116 +1,100 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useGlobal } from '@/context/GlobalContext'
-import { Tooltip } from './Tooltip'
-import {
-  HeaderPosition,
-  TooltipProps as TooltipPropsType
-} from '@/types/global'
-import { getFontSizeClass } from '@/app/utils/branding'
-type ContentAlign = 'left' | 'center' | 'right'
+import React from "react";
+import { useGlobal } from "@/context/GlobalContext";
+import { Tooltip } from "./Tooltip";
+import { RadioSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
+import { getFontSizeClass } from "@/utils/branding";
+
 interface RadioProps {
-  checked?: boolean
-  disabled?: boolean
-  content?: string
-  needTooltip?: boolean
-  tooltipProps?: TooltipPropsType
-  headerText?: string
-  headerPosition?: HeaderPosition
-  value?: string
-  name?: string
-  className?: string
-  fillContainer?: boolean
-  contentAlign?: ContentAlign
-  onClick?: (checked: boolean) => void
-  onChange?: (value: string) => void
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
-  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+  checked?: boolean;
+  size?: RadioSize;
+  disabled?: boolean;
+  content?: string;
+  needTooltip?: boolean;
+  tooltipProps?: TooltipPropsType;
+  headerText?: string;
+  headerPosition?: HeaderPosition;
+  value?: string;
+  name?: string;
+  onClick?: (checked: boolean) => void;
+  onChange?: (value: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  className?: string;
 }
 
 export const Radio: React.FC<RadioProps> = ({
   checked,
+  size,
   disabled = false,
   content,
   needTooltip = false,
   tooltipProps,
   headerText,
-  headerPosition = 'top',
-  value = '',
+  headerPosition = "top",
+  value = "",
   name,
-  className = '',
-  fillContainer = true,
-  contentAlign = 'left',
   onChange,
   onBlur,
   onFocus,
-  onClick
+  onClick,
+  className = "",
 }) => {
-  const { theme, direction, branding } = useGlobal()
-  const isDark = theme === 'dark' || theme === 'dark-hc'
-  const getFillClasses = () => {
-    if (!fillContainer) return ''
-    return 'w-full h-full'
-  }
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case 'left':
-        return 'justify-start'
-      case 'right':
-        return 'justify-end'
-      case 'center':
-      default:
-        return 'justify-center'
-    }
-  }
-  const getRadioStyles = (): React.CSSProperties => {
-    const isDark = theme === 'dark' || theme === 'dark-hc'
+  const { theme, direction, branding } = useGlobal();
 
+  const getSizeClasses = () => {
+    switch (size) {
+      case "s":
+        return "w-4 h-4";
+      case "m":
+        return "w-5 h-5";
+      case "l":
+        return "w-6 h-6";
+      case "xl":
+        return "w-7 h-7";
+    }
+  };
+
+  const getRadioStyles = (): React.CSSProperties => {
+    const isDark = theme === "dark" || theme === "dark-hc";
+    
     if (disabled) {
       return {
-        backgroundColor: isDark ? '#374151' : '#E5E7EB',
-        borderColor: isDark ? '#4B5563' : '#D1D5DB'
-      }
+        backgroundColor: isDark ? "#374151" : "#E5E7EB",
+        borderColor: isDark ? "#4B5563" : "#D1D5DB",
+      };
     }
-
+    
     if (checked) {
       return {
-        backgroundColor: 'var(--selection-color)',
-        borderColor: 'var(--selection-color)',
-        borderWidth: '2px',
-        boxShadow: 'inset 0 0 0 5px white '
-      }
+        borderColor: "var(--selection-color)",
+        borderWidth: size === "s" ? "4px" : size === "m" ? "5px" : size === "l" ? "6px" : "7px",
+      };
     }
-
+    
     return {
-      backgroundColor: isDark ? '#1F2937' : 'white',
-      borderColor: isDark ? '#4B5563' : '#D1D5DB',
-      borderWidth: '2px'
-    }
-  }
+      backgroundColor: isDark ? "#1F2937" : "white",
+      borderColor: isDark ? "#4B5563" : "#D1D5DB",
+      borderWidth: "2px",
+    };
+  };
 
-  const handleClick = (e: React.MouseEvent) => {
+    const handleClick = (e: React.MouseEvent) => {
     if (!disabled) {
-      e.preventDefault()
-      onClick?.(!checked)
-      onChange?.(value)
+      e.preventDefault();
+      onClick?.(!checked);
+      onChange?.(value);
     }
-  }
+  };
 
   const radioElement = (
     <label
-      className={`
-        ${getFontSizeClass(branding.fontSize)}
-        ${fillContainer ? 'flex' : 'inline-flex'} 
-        items-center 
-        ${getContentAlignClasses()} 
-        ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} 
-        ${getFillClasses()} ${fillContainer ? 'overflow-hidden' : ''}
-      `}
+      className={`inline-flex items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
       onClick={handleClick}
     >
       <input
-        type='radio'
+        type="radio"
         checked={checked}
         disabled={disabled}
         name={name}
@@ -118,108 +102,87 @@ export const Radio: React.FC<RadioProps> = ({
         onChange={() => onChange?.(value)}
         onBlur={onBlur}
         onFocus={onFocus}
-        className='sr-only'
+        className="sr-only"
       />
       <div
         style={getRadioStyles()}
-        className={`
-          aspect-square h-full
-          flex-shrink-0  rounded-full border transition-all
-        `}
-        onMouseEnter={e => {
+        className={`${getSizeClasses()} rounded-full border transition-all`}
+        onMouseEnter={(e) => {
           if (!disabled && !checked) {
-            e.currentTarget.style.borderColor = 'var(--hover-color)'
+            e.currentTarget.style.borderColor = 'var(--hover-color)';
           }
         }}
-        onMouseLeave={e => {
+        onMouseLeave={(e) => {
           if (!disabled && !checked) {
-            const isDark = theme === 'dark' || theme === 'dark-hc'
-            e.currentTarget.style.borderColor = isDark ? '#4B5563' : '#D1D5DB'
+            const isDark = theme === "dark" || theme === "dark-hc";
+            e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
           }
         }}
       />
       {content && (
         <span
-          className={`${direction === 'RTL' ? 'mr-2' : 'ml-2'} ${
-            theme === 'dark' || theme === 'dark-hc'
-              ? 'text-gray-200'
-              : 'text-gray-900'
-          } ${fillContainer ? 'overflow-hidden ' : ''}`}
+          className={`${direction === "RTL" ? "mr-2" : "ml-2"} ${
+            theme === "dark" || theme === "dark-hc" ? "text-gray-200" : "text-gray-900"
+          }`}
         >
           {content}
         </span>
       )}
     </label>
-  )
+  );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText)
-      return (
-        <div
-          className={`h-full w-full 
-            ${getFontSizeClass(branding.fontSize)} 
-            ${isDark ? 'text-gray-300' : 'text-gray-700'} 
-            ${direction === 'RTL' ? 'flex-row-reverse' : ''}
-            ${className}
-          `}
-        >
-          {element}
-        </div>
-      )
+    if (!headerText) return <div className={className}>{element}</div>;
 
-    const headerClasses = `
-      flex h-full w-full overflow-hidden text-ellipsis whitespace-nowrap 
-      ${isDark ? 'text-gray-300' : 'text-gray-700'}
-      ${direction === 'RTL' ? 'flex-row-reverse' : ''}
-      ${getFontSizeClass(branding.fontSize)}
-      ${className}
-      `
+    const headerClasses = ` font-semibold mb-1 ${
+      theme === "dark" || theme === "dark-hc" ? "text-gray-300" : "text-gray-700"
+    }`;
 
     switch (headerPosition) {
-      case 'top':
+      case "top":
         return (
-          <div className={`${headerClasses} flex-col `}>
-            <div className='font-semibold '>{headerText}</div>
+          <div className={`flex flex-col ${className}`}>
+            <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
-        )
-      case 'bottom':
+        );
+      case "bottom":
         return (
-          <div className={`${headerClasses} flex-col`}>
+          <div className={`flex flex-col ${className}`}>
             {element}
-            <div className='mt-1 font-semibold'>{headerText}</div>
+            <div className={`${headerClasses} mt-1 mb-0`}>{headerText}</div>
           </div>
-        )
-      case 'left':
+        );
+      case "left":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
-            <div className={`mb-0 min-w-0 overflow-hidden font-semibold`}>
+          <div className={`flex items-center ${className}`}>
+            <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "ml-2" : "mr-2"}`}>
               {headerText}
             </div>
             {element}
           </div>
-        )
-      case 'right':
+        );
+      case "right":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
+          <div className={`flex items-center ${className}`}>
             {element}
-            <div className={`mb-0 min-w-0 overflow-hidden font-semibold`}>
+            <div className={`${headerClasses} mb-0 ${direction === "RTL" ? "mr-2" : "ml-2"}`}>
               {headerText}
             </div>
           </div>
-        )
+        );
     }
-  }
+  };
 
-  const finalElement = renderWithHeader(radioElement)
+  const finalElement = renderWithHeader(radioElement);
 
   if (needTooltip && tooltipProps) {
     return (
       <Tooltip title={tooltipProps.title} placement={tooltipProps.placement}>
         {finalElement}
       </Tooltip>
-    )
+    );
   }
 
-  return <>{finalElement}</>
-}
+  return <>{finalElement}</>;
+};

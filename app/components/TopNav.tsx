@@ -1,23 +1,29 @@
 import { deleteAllCookies, getCookie } from '@/app/components/cookieMgment'
 import decodeToken from '@/app/components/decodeToken'
 import { Logo } from '@/app/components/Logo'
+import {
+  DropdownMenu,
+  UserLabel
+} from '@gravity-ui/uikit'
+import { Avatar } from '@/components/Avatar'
+import { Button } from '@/components/Button'
+import { Icon } from '@/components/Icon'
+import { Text } from '@/components/Text'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { MenuItem, MenuStructure } from '../interfaces/interfaces'
 import { isLightColor } from './utils'
-import { Text } from '@/components/Text'
-import { Button } from '@/components/Button'
-import { Avatar } from '@/components/Avatar'
-import { BsThreeDotsVertical } from 'react-icons/bs'
-import { DropdownMenu } from '@/components/DropdownMenu'
-import { getCdnImage } from '../utils/getAssets'
+import { Ellipsis } from '@gravity-ui/icons'
+import { useGravityThemeClass } from '../utils/useGravityUITheme'
 
 const TopNav = ({
   navData,
   listMenuItems = true,
   mode,
+  selectionColor = '#fff',
   brandColor = '#fff',
-  // topbarColor = '#fff',
+  hoverColor = '#fff',
+ // topbarColor = '#fff',
   appName,
   logo,
   userDetails
@@ -25,11 +31,13 @@ const TopNav = ({
   navData: MenuStructure
   listMenuItems?: boolean
   mode: string
+  selectionColor: string
   brandColor: string
-  //  topbarColor: string
+  hoverColor: string
+//  topbarColor: string
   appName: string
   logo?: string
-  userDetails: any
+  userDetails:any
 }) => {
   const router = useRouter()
   const token: string = getCookie('token')
@@ -41,6 +49,7 @@ const TopNav = ({
   const [visibleItems, setVisibleItems] = useState<MenuItem[]>(navData || [])
   const [hiddenItems, setHiddenItems] = useState<MenuItem[]>([])
   const tp_ps = getCookie('tp_ps')
+  const themeClass = useGravityThemeClass()
   useEffect(() => {
     const checkOverflow = () => {
       if (!menuRef.current) return
@@ -113,7 +122,7 @@ const TopNav = ({
   async function logout() {
     localStorage.clear()
     deleteAllCookies()
-    window.location.href = '/ct003/cg/tg1/v5'
+    window.location.href = '/ct003/cg/tg2/v2'
   }
   const hasMatchingName = (obj: any, input: string): boolean => {
     if (typeof obj !== 'object' || obj === null) return false
@@ -132,14 +141,32 @@ const TopNav = ({
     return false
   }
 
-  
+  const getDropDownStyles = useCallback(
+    (menuGroup: any) => {
+      const menuGrp = navData.find(item => item.menuGroup === menuGroup)
+      const currentScreen = pathname.split('/').pop()?.split('_')[0] || ''
+      const selectedRoute = hasMatchingName(menuGrp, currentScreen)
+      if (selectedRoute) {
+        return {
+          backgroundColor: brandColor,
+          color: isLightColor(brandColor)
+        }
+      }
+
+      return {
+        backgroundColor: 'transparent',
+        color: 'unset'
+      }
+    },
+    [hoverColor, brandColor]
+  )
 
   return (
     <div
       suppressHydrationWarning
       className={`flex items-center justify-between p-2 ${
         mode === 'detached' ? 'shadow-md' : ''
-      } g-root`}
+      } g-root ${themeClass} `}
     >
       <div className='flex items-center gap-1'>
         {logo ? (
@@ -147,18 +174,21 @@ const TopNav = ({
             className='h-[16px] w-[20px]'
             width={100}
             height={100}
-            src={getCdnImage(logo)}
+            src={logo}
             alt='logo'
           />
         ) : (
           <Logo />
         )}
-        <Text className='text-nowrap text-center font-bold '>{appName}</Text>
+        <h3 className='text-center text-nowrap font-bold '>{appName}</h3>
       </div>
       {listMenuItems && (
         <>
           <div className='flex w-full justify-center gap-1'>
-            <div className='flex max-w-[62%] items-center gap-2' ref={menuRef}>
+            <div
+              className='flex max-w-[62%] items-center gap-2 overflow-hidden'
+              ref={menuRef}
+            >
               {navData &&
                 visibleItems.map((menu, index) => {
                   if (menu.menuGroup) {
@@ -167,15 +197,25 @@ const TopNav = ({
                         <DropdownMenu
                           renderSwitcher={(props: any) => (
                             <Button
-                              {...props}
                               view='flat'
-                              className='max-w-[100px] truncate font-medium leading-[1.5vh] p-2'
+                              {...props}
+                              className='max-w-[100px] truncate font-medium leading-[1.5vh]'
+                              style={{
+                                ...getDropDownStyles(menu.menuGroup),
+                                transition: 'all 0.2s ease-in-out'
+                              }}
                             >
                               {menu.menuGroupLabel}
                             </Button>
                           )}
                           key={index}
                           items={getNestedMenu(menu)}
+                          popupProps={{
+                            style: {
+                              backgroundColor: brandColor,
+                              color: `${isLightColor(brandColor)}`
+                            }
+                          }}
                         />
                       </div>
                     )
@@ -188,17 +228,17 @@ const TopNav = ({
                     return (
                       <Button
                         view='flat'
-                        // style={{
-                        //   backgroundColor:
-                        //     routingName == pathname
-                        //       ? `${brandColor}`
-                        //       : 'transparent',
-                        //   color:
-                        //     routingName == pathname
-                        //       ? `${isLightColor(brandColor)}`
-                        //       : 'unset'
-                        // }}
-                        className='rounded-full px-2 py-2 '
+                        style={{
+                          backgroundColor:
+                            routingName == pathname
+                              ? `${brandColor}`
+                              : 'transparent',
+                          color:
+                            routingName == pathname
+                              ? `${isLightColor(brandColor)}`
+                              : 'unset'
+                        }}
+                        className='rounded-full px-2  py-2 '
                         key={index}
                         onClick={() => router.push(routingName)}
                       >
@@ -212,8 +252,8 @@ const TopNav = ({
               {hiddenItems.length > 0 && (
                 <DropdownMenu
                   renderSwitcher={(props: any) => (
-                    <Button {...props} view='flat' className='mt-1 rotate-90'>
-                      <BsThreeDotsVertical />
+                    <Button {...props} view='flat'>
+                      <Icon data={Ellipsis} />
                     </Button>
                   )}
                   items={hiddenItems.map(menu => {
@@ -238,6 +278,12 @@ const TopNav = ({
                       }
                     }
                   })}
+                  popupProps={{
+                    style: {
+                      backgroundColor: brandColor,
+                      color: `${isLightColor(brandColor)}`
+                    }
+                  }}
                 />
               )}
             </div>
@@ -245,40 +291,28 @@ const TopNav = ({
           <div>
             <DropdownMenu
               renderSwitcher={(props: any) => (
-                <div
+                <UserLabel
+                  type='person'
+                  avatar={userDetails?.profile}
                   {...props}
-                  className='flex items-center gap-2 rounded-full border'
-                  style={{
-                    borderColor: brandColor
-                  }}
                 >
-                  <Avatar
-                    theme='brand'
-                    view='filled'
-                    imageUrl={getCdnImage(userDetails?.profile)}
-                    icon='FaRegUser'
-                  />
-                  <Text className='pr-2'>{user}</Text>
-                </div>
+                 <Text>{user}</Text>
+                </UserLabel>
               )}
               items={[
                 {
                   text: user,
-                  action: () => {}
+                  action: () => {},
+                  selected: true
                 },
-                ...(pathname !== '/select-context'
-                  ? [
-                      {
-                        text: 'Switch accessProfile',
-                        action: () => {
-                          if (tp_ps) {
-                            router.push('/select-context')
-                          }
-                        }
-                      }
-                    ]
-                  : []),
-
+                {
+                  text: 'Switch accessProfile',
+                  action: () => {
+                    if (tp_ps) {
+                      router.push('/select-context')
+                    }
+                  }
+                },
                 {
                   text: 'Log out',
                   action: () => {
@@ -288,10 +322,9 @@ const TopNav = ({
               ]}
               popupProps={{
                 style: {
-                  right: '10px',
-                  borderRadius: '0.375rem'
-                },
-                className: 'rounded-md hover:rounded-md'
+                  backgroundColor: brandColor,
+                  color: `${isLightColor(brandColor)}`
+                }
               }}
             />
           </div>

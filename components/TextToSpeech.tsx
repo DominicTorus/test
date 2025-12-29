@@ -2,10 +2,9 @@
 import React, { useEffect,useState } from 'react';
 
 import { FiVolume2 } from 'react-icons/fi';
+import { Button } from './Button';
 import { Tooltip } from './Tooltip';
 import { HeaderPosition, TooltipProps as TooltipPropsType } from '@/types/global';
-import { useGlobal } from '@/context/GlobalContext';
-import { getFontSizeClass } from '@/app/utils/branding';
 
 interface TextAreaWithEndContentProps {
   value?: string;
@@ -19,70 +18,33 @@ interface TextAreaWithEndContentProps {
   [key: string]: any;
 }
 
-function TextAreaWithEndContent({ endContent, placeholder, branding, isDark, ...props }: TextAreaWithEndContentProps & { branding: any; isDark: boolean }) {
-  // Helper to convert hex to rgba
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex?.slice(1, 3), 16);
-    const g = parseInt(hex?.slice(3, 5), 16);
-    const b = parseInt(hex?.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
-
-  // Extract non-DOM props to avoid React warnings
-  const {
-    className,
-    needTooltip,
-    tooltipProps,
-    headerText,
-    headerPosition,
-    tooltipDisplay,
-    onUpdate,
-    label,
-    ...domProps
-  } = props;
-
+function TextAreaWithEndContent({ endContent, placeholder, ...props }: TextAreaWithEndContentProps) {
   return (
-    <div className={`relative w-full h-full ${className || ''} overflow-hidden`}>
+    <div className="relative w-full">
       <textarea
-        {...domProps}
-        rows={domProps.rows || 4}
+        {...props}
+        rows={props.rows || 4}
         placeholder={placeholder}
         className={`
           w-full
-          h-full
           px-3 py-2
           sm:px-4 sm:py-3
           pr-14 sm:pr-16
-          border-2
-          ${isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'}
+          text-sm sm:text-base
+          rounded-md sm:rounded-lg
+          border border-gray-300
+          dark:border-gray-600
+          dark:bg-gray-800
+          dark:text-white
           resize-vertical
           focus:outline-none
-          transition-all duration-200
+          focus:ring-2
+          focus:ring-yellow-400
+          focus:border-transparent
+          transition-all
           font-inherit
         `}
-        style={{
-          ...domProps.style,
-          borderRadius: 'var(--border-radius)',
-        }}
-        onFocus={(e) => {
-          e.currentTarget.style.borderColor = branding.selectionColor;
-          e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(branding.selectionColor, 0.2)}`;
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.borderColor = isDark ? '#4B5563' : '#D1D5DB';
-          e.currentTarget.style.boxShadow = 'none';
-          domProps.onBlur?.(e);
-        }}
-        onMouseEnter={(e) => {
-          if (!domProps.disabled && document.activeElement !== e.currentTarget) {
-            e.currentTarget.style.borderColor = branding.hoverColor;
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!domProps.disabled && document.activeElement !== e.currentTarget) {
-            e.currentTarget.style.borderColor = isDark ? '#4B5563' : '#D1D5DB';
-          }
-        }}
+        style={props.style}
       />
       {endContent}
     </div>
@@ -106,11 +68,8 @@ interface TextToSpeechProps {
 }
 
 export function TextToSpeech(props: TextToSpeechProps){
-  const { branding, theme } = useGlobal();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [text, setText] = useState(props.value?.toString() || '');
-  const fontSizeClass = getFontSizeClass(branding.fontSize);
-  const isDark = theme === "dark" || theme === "dark-hc";
 
   const handleSpeak = () => {
     if (!text.trim()) return;
@@ -125,7 +84,7 @@ export function TextToSpeech(props: TextToSpeechProps){
   }, [props.value]);
 
   const endContent = (
-    <button
+    <Button
       onClick={handleSpeak}
       disabled={isSpeaking || props.disabled}
       className={`
@@ -134,6 +93,8 @@ export function TextToSpeech(props: TextToSpeechProps){
         sm:right-4
         top-2
         sm:top-3
+        bg-yellow-400
+        hover:bg-yellow-500
         border-none
         rounded-full
         flex
@@ -148,62 +109,48 @@ export function TextToSpeech(props: TextToSpeechProps){
         md:w-10 md:h-10
         p-0
         min-w-0
-        transition-all duration-200
+        transition-all
         ${isSpeaking ? 'opacity-70 animate-pulse' : ''}
-        ${props.disabled || isSpeaking ? 'cursor-not-allowed' : 'hover:shadow-lg'}
       `}
-      style={{
-        backgroundColor: branding.brandColor,
-      }}
-      onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-        if (!isSpeaking && !props.disabled) {
-          e.currentTarget.style.backgroundColor = branding.hoverColor;
-        }
-      }}
-      onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-        if (!isSpeaking && !props.disabled) {
-          e.currentTarget.style.backgroundColor = branding.brandColor;
-        }
-      }}
     >
       <FiVolume2 className="w-4 h-4 sm:w-5 sm:h-5" />
-    </button>
+    </Button>
   );
 
   const renderWithHeader = (element: React.ReactNode) => {
     if (!props.headerText) return <>{element}</>;
 
-    const headerClasses = `${fontSizeClass} font-semibold mb-1 text-gray-700 dark:text-gray-300`;
+    const headerClasses = "font-semibold mb-1 text-gray-700 dark:text-gray-300";
     const headerPosition = props.headerPosition || "top";
 
     switch (headerPosition) {
       case "top":
         return (
-          <div className="flex flex-col w-full overflow-hidden h-full">
+          <div className="flex flex-col w-full">
             <div className={headerClasses}>{props.headerText}</div>
             {element}
           </div>
         );
       case "bottom":
         return (
-          <div className="flex flex-col w-full overflow-hidden h-full">
+          <div className="flex flex-col w-full">
             {element}
             <div className={`${headerClasses} mt-2 mb-0`}>{props.headerText}</div>
           </div>
         );
       case "left":
         return (
-          <div className="flex items-start gap-1 overflow-hidden w-full h-full">
+          <div className="flex items-start gap-4 w-full">
             <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {props.headerText}
             </div>
-            <div className="flex-1 h-full">{element}</div>
+            <div className="flex-1">{element}</div>
           </div>
         );
       case "right":
         return (
-          <div className="flex items-start gap-1 overflow-hidden w-full h-full">
-            <div className="flex-1 h-full">{element}</div>
+          <div className="flex items-start gap-4 w-full">
+            <div className="flex-1">{element}</div>
             <div className={`${headerClasses} mb-0 whitespace-nowrap`}>
               {props.headerText}
             </div>
@@ -213,32 +160,28 @@ export function TextToSpeech(props: TextToSpeechProps){
   };
 
   const textAreaContent = (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full max-w-full">
       {props.label && (
-        <label className={`block mb-2 ${fontSizeClass} font-medium text-gray-700 dark:text-gray-300`}>
+        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           {props.label}
         </label>
       )}
-      <div className="flex-1">
-        <TextAreaWithEndContent
-          {...props}
-          value={text}
-          rows={props?.rows||4}
-          disabled={props.disabled}
-          placeholder={props.placeholder}
-          onChange={(e) => {
-            setText(e.target.value);
-            props.onUpdate?.(e);
-          }}
-          onBlur={props.onBlur}
-          endContent={endContent}
-          branding={branding}
-          isDark={isDark}
-        />
-      </div>
+      <TextAreaWithEndContent
+        {...props}
+        value={text}
+        rows={4}
+        disabled={props.disabled}
+        placeholder={props.placeholder}
+        onChange={(e) => {
+          setText(e.target.value);
+          props.onUpdate?.(e);
+        }}
+        onBlur={props.onBlur}
+        endContent={endContent}
+      />
       {isSpeaking && (
-        <p className="mt-2 text-xs sm:text-sm flex items-center gap-2" style={{ color: branding.brandColor }}>
-          <span className="inline-block w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: branding.brandColor }}></span>
+        <p className="mt-2 text-xs sm:text-sm text-blue-600 dark:text-blue-400 flex items-center gap-2">
+          <span className="inline-block w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></span>
           Speaking...
         </p>
       )}
@@ -249,7 +192,7 @@ export function TextToSpeech(props: TextToSpeechProps){
 
   if (props.needTooltip && props.tooltipProps) {
     return (
-      <Tooltip title={props.tooltipProps.title} placement={props.tooltipProps.placement} triggerClassName="h-full w-full">
+      <Tooltip title={props.tooltipProps.title} placement={props.tooltipProps.placement}>
         {finalElement}
       </Tooltip>
     );

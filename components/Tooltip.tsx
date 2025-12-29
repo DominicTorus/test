@@ -18,7 +18,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   title,
   placement,
   className = "",
-  triggerClassName = "",
+  triggerClassName = "inline-block",
   disable = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -76,28 +76,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
       setPosition({ top, left });
     }
-
-    // Hide tooltip on scroll or any click
-    const handleScroll = () => {
-      if (isVisible) {
-        setIsVisible(false);
-      }
-    };
-
-    const handleAnyClick = () => {
-      if (isVisible) {
-        setIsVisible(false);
-      }
-    };
-
-    if (isVisible) {
-      window.addEventListener('scroll', handleScroll, true);
-      window.addEventListener('click', handleAnyClick, true);
-      return () => {
-        window.removeEventListener('scroll', handleScroll, true);
-        window.removeEventListener('click', handleAnyClick, true);
-      };
-    }
   }, [isVisible, placement]);
 
   const getThemeClasses = () => {
@@ -119,8 +97,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         ref={triggerRef}
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
-        onClick={() => setIsVisible(false)}
-        className={`w-full h-full ${triggerClassName}`}
+        // className={triggerClassName}
       >
         {children}
       </div>
@@ -139,5 +116,3 @@ export const Tooltip: React.FC<TooltipProps> = ({
     </>
   );
 };
-
- 

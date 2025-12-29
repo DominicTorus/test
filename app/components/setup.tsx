@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import {
   DeleteIcon,
   GeneralSettingsIcon,
@@ -16,26 +16,21 @@ import {
   handleDelete,
   handleDeleteGroupAndMembers
 } from '../components/utils'
+import { Menu, Modal } from '@gravity-ui/uikit'
+import { Button } from '@/components/Button'
+import { Card } from '@/components/Card'
+import { Text } from '@/components/Text'
 import { useInfoMsg } from '@/app/components/infoMsgHandler'
 import { getCookie } from '@/app/components/cookieMgment'
 import { AxiosService } from '@/app/components/axiosService'
 import { isLightColor } from '@/app/components/utils'
 import UserTable from './userTable'
 import AccessTemplateTable from './accessTemplateTable'
+import { TotalContext, TotalContextProps } from '@/app/globalContext'
 import GeneralSettings from './generalSettings'
+import { useGravityThemeClass } from '../utils/useGravityUITheme'
 import { checkDataAccess } from '../utils/checkDAP'
 import OPRMatrix from './OprMatrix'
-import { useGlobal } from '@/context/GlobalContext'
-import { useTheme } from '@/hooks/useTheme'
-import { Text } from '@/components/Text'
-import { Modal } from '@/components/Modal'
-import { Button } from '@/components/Button'
-import { Menu } from '@/components/Menu'
-import { twMerge } from 'tailwind-merge'
-import i18n from './i18n'
-import { Tabs } from '@/components/Tabs'
-import OrganizationLink from './OprMatrix/OrganizationLink'
-import clsx from 'clsx'
 
 type SettingTabs = 'org' | 'st' | 'user' | 'general'
 
@@ -71,8 +66,6 @@ export interface SetupScreenContextType {
   setTemplateToBeUpdated: React.Dispatch<
     React.SetStateAction<Record<string, any> | null>
   >
-  orgMasterData: any
-  setOrgMasterData: React.Dispatch<React.SetStateAction<any>>
 }
 
 export const SetupScreenContext =
@@ -83,24 +76,29 @@ const SetupScreen = ({
 }: {
   tenantAccess: 'view' | 'edit' | null | undefined
 }) => {
-  const [selectedMenuItem, setSelectedMenuItem] = useState<SettingTabs>('general')
+  const [selectedMenuItem, setSelectedMenuItem] =
+    useState<SettingTabs>('general')
   const [orgGrpData, setOrgGrpData] = useState<any>([])
-  const [tenantProfileData, setTenantProfileData] = useState<Record<string, any>>({})
+  const [tenantProfileData, setTenantProfileData] = useState<
+    Record<string, any>
+  >({})
   const [securityData, setSecurityData] = useState<any>([])
   const [userProfileData, setUserProfileData] = useState<any>([])
   const [loading, setLoading] = useState(true)
-  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({})
-  const { branding } = useGlobal()
-  const { borderColor, textColor, bgColor, isDark } = useTheme()
-  const { brandColor } = branding
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
+    {}
+  )
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
   const [focusedPath, setFocusedPath] = useState<string | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [psList, setPSList] = useState<Set<string>>(new Set())
   const [assignedOPRList, setAssignedOPRList] = useState<Array<string>>([])
   const [refetch, setRefetch] = useState(false)
+  const { property, setProperty } = useContext(
+    TotalContext
+  ) as TotalContextProps
+  let brandcolor: string = property?.brandColor ?? '#0736c4'
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState<'orgsetup' | 'oprmatrix'>('orgsetup')
   const [masterState, setMasterState] = useState<Record<string, any>>({
     profile: {},
     org: [],
@@ -115,19 +113,18 @@ const SetupScreen = ({
   const tenant = process.env.NEXT_PUBLIC_TENANT_CODE
   const ag = process.env.NEXT_PUBLIC_APPGROUPCODE
   const app = process.env.NEXT_PUBLIC_APPCODE
+  const themeClass = useGravityThemeClass()
   const userManagementAccess = useMemo(
     () => checkDataAccess(getCookie('token')),
     []
   )
-  const [indexOfTemplateToBeUpdated, setIndexOfTemplateToBeUpdated] = useState<number | null>(null)
-  const [templateToBeUpdated, setTemplateToBeUpdated] = useState<Record<string, any> | null>(null)
-  const [isView, setIsView] = useState(false)
-  const [currentLang, setCurrentLang] = useState(getCookie('cfg_lang')) // 'en'
-  const keyset = useMemo(() => {
-    return i18n.keyset('language')
-  }, [currentLang]) // i18n.keyset('language')
-  const [orgMasterData, setOrgMasterData] = useState([])
-  let srcOrgIds: Array<string> = []
+  const [indexOfTemplateToBeUpdated, setIndexOfTemplateToBeUpdated] = useState<
+    number | null
+  >(null)
+  const [templateToBeUpdated, setTemplateToBeUpdated] = useState<Record<
+    string,
+    any
+  > | null>(null)
 
   const onUpdateSecurityData = (updatedData: any[]) => {
     setSecurityData(updatedData)
@@ -173,33 +170,6 @@ const SetupScreen = ({
     onUpdateSecurityData([...securityData, newTemplate])
   }
 
-  type AnyObject = Record<string, any>
-  function collectUniqueSrcIds(data: AnyObject | AnyObject[]): string[] {
-    const srcIdSet = new Set<string>()
-
-    function traverse(node: AnyObject) {
-      if (!node || typeof node !== 'object') return
-
-      if (typeof node.srcId === 'string') {
-        srcIdSet.add(node.srcId) // Set ensures uniqueness
-      }
-
-      for (const key in node) {
-        const value = node[key]
-
-        if (Array.isArray(value)) {
-          value.forEach(traverse)
-        } else if (typeof value === 'object' && value !== null) {
-          traverse(value)
-        }
-      }
-    }
-
-    Array.isArray(data) ? data.forEach(traverse) : traverse(data)
-
-    return Array.from(srcIdSet)
-  }
-
   const getOrgAndUserData = async () => {
     try {
       if (!userManagementAccess) return
@@ -213,17 +183,10 @@ const SetupScreen = ({
       )
       if (response.status === 200) {
         if (
-          response?.data?.orgMaster &&
-          Array.isArray(response?.data?.orgMaster)
-        ) {
-          setOrgMasterData(response?.data?.orgMaster)
-        }
-        if (
           response?.data?.orgMatrix &&
           Array.isArray(response?.data?.orgMatrix)
         ) {
           setOrgGrpData(response?.data?.orgMatrix)
-          srcOrgIds = collectUniqueSrcIds(response?.data.orgMatrix ?? [])
           setMasterState(prev => ({
             ...prev,
             org: response?.data?.orgMatrix
@@ -265,22 +228,22 @@ const SetupScreen = ({
       return [
         {
           name: 'General',
-          svg: <GeneralSettingsIcon fill={isDark ? "white" : "black"} />,
+          svg: <GeneralSettingsIcon fill={`var(--g-color-text-primary)`} />,
           code: 'general'
         },
         {
           name: 'Organizational Matrix',
-          svg: <Org fill={isDark ? "white" : "black"} />,
+          svg: <Org fill={`var(--g-color-text-primary)`} />,
           code: 'org'
         },
         {
           name: 'Access Template',
-          svg: <Security fill={isDark ? "white" : "black"} />,
+          svg: <Security fill={`var(--g-color-text-primary)`} />,
           code: 'st'
         },
         {
           name: 'User Management',
-          svg: <Management fill={isDark ? "white" : "black"} />,
+          svg: <Management fill={`var(--g-color-text-primary)`} />,
           code: 'user'
         }
       ]
@@ -288,12 +251,12 @@ const SetupScreen = ({
       return [
         {
           name: 'General',
-          svg: <GeneralSettingsIcon fill={isDark ? "white" : "black"} />,
+          svg: <GeneralSettingsIcon fill={`var(--g-color-text-primary)`} />,
           code: 'general'
         }
       ]
     }
-  }, [selectedMenuItem, isDark])
+  }, [selectedMenuItem])
 
   const resetStates = (code: 'org' | 'st' | 'user' | string) => {
     switch (code) {
@@ -315,47 +278,35 @@ const SetupScreen = ({
     setSelectedMenuItem(itemCode)
     setSelectedItems({})
     setSelectedRows(new Set())
-    setTemplateToBeUpdated(null)
-    setIndexOfTemplateToBeUpdated(null)
     resetStates(itemCode)
-    setActiveTab("orgsetup")
   }
 
-  const saveJson = async (key: string, data: any) => {
-    const res = await AxiosService.post(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/UF/setJson?key=${key}`,
-      { data },
-      {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
+  const masterSave = async (isDeletion: boolean = false, data?: any) => {
+    if (!isDeletion) {
+      if (selectedMenuItem == 'org') {
+        if (findPath(orgGrpData, '')) {
+          toast(
+            'Please fill all the fields to save organization matrix',
+            'warning'
+          )
+          return
         }
       }
-    )
-
-    return res.status === 201
-  }
-
-  const masterSave = async (isDeletion: boolean = false) => {
-    if (!isDeletion && selectedMenuItem === 'org') {
-      if (findPath(orgGrpData, '')) {
-        toast(
-          'Please fill all the fields to save organization matrix',
-          'warning'
-        )
-        return
-      }
     }
-
-    const orgKey = `CK:TGA:FNGK:SETUP:FNK:SF:CATK:${tenant}:AFGK:${ag}:AFK:${app}:AFVK:v1:orgMatrix`
-    const orgMasterKey = `CK:TGA:FNGK:SETUP:FNK:SF:CATK:${tenant}:AFGK:${ag}:AFK:${app}:AFVK:v1:orgMaster`
-
+    const key = `CK:TGA:FNGK:SETUP:FNK:SF:CATK:${tenant}:AFGK:${ag}:AFK:${app}:AFVK:v1:orgMatrix`
     try {
-      const results = await Promise.all([
-        saveJson(orgKey, orgGrpData),
-        saveJson(orgMasterKey, orgMasterData)
-      ])
-
-      if (results.every(Boolean)) {
+      const res = await AxiosService.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/UF/setJson?key=${key}`,
+        {
+          data: orgGrpData
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getCookie('token')}`
+          }
+        }
+      )
+      if (res.status == 201) {
         setRefetch(prev => !prev)
         toast(
           `Data ${isDeletion ? 'Deleted' : 'Saved'} Successfully`,
@@ -365,7 +316,7 @@ const SetupScreen = ({
         toast('Something went wrong', 'danger')
       }
     } catch (error) {
-      toast('Something went wrong', 'danger')
+      console.error(error)
     }
   }
 
@@ -736,234 +687,204 @@ const SetupScreen = ({
             indexOfTemplateToBeUpdated,
             setIndexOfTemplateToBeUpdated,
             templateToBeUpdated,
-            setTemplateToBeUpdated,
-            orgMasterData,
-            setOrgMasterData
+            setTemplateToBeUpdated
           }}
         >
           <div
-            className={`g-root flex h-[90%] w-full flex-col overflow-hidden`}
+            className={`g-root flex h-[90%] w-full flex-col overflow-hidden ${themeClass}`}
           >
-            <div
-              className={'flex w-full items-center justify-between px-2'}
-            >
-              {/* LEFT : TITLE */}
-              <Text variant='header-1' className='whitespace-nowrap'>
-                {keyset('User Management')}
+            <div className='flex w-2/3  items-center justify-between px-2'>
+              <Text variant='header-1' className='text-nowrap'>
+                User Management
               </Text>
-
-              {/* CENTER : SEARCH + ACTIONS */}
-              <div className='flex items-center gap-2 py-2 w-full'>
+              <div className='flex items-center gap-2 py-2'>
                 <div
                   style={{
                     visibility:
-                      selectedMenuItem === 'general' ? 'hidden' : 'visible'
+                      selectedMenuItem == 'general' ? 'hidden' : 'unset',
+                    borderColor: 'var(--g-color-line-generic)'
                   }}
-                  className={twMerge(
-                    'flex h-fit items-center gap-2 rounded border px-2',
-                    borderColor
-                  )}
+                  className='flex h-fit items-center gap-2 rounded border px-2'
                 >
-                  <SearchIcon
-                    fill={isDark ? 'white' : 'black'}
-                    height='12'
-                    width='12'
-                  />
+                  <span>
+                    <SearchIcon
+                      fill={themeClass.includes('dark') ? '#ffffff' : '#000000'}
+                      height='12'
+                      width='12'
+                    />
+                  </span>
                   <input
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    placeholder={keyset('Search')}
-                    className={twMerge('px-2 py-1.5 outline-none', bgColor)}
+                    placeholder={'Search'}
+                    style={{
+                      backgroundColor: 'var(--g-color-base-background)',
+                      color: 'var(--g-color-text-primary)'
+                    }}
+                    className='px-2 py-1.5 outline-none'
                   />
                 </div>
-
-                <div
-                  className='flex items-center gap-2'
-                  style={{
-                    visibility:
-                      selectedMenuItem === 'general' ? 'hidden' : 'visible'
-                  }}
-                >
-                  {/* PLUS BUTTON */}
-                  <button
-                    hidden={
-                      selectedMenuItem == 'user' ||
-                      selectedMenuItem == 'org' ||
-                      (selectedMenuItem == 'st' && templateToBeUpdated)
-                        ? true
-                        : false
-                    }
-                    onClick={handlePlusButtonClick}
+                <div className=' flex items-center'>
+                  <div
+                    className=' flex items-center gap-2'
                     style={{
-                      backgroundColor: brandColor,
-                      opacity:
-                        selectedMenuItem === 'org' && !focusedPath ? 0.5 : 1
+                      visibility:
+                        selectedMenuItem == 'general' ? 'hidden' : 'unset'
                     }}
-                    className='rounded-md px-2 py-1.5 outline-none'
-                    disabled={tenantAccess !== 'edit'}
                   >
-                    <PlusIcon
-                      fill={isLightColor(brandColor)}
-                      height='16'
-                      width='16'
-                    />
-                  </button>
-
-                  {/* DELETE BUTTON */}
-                  <button
-                    hidden={
-                      selectedMenuItem == 'user' ||
-                      selectedMenuItem == 'org' ||
-                      (selectedMenuItem == 'st' && templateToBeUpdated)
-                        ? true
-                        : false
-                    }
-                    className={`${
-                      selectedMenuItem === 'org' ? 'hidden' : ''
-                    } outline-none ${
-                      ((selectedMenuItem === 'st' ||
-                        selectedMenuItem === 'user') &&
-                        Array.from(selectedRows).filter(Boolean).length > 0) ||
-                      (Object.keys(selectedItems).length > 0 &&
-                        Object.values(selectedItems).includes(true))
-                        ? 'bg-[#F14336]'
-                        : 'bg-[#F14336]/50'
-                    } rounded-md px-2 py-1.5`}
-                    disabled={
-                      selectedMenuItem === 'st' || selectedMenuItem === 'user'
-                        ? Array.from(selectedRows).filter(Boolean).length > 0
-                          ? false
-                          : true
-                        : Object.keys(selectedItems).length > 0 &&
-                          Object.values(selectedItems).includes(true)
-                        ? tenantAccess != 'edit'
+                    <button
+                      hidden={
+                        selectedMenuItem == 'user' || selectedMenuItem == 'org' || (selectedMenuItem == "st" && templateToBeUpdated)
                           ? true
                           : false
-                        : true
-                    }
-                    onClick={() => setDeleteModalOpen(true)}
-                  >
-                    <DeleteIcon fill='white' height='16' width='16' />
-                  </button>
-                  <Modal
-                    className='w-[25.5vw] lg:w-[20.5vw]'
-                    onClose={() => setDeleteModalOpen(false)}
-                    showCloseButton={false}
-                    open={deleteModalOpen}
-                  >
-                    <div className='flex items-center justify-between'>
-                      <Text
-                        variant='header-1'
-                        className='flex items-center gap-2 text-[#EB5757]'
-                      >
-                        <DeleteIcon fill='#EB5757' />
-                        {selectedMenuItem === 'st'
-                          ? keyset('Delete AccessTemplate')
-                          : selectedMenuItem === 'user' &&
-                            keyset('Delete User')}
-                      </Text>
-                      <Button onClick={() => setDeleteModalOpen(false)}>
-                        <Multiply fill={isDark ? 'white' : 'black'} />
-                      </Button>
-                    </div>
-                    <hr className={twMerge('w-full', borderColor)} />
-                    <div className='flex w-full flex-col gap-2 p-2'>
-                      <Text variant='body-3'>
-                        {selectedMenuItem === 'st'
-                          ? keyset(
-                              'Are you sure you want to delete this template?'
-                            )
-                          : selectedMenuItem === 'user' &&
-                            keyset(
-                              'Are you sure you want to delete this user?'
-                            )}
-                      </Text>
-                      <Text variant='body-1' color='secondary'>
-                        {selectedMenuItem === 'st'
-                          ? keyset(
-                              'Deleting the template will remove all associated'
-                            )
-                          : selectedMenuItem === 'user' &&
-                            keyset(
-                              'Deleting the user will remove all associated'
-                            )}
-                      </Text>
-                    </div>
-                    <hr className={twMerge('w-full', borderColor)} />
-                    <div className='flex w-full items-center justify-end gap-2 p-2 pb-0'>
-                      <Button
-                        view='raised'
-                        onClick={() => setDeleteModalOpen(false)}
-                      >
-                        {keyset('Cancel')}
-                      </Button>
-                      <Button
-                        view='normal-contrast'
-                        onClick={handleDeleteButtonClick}
-                      >
-                        {keyset('Delete')}
-                      </Button>
-                    </div>
-                  </Modal>
+                      }
+                      onClick={handlePlusButtonClick}
+                      style={{
+                        backgroundColor: brandcolor,
+                        opacity:
+                          selectedMenuItem === 'org' && !focusedPath ? 0.5 : 1
+                      }}
+                      className={`rounded-md px-2 py-1.5 outline-none`}
+                      disabled={tenantAccess != 'edit'}
+                    >
+                      <PlusIcon
+                        fill={isLightColor(brandcolor)}
+                        height='16'
+                        width='16'
+                      />
+                    </button>
 
-                  {/* SAVE BUTTON */}
-                  <button
-                    onClick={handleSaveButtonClick}
-                    className='rounded-md bg-[#1C274C] px-2 py-1.5 outline-none'
-                    disabled={tenantAccess !== 'edit' || isView}
-                    hidden={selectedMenuItem === 'user'}
-                  >
-                    <SaveIcon height='18' width='18' />
-                  </button>
+                    <button
+                      hidden={selectedMenuItem == 'user' || selectedMenuItem == 'org' || (selectedMenuItem == "st" && templateToBeUpdated)
+                          ? true
+                          : false}
+                      className={`${
+                        selectedMenuItem === 'org' ? 'hidden' : ''
+                      } outline-none ${
+                        ((selectedMenuItem === 'st' ||
+                          selectedMenuItem === 'user') &&
+                          Array.from(selectedRows).filter(Boolean).length >
+                            0) ||
+                        (Object.keys(selectedItems).length > 0 &&
+                          Object.values(selectedItems).includes(true))
+                          ? 'bg-[#F14336]'
+                          : 'bg-[#F14336]/50'
+                      } rounded-md px-2 py-1.5`}
+                      disabled={
+                        selectedMenuItem === 'st' || selectedMenuItem === 'user'
+                          ? Array.from(selectedRows).filter(Boolean).length > 0
+                            ? false
+                            : true
+                          : Object.keys(selectedItems).length > 0 &&
+                            Object.values(selectedItems).includes(true)
+                          ? tenantAccess != 'edit'
+                            ? true
+                            : false
+                          : true
+                      }
+                      onClick={() => setDeleteModalOpen(true)}
+                    >
+                      <DeleteIcon fill='white' height='16' width='16' />
+                    </button>
+                    <Modal open={deleteModalOpen} disableOutsideClick>
+                      <Card className='p-2'>
+                        <div className='flex w-full items-center justify-between px-2 pb-2'>
+                          <Text
+                            variant='header-1'
+                            className='flex items-center gap-2 text-[#EB5757]'
+                          >
+                            <DeleteIcon fill='#EB5757' />
+                            {selectedMenuItem === 'st'
+                              ? 'Delete AccessTemplate'
+                              : selectedMenuItem === 'user' && 'Delete User'}
+                          </Text>
+                          <button onClick={() => setDeleteModalOpen(false)}>
+                            <Multiply fill='var(--g-color-text-secondary)' />
+                          </button>
+                        </div>
+                        <hr
+                          className='w-full'
+                          style={{ borderColor: 'var(--g-color-line-generic)' }}
+                        />
+                        <div className='flex w-full flex-col gap-2 p-2'>
+                          <Text variant='header-2'>
+                            {selectedMenuItem === 'st'
+                              ? 'Are you sure you want to delete this template?'
+                              : selectedMenuItem === 'user' &&
+                                'Are you sure you want to delete this user?'}
+                          </Text>
+                          <Text variant='body-1' color='secondary'>
+                            {selectedMenuItem === 'st'
+                              ? 'Deleting the template will remove all associated'
+                              : selectedMenuItem === 'user' &&
+                                'Deleting the user will remove all associated'}
+                          </Text>
+                        </div>
+                        <hr
+                          className='w-full'
+                          style={{ borderColor: 'var(--g-color-line-generic)' }}
+                        />
+                        <div className='flex w-full items-center justify-end gap-2 p-2 pb-0'>
+                          <Button
+                            view='flat'
+                            onClick={() => setDeleteModalOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            view='flat'
+                            onClick={handleDeleteButtonClick}
+                            style={{
+                              backgroundColor: '#EB5757',
+                              color: 'white'
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </Card>
+                    </Modal>
+
+                    <button
+                      onClick={handleSaveButtonClick}
+                      className={`rounded-md bg-[#1C274C] px-2 py-1.5 outline-none`}
+                      disabled={tenantAccess != 'edit'}
+                      hidden={selectedMenuItem == 'user' ? true : false}
+                    >
+                      <SaveIcon height='18' width='18' />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* RIGHT : TABS */}
-              {selectedMenuItem === 'org' && (
-                <Tabs
-                  direction='horizontal'
-                  items={[
-                    { id: 'orgsetup', title: 'Organization Setup' },
-                    { id: 'oprmatrix', title: 'OPR Matrix' }
-                  ]}
-                  onChange={setActiveTab}
-                  defaultActiveId='orgsetup'
-                  className='!w-[900px]'
-                />
-              )}
             </div>
-
-            <hr className={twMerge('w-full', borderColor)}></hr>
-            <div className={clsx(`flex h-[85vh]`, {
-              "h-fit": selectedMenuItem === 'st'
-            })}>
+            <hr
+              style={{ borderColor: 'var(--g-color-line-generic)' }}
+              className=' w-full'
+            ></hr>
+            <div className='flex h-[85vh]'>
               <div
                 style={{
-                  borderRight: `1px solid ${borderColor}`,
+                  borderRight: `1px solid var(--g-color-line-generic)`,
                   minWidth: '200px'
                 }}
-                className={twMerge(`border-r`, borderColor)}
               >
-                <Menu size='s' className='h-full'>
+                <Menu size='xl' className='h-full'>
                   {menuItems.map(item => (
                     <Menu.Item
                       iconStart={item.svg}
                       key={item.code}
-                      className='truncate text-nowrap'
+                      className='text-nowrap'
                       active={selectedMenuItem === item.code}
                       onClick={() => handleMenuClick(item.code as SettingTabs)}
                     >
-                      <span title={keyset(item.name)}>{keyset(item.name)}</span>
+                      {item.name}
                     </Menu.Item>
                   ))}
                 </Menu>
               </div>
-              <div className='flex h-full w-full px-2 py-3'>
+              <div className='flex h-full w-full overflow-hidden px-2 py-3'>
                 {selectedMenuItem == 'general' ? (
-                  <GeneralSettings
-                    currentLang={currentLang}
-                    setCurrentLang={setCurrentLang}
-                  />
+                  <GeneralSettings />
                 ) : selectedMenuItem === 'user' ? (
                   <UserTable
                     data={userProfileData}
@@ -971,17 +892,11 @@ const SetupScreen = ({
                   />
                 ) : selectedMenuItem === 'org' ? (
                   <div className='w-full'>
-                    {activeTab === 'orgsetup' ? (
-                      <OrganizationLink
-                        srcOrgIds={srcOrgIds}
-                        assignedOPRList={assignedOPRList}
-                      />
-                    ) : (
-                      <OPRMatrix assignedOPRList={assignedOPRList} />
-                    )}
+                    <OPRMatrix assignedOPRList={assignedOPRList} />
+                    {/* <OrgMatrix tenantAccess={'edit'} /> */}
                   </div>
                 ) : (
-                  selectedMenuItem === 'st' && <AccessTemplateTable isView={isView} setIsView={setIsView} />
+                  selectedMenuItem === 'st' && <AccessTemplateTable />
                 )}
               </div>
             </div>

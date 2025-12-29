@@ -5,21 +5,19 @@ import { useGlobal } from "@/context/GlobalContext";
 import { Tooltip } from "./Tooltip";
 import { Radio } from "./Radio";
 import { CheckboxSize, HeaderPosition, TooltipProps as TooltipPropsType } from "@/types/global";
-import { getFontSizeClass } from "@/app/utils/branding";
+import { getFontSizeClass } from "@/utils/branding";
 
-type ContentAlign = "left" | "center" | "right";
 interface RadioGroupItem {
   value: string;
   content: string;
 }
 
 interface RadioGroupProps {
+  size: CheckboxSize;
   disabled?: boolean;
   direction?: "horizontal" | "vertical";
   items: RadioGroupItem[];
   value?: string;
-  content?: string;
-  contentAlign?: ContentAlign;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
   headerText?: string;
@@ -29,12 +27,11 @@ interface RadioGroupProps {
 }
 
 export const RadioGroup: React.FC<RadioGroupProps> = ({
+  size,
   disabled = false,
   direction = "vertical",
   items,
   value = "",
-  content = "",
-  contentAlign = "center",
   needTooltip = false,
   tooltipProps,
   headerText,
@@ -51,28 +48,20 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   };
 
   const isDark = theme === "dark" || theme === "dark-hc";
-  const getContentAlignClasses = () => {
-    switch (contentAlign) {
-      case "left":
-        return "justify-start";
-      case "right":
-        return "justify-end";
-      case "center":
-      default:
-        return "justify-center";
-    }
-  };
+  const radioSize = size === "m" ? "m" : "l";
+
   const radioGroupElement = (
     <div
-      className={`w-full h-full flex gap-2 overflow-hidden ${direction === "horizontal" ? "flex-row flex-auto shrink " : "flex-col"}`}
+      className={`flex ${direction === "horizontal" ? "flex-row flex-wrap gap-4" : "flex-col gap-3"} ${className}`}
     >
       {items.map((item) => (
         <Radio
           key={item.value}
           checked={selectedValue === item.value}
+          className={className}
+          size={radioSize}
           disabled={disabled}
           content={item.content}
-          className={className}
           value={item.value}
           name="radio-group"
           onChange={handleChange}
@@ -82,45 +71,47 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   );
 
   const renderWithHeader = (element: React.ReactNode) => {
-    if (!headerText) return <div className={`h-full w-full`}>{element}</div>
+    if (!headerText) return element;
 
-    const headerClasses = `
-      flex h-full w-full overflow-hidden text-ellipsis whitespace-nowrap 
-      ${isDark ? 'text-gray-300' : 'text-gray-700'} 
-      ${getFontSizeClass(branding.fontSize)}
-      ${className}
-    `
+    const headerClasses = ` font-semibold mb-2 ${
+      isDark ? "text-gray-300" : "text-gray-700"
+    }`;
+
     switch (headerPosition) {
-      case 'top':
+      case "top":
         return (
-          <div className={`${headerClasses} flex-col`}>
-            <div className='font-semibold'>{headerText}</div>
+          <div className={`flex flex-col ${className}`}>
+            <div className={headerClasses}>{headerText}</div>
             {element}
           </div>
-        )
-      case 'bottom':
+        );
+      case "bottom":
         return (
-          <div className={`${headerClasses} flex-col`}>
+          <div className={`flex flex-col ${className}`}>
             {element}
-            <div className='mt-1 font-semibold'>{headerText}</div>
+            <div className={`${headerClasses} mt-2 mb-0`}>{headerText}</div>
           </div>
-        )
-      case 'left':
+        );
+      case "left":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
-            <div className={`mb-0 min-w-0  font-semibold overflow-hidden`}>{headerText}</div>
+          <div className={`flex items-start gap-4 ${className}`}>
+            <div className={`${headerClasses} mb-0 whitespace-nowrap pt-1`}>
+              {headerText}
+            </div>
             {element}
           </div>
-        )
-      case 'right':
+        );
+      case "right":
         return (
-          <div className={`${headerClasses} items-center gap-4`}>
+          <div className={`flex items-start gap-4 ${className}`}>
             {element}
-            <div className={`mb-0 min-w-0 font-semibold overflow-hidden`}>{headerText}</div>
+            <div className={`${headerClasses} mb-0 whitespace-nowrap pt-1`}>
+              {headerText}
+            </div>
           </div>
-        )
+        );
     }
-  }
+  };
 
   const finalElement = renderWithHeader(radioGroupElement);
 

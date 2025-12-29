@@ -44,15 +44,7 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   const [language, setLanguage] = useState<Language>("English");
-
-  // Initialize direction from cookie or default to "LTR"
-  const [direction, setDirectionState] = useState<Direction>(() => {
-    if (typeof window !== 'undefined') {
-      const savedDirection = getCookie('cfg_direction');
-      return (savedDirection as Direction) || "LTR";
-    }
-    return "LTR";
-  });
+  const [direction, setDirection] = useState<Direction>("LTR");
   const [branding, setBrandingState] = useState<Branding>({
     fontSize: "Medium",
     brandColor: "#00BFFF",
@@ -73,12 +65,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
     setCookie('cfg_theme', newTheme);
   };
 
-  // Wrapper to save direction to cookie when it changes
-  const setDirection = (newDirection: Direction) => {
-    setDirectionState(newDirection);
-    setCookie('cfg_direction', newDirection);
-  };
-
   const setBranding = (newBranding: Branding) => {
     setBrandingState(newBranding);
   };
@@ -94,13 +80,6 @@ export const GlobalProvider: React.FC<{ children: ReactNode }> = ({
   const updateTypography = (updates: Partial<Typography>) => {
     setTypographyState((prev) => ({ ...prev, ...updates }));
   };
-
-  // Apply direction to document element
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.dir = direction.toLowerCase();
-    }
-  }, [direction]);
 
   return (
     <GlobalContext.Provider
@@ -131,4 +110,3 @@ export const useGlobal = () => {
   }
   return context;
 };
- 

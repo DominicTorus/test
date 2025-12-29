@@ -1,60 +1,61 @@
 'use client'
 import React,{ useEffect, useState,useContext, useRef } from 'react';
+import { Grid } from "@gravity-ui/page-constructor";
 import { AxiosService } from '@/app/components/axiosService';
 import { uf_authorizationCheckDto } from '@/app/interfaces/interfaces';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useRouter } from 'next/navigation';
 import { getRouteScreenDetails } from '@/app/utils/assemblerKeys';
-import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
-import { Button } from '@/components/Button';
-import { Text } from '@/components/Text';
-import { Icon } from '@/components/Icon';
-import { Modal } from '@/components/Modal';
+import { Magnifier,Xmark } from '@gravity-ui/icons'
+import { Button, Icon, Modal } from '@gravity-ui/uikit'
 import { eventBus } from '@/app/eventBus';
-import clsx from "clsx";
-import Buttonbutton  from "./Buttonbutton";
-import Avataravatar  from "./Avataravatar";
-import RadioGroupradiogroup  from "./RadioGroupradiogroup";
-import DatePickerdatepicker  from "./DatePickerdatepicker";
-import Checkboxcheckbox  from "./Checkboxcheckbox";
-import Dropdowndropdown  from "./Dropdowndropdown";
-import Documentuploaderupload  from "./Documentuploaderupload";
-import Labellabel  from "./Labellabel";
-import Cardcard  from "./Cardcard";
-import Imageimage  from "./Imageimage";
 import TextInputtextinput  from "./TextInputtextinput";
-import Iconicon  from "./Iconicon";
-import Listlist  from "./Listlist";
-import PinInputpinInput  from "./PinInputpinInput";
-import Progressprogress  from "./Progressprogress";
-import QrCodeqrcode  from "./QrCodeqrcode";
-import RadioButtonradioButton  from "./RadioButtonradioButton";
-import Radioradio  from "./Radioradio";
-import SpeechToTextInputspeechtotext  from "./SpeechToTextInputspeechtotext";
-import TextToSpeechOutputtexttospeech  from "./TextToSpeechOutputtexttospeech";
-import Texttext  from "./Texttext";
-import Switchswitch  from "./Switchswitch";
+import Documentuploaderupload  from "./Documentuploaderupload";
 import TextAreatextarea  from "./TextAreatextarea";
-import TimePickertimepicker  from "./TimePickertimepicker";
+import Radioradio  from "./Radioradio";
+import RadioGroupradiogroup  from "./RadioGroupradiogroup";
+import Switchswitch  from "./Switchswitch";
+import PinInputpininput  from "./PinInputpininput";
+import Buttonsave  from "./Buttonsave";
+import RadioButtonradiobutton  from "./RadioButtonradiobutton";
+import CheckBoxcheckbox  from "./Checkboxcheckbox";
 import Signaturesignature  from "./Signaturesignature";
+import DocumentViewerviewer  from "./DocumentViewerviewer";
+import Cardcard  from "./Cardcard";
+import TimePickertimePicker  from "./TimePickertimePicker";
 import Sliderslider  from "./Sliderslider";
+import QrCodeqrcode  from "./QrCodeqrcode";
+import Imageimage  from "./Imageimage";
+import Dropdowndropdown  from "./Dropdowndropdown";
+import Iconicon  from "./Iconicon";
+import Texttext  from "./Texttext";
+import Labellabel  from "./Labellabel";
+import Listlist  from "./Listlist";
+import DatePickerdatepicker  from "./DatePickerdatepicker";
+import TreeViewerjsonviewer  from "./TreeViewerjsonviewer";
+import Avataravatar  from "./Avataravatar";
+import CompanyCardcompanycard  from "./CompanyCardcompanycard";
+import Progressprogress  from "./Progressprogress";
+import TextToSpeechOutputtexttospeech  from "./TextToSpeechOutputtexttospeech";
+import SpeechToTextInputspeechtotext  from "./SpeechToTextInputspeechtotext";
+import Tabstabs  from "./Tabstabs";
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { getCookie } from "@/app/components/cookieMgment";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { useTheme } from '@/hooks/useTheme';
 
 
-const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,isFormOpen=false}:any) => {
+const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,paginationDetails,isFormOpen=false}:any)=> {
   const token:string = getCookie('token'); 
+  const { isDark, isHighContrast, bgStyle, textStyle } = useTheme();
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
-  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
-  const handleDfdRefresh = useHandleDfdRefresh();
-  const code:any = ``;
-  let idx = "";
-  let item = "";
-  const { isDark, isHighContrast, bgStyle, textStyle } = useTheme();
+  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
+  let code:any = ``;
+  let idx = ""
+  let item = ""
+  const {dfd_code_description_v1Props, setdfd_code_description_v1Props} = useContext(TotalContext) as TotalContextProps;
   const encryptionFlagComp: boolean = encryptionFlagPageData?.flag || false;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagPageData?.dpd;
@@ -68,37 +69,40 @@ const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPr
   const securityData:any={
   "Employee": {
     "allowedControls": [
-      "button",
-      "avatar",
-      "radiogroup",
-      "datepicker",
-      "checkbox",
-      "dropdown",
-      "upload",
-      "label",
-      "card",
-      "image",
       "textinput",
-      "icon",
-      "list",
-      "pininput",
-      "progress",
-      "qrcode",
-      "radiobutton",
-      "radio",
-      "speechtotext",
-      "texttospeech",
-      "text",
-      "switch",
+      "upload",
       "textarea",
-      "timepicker",
+      "radio",
+      "radiogroup",
+      "switch",
+      "pininput",
+      "save",
+      "radiobutton",
+      "checkbox",
       "signature",
-      "slider"
+      "viewer",
+      "card",
+      "timepicker",
+      "slider",
+      "qrcode",
+      "image",
+      "dropdown",
+      "icon",
+      "text",
+      "label",
+      "list",
+      "datepicker",
+      "jsonviewer",
+      "avatar",
+      "companycard",
+      "progress",
+      "texttospeech",
+      "speechtotext",
+      "tabs"
     ],
     "allowedGroups": [
       "canvas",
-      "firstgroup",
-      "secondgroup"
+      "firstgroup"
     ],
     "blockedControls": [],
     "readOnlyControls": []
@@ -106,6 +110,7 @@ const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPr
 };
   const prevRefreshRef = useRef(false);
   const [allowedComponent,setAllowedComponent]=useState<any>("");
+  const [allowedControls,setAllowedControls]=useState<any>("");
   const toast=useInfoMsg();
   const confirmMsgFlag: boolean = false;
   const [allCode,setAllCode]=useState<any>("");
@@ -114,151 +119,151 @@ const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPr
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
  /////////////
    //another screen
-  const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
-  const {firstgroupc08a7Props, setfirstgroupc08a7Props}= useContext(TotalContext) as TotalContextProps;
-  const {button6c543, setbutton6c543}= useContext(TotalContext) as TotalContextProps;
-  const {button6c543Props, setbutton6c543Props}= useContext(TotalContext) as TotalContextProps;
-  const {avatard99b3, setavatard99b3}= useContext(TotalContext) as TotalContextProps;
-  const {avatard99b3Props, setavatard99b3Props}= useContext(TotalContext) as TotalContextProps;
-  const {radiogroupcf04e, setradiogroupcf04e}= useContext(TotalContext) as TotalContextProps;
-  const {radiogroupcf04eProps, setradiogroupcf04eProps}= useContext(TotalContext) as TotalContextProps;
-  const {datepickerbe7c3, setdatepickerbe7c3}= useContext(TotalContext) as TotalContextProps;
-  const {datepickerbe7c3Props, setdatepickerbe7c3Props}= useContext(TotalContext) as TotalContextProps;
-  const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
-  const {checkbox2289fProps, setcheckbox2289fProps}= useContext(TotalContext) as TotalContextProps;
-  const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
-  const {dropdown0e57dProps, setdropdown0e57dProps}= useContext(TotalContext) as TotalContextProps;
-  const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {upload2cc02Props, setupload2cc02Props}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35Props, setlabel9be35Props}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2Props, setcard498e2Props}= useContext(TotalContext) as TotalContextProps;
-  const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
-  const {imageeee6cProps, setimageeee6cProps}= useContext(TotalContext) as TotalContextProps;
-  const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
-  const {textinput56a48Props, settextinput56a48Props}= useContext(TotalContext) as TotalContextProps;
-  const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
-  const {icon0a30cProps, seticon0a30cProps}= useContext(TotalContext) as TotalContextProps;
-  const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
-  const {liste965eProps, setliste965eProps}= useContext(TotalContext) as TotalContextProps;
-  const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
-  const {pininput92978Props, setpininput92978Props}= useContext(TotalContext) as TotalContextProps;
-  const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
-  const {progress53986Props, setprogress53986Props}= useContext(TotalContext) as TotalContextProps;
-  const {qrcoded45d1, setqrcoded45d1}= useContext(TotalContext) as TotalContextProps;
-  const {qrcoded45d1Props, setqrcoded45d1Props}= useContext(TotalContext) as TotalContextProps;
-  const {radiobutton92d8e, setradiobutton92d8e}= useContext(TotalContext) as TotalContextProps;
-  const {radiobutton92d8eProps, setradiobutton92d8eProps}= useContext(TotalContext) as TotalContextProps;
-  const {radio65f38, setradio65f38}= useContext(TotalContext) as TotalContextProps;
-  const {radio65f38Props, setradio65f38Props}= useContext(TotalContext) as TotalContextProps;
-  const {speechtotextf8edf, setspeechtotextf8edf}= useContext(TotalContext) as TotalContextProps;
-  const {speechtotextf8edfProps, setspeechtotextf8edfProps}= useContext(TotalContext) as TotalContextProps;
-  const {texttospeech35a79, settexttospeech35a79}= useContext(TotalContext) as TotalContextProps;
-  const {texttospeech35a79Props, settexttospeech35a79Props}= useContext(TotalContext) as TotalContextProps;
-  const {textf0149, settextf0149}= useContext(TotalContext) as TotalContextProps;
-  const {textf0149Props, settextf0149Props}= useContext(TotalContext) as TotalContextProps;
-  const {switch4a6e4, setswitch4a6e4}= useContext(TotalContext) as TotalContextProps;
-  const {switch4a6e4Props, setswitch4a6e4Props}= useContext(TotalContext) as TotalContextProps;
-  const {textareaa5a38, settextareaa5a38}= useContext(TotalContext) as TotalContextProps;
-  const {textareaa5a38Props, settextareaa5a38Props}= useContext(TotalContext) as TotalContextProps;
-  const {timepicker8a8fa, settimepicker8a8fa}= useContext(TotalContext) as TotalContextProps;
-  const {timepicker8a8faProps, settimepicker8a8faProps}= useContext(TotalContext) as TotalContextProps;
-  const {signature63e12, setsignature63e12}= useContext(TotalContext) as TotalContextProps;
-  const {signature63e12Props, setsignature63e12Props}= useContext(TotalContext) as TotalContextProps;
-  const {sliderde96f, setsliderde96f}= useContext(TotalContext) as TotalContextProps;
-  const {sliderde96fProps, setsliderde96fProps}= useContext(TotalContext) as TotalContextProps;
-  const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
-  const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
+  const {firstgroupc4acb, setfirstgroupc4acb}= useContext(TotalContext) as TotalContextProps;
+  const {firstgroupc4acbProps, setfirstgroupc4acbProps}= useContext(TotalContext) as TotalContextProps;
+  const {textinput2cc5d, settextinput2cc5d}= useContext(TotalContext) as TotalContextProps;
+  const {uploade78d7, setuploade78d7}= useContext(TotalContext) as TotalContextProps;
+  const {textarea87afb, settextarea87afb}= useContext(TotalContext) as TotalContextProps;
+  const {radiof9609, setradiof9609}= useContext(TotalContext) as TotalContextProps;
+  const {radiogroup5ad4f, setradiogroup5ad4f}= useContext(TotalContext) as TotalContextProps;
+  const {switcha515a, setswitcha515a}= useContext(TotalContext) as TotalContextProps;
+  const {pininputf6753, setpininputf6753}= useContext(TotalContext) as TotalContextProps;
+  const {save67a1f, setsave67a1f}= useContext(TotalContext) as TotalContextProps;
+  const {radiobutton6d7d6, setradiobutton6d7d6}= useContext(TotalContext) as TotalContextProps;
+  const {checkbox1c08f, setcheckbox1c08f}= useContext(TotalContext) as TotalContextProps;
+  const {signature75ba3, setsignature75ba3}= useContext(TotalContext) as TotalContextProps;
+  const {viewer2e45c, setviewer2e45c}= useContext(TotalContext) as TotalContextProps;
+  const {card63ac3, setcard63ac3}= useContext(TotalContext) as TotalContextProps;
+  const {timepicker40a6b, settimepicker40a6b}= useContext(TotalContext) as TotalContextProps;
+  const {slider6c8f7, setslider6c8f7}= useContext(TotalContext) as TotalContextProps;
+  const {qrcode772a6, setqrcode772a6}= useContext(TotalContext) as TotalContextProps;
+  const {image54de2, setimage54de2}= useContext(TotalContext) as TotalContextProps;
+  const {dropdown7f41a, setdropdown7f41a}= useContext(TotalContext) as TotalContextProps;
+  const {icon71de8, seticon71de8}= useContext(TotalContext) as TotalContextProps;
+  const {text5d0f8, settext5d0f8}= useContext(TotalContext) as TotalContextProps;
+  const {label9bd6f, setlabel9bd6f}= useContext(TotalContext) as TotalContextProps;
+  const {listec3b4, setlistec3b4}= useContext(TotalContext) as TotalContextProps;
+  const {datepickerbe904, setdatepickerbe904}= useContext(TotalContext) as TotalContextProps;
+  const {jsonviewerfbb2e, setjsonviewerfbb2e}= useContext(TotalContext) as TotalContextProps;
+  const {avatar24aed, setavatar24aed}= useContext(TotalContext) as TotalContextProps;
+  const {companycard071eb, setcompanycard071eb}= useContext(TotalContext) as TotalContextProps;
+  const {progressd7ccf, setprogressd7ccf}= useContext(TotalContext) as TotalContextProps;
+  const {texttospeech63351, settexttospeech63351}= useContext(TotalContext) as TotalContextProps;
+  const {speechtotext5f5c9, setspeechtotext5f5c9}= useContext(TotalContext) as TotalContextProps;
+  const {tabsb7d72, settabsb7d72}= useContext(TotalContext) as TotalContextProps;
   //////////////
   const [open, setOpen] = React.useState(false);
   async function securityCheck() {
+  const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG2:AFK:AllComponents:AFVK:v1",componentId:"5909e18973e149f19bb5db9d38fc4acb",from:"GroupFirstgroup",accessProfile:accessProfile},{
+    headers: {
+      Authorization: `Bearer ${token}`
+    }})
+  code = orchestrationData?.data?.code;
+  const security:any[] = orchestrationData?.data?.security;
+  const allowedGroups:any[] = orchestrationData?.data?.allowedGroups;
+  if(orchestrationData?.data?.error === true){
+    toast(orchestrationData?.data?.errorDetails?.message, 'danger')
+    return
+  }
+  setAllowedControls(security) 
+  setAllowedComponent(allowedGroups) 
+    
   /////////////
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("button")){
-      setbutton6c543({...button6c543,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("textinput")){
+      settextinput2cc5d({...textinput2cc5d,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("avatar")){
-      setavatard99b3({...avatard99b3,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("upload")){
+      setuploade78d7({...uploade78d7,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("radiogroup")){
-      setradiogroupcf04e({...radiogroupcf04e,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("textarea")){
+      settextarea87afb({...textarea87afb,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("datepicker")){
-      setdatepickerbe7c3({...datepickerbe7c3,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("radio")){
+      setradiof9609({...radiof9609,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("checkbox")){
-      setcheckbox2289f({...checkbox2289f,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("radiogroup")){
+      setradiogroup5ad4f({...radiogroup5ad4f,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("dropdown")){
-      setdropdown0e57d({...dropdown0e57d,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("switch")){
+      setswitcha515a({...switcha515a,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("upload")){
-      setupload2cc02({...upload2cc02,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("pininput")){
+      setpininputf6753({...pininputf6753,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("label")){
-      setlabel9be35({...label9be35,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("save")){
+      setsave67a1f({...save67a1f,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("card")){
-      setcard498e2({...card498e2,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("radiobutton")){
+      setradiobutton6d7d6({...radiobutton6d7d6,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("image")){
-      setimageeee6c({...imageeee6c,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("checkbox")){
+      setcheckbox1c08f({...checkbox1c08f,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("textinput")){
-      settextinput56a48({...textinput56a48,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("signature")){
+      setsignature75ba3({...signature75ba3,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("icon")){
-      seticon0a30c({...icon0a30c,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("viewer")){
+      setviewer2e45c({...viewer2e45c,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("list")){
-      setliste965e({...liste965e,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("card")){
+      setcard63ac3({...card63ac3,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("pininput")){
-      setpininput92978({...pininput92978,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("timepicker")){
+      settimepicker40a6b({...timepicker40a6b,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("progress")){
-      setprogress53986({...progress53986,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("slider")){
+      setslider6c8f7({...slider6c8f7,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("qrcode")){
-      setqrcoded45d1({...qrcoded45d1,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("qrcode")){
+      setqrcode772a6({...qrcode772a6,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("radiobutton")){
-      setradiobutton92d8e({...radiobutton92d8e,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("image")){
+      setimage54de2({...image54de2,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("radio")){
-      setradio65f38({...radio65f38,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("dropdown")){
+      setdropdown7f41a({...dropdown7f41a,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("speechtotext")){
-      setspeechtotextf8edf({...speechtotextf8edf,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("icon")){
+      seticon71de8({...icon71de8,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("texttospeech")){
-      settexttospeech35a79({...texttospeech35a79,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("text")){
+      settext5d0f8({...text5d0f8,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("text")){
-      settextf0149({...textf0149,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("label")){
+      setlabel9bd6f({...label9bd6f,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("switch")){
-      setswitch4a6e4({...switch4a6e4,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("list")){
+      setlistec3b4({...listec3b4,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("textarea")){
-      settextareaa5a38({...textareaa5a38,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("datepicker")){
+      setdatepickerbe904({...datepickerbe904,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("timepicker")){
-      settimepicker8a8fa({...timepicker8a8fa,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("jsonviewer")){
+      setjsonviewerfbb2e({...jsonviewerfbb2e,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("signature")){
-      setsignature63e12({...signature63e12,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("avatar")){
+      setavatar24aed({...avatar24aed,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("slider")){
-      setsliderde96f({...sliderde96f,isDisabled:true});
+    if(orchestrationData?.data?.readableControls.includes("companycard")){
+      setcompanycard071eb({...companycard071eb,isDisabled:true});
+    }
+    if(orchestrationData?.data?.readableControls.includes("progress")){
+      setprogressd7ccf({...progressd7ccf,isDisabled:true});
+    }
+    if(orchestrationData?.data?.readableControls.includes("texttospeech")){
+      settexttospeech63351({...texttospeech63351,isDisabled:true});
+    }
+    if(orchestrationData?.data?.readableControls.includes("speechtotext")){
+      setspeechtotext5f5c9({...speechtotext5f5c9,isDisabled:true});
+    }
+    if(orchestrationData?.data?.readableControls.includes("tabs")){
+      settabsb7d72({...tabsb7d72,isDisabled:true});
     }
   //////////////
     if (code != '') {
       let codeStates: any = {};
-      codeStates['firstgroup']  = firstgroupc08a7,
-      codeStates['setfirstgroup'] = setfirstgroupc08a7,
-      codeStates['secondgroup']  = secondgroup311a5,
-      codeStates['setsecondgroup'] = setsecondgroup311a5,
+      codeStates['firstgroup']  = firstgroupc4acb,
+      codeStates['setfirstgroup'] = setfirstgroupc4acb,
 
     codeExecution(code,codeStates);
     } 
@@ -268,38 +273,38 @@ const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPr
     const handleOnload=()=>{
   }
   const handleOnChange=()=>{
-  }
 
-  const firstgroupc08a7Ref = useRef<any>(null);
+  }
+  const firstgroupc4acbRef = useRef<any>(null);
   const handleClearSearch = () => {
-    firstgroupc08a7Ref.current?.setSearchParams();
-    firstgroupc08a7Ref.current?.handleSearch({});
+    firstgroupc4acbRef.current?.setSearchParams();
+    firstgroupc4acbRef.current?.handleSearch({});
   };
 
   useEffect(() => {    
     securityCheck()   
     handleOnload()
     if (prevRefreshRef.current) {
-      if(!Array.isArray(firstgroupc08a7) && Object.keys(firstgroupc08a7)?.length>0)
+      if(!Array.isArray(firstgroupc4acb) && Object.keys(firstgroupc4acb)?.length>0)
       {
-        setfirstgroupc08a7({})
+        setfirstgroupc4acb({})
       }
     }else 
       prevRefreshRef.current= true
-  }, [firstgroupc08a7Props?.refresh])
+  }, [firstgroupc4acbProps?.refresh])
 
   return (
-  <div  
+    <div 
       style={{          
-        gridColumn: '2 / 24',
-        gridRow: '14 / 390',
-        height: '100%',
+        gridColumn: '1 / 13',
+        gridRow: '6 / 390',
         gridAutoRows: '4px',
         columnGap: '0px',
-        //rowGap: '0px',
+        rowGap: '0px',
         display: 'grid',
-        gridTemplateColumns: 'repeat(24, 1fr)',
+        gridTemplateColumns: 'repeat(12, 1fr)',
         gridTemplateRows: 'repeat(auto-fill, minmax(4px, 1fr))',
+        height: '100%',
         overflow: 'auto',
         backgroundColor:'',
         backgroundImage:'',
@@ -310,37 +315,38 @@ const Groupfirstgroup = ({lockedData={},setLockedData,primaryTableData={}, setPr
         backgroundClip: '',
         backgroundBlendMode: ''
       }}
-      className={clsx("",
-        "rounded-md",
-        isDark ? "bg-gray-800 text-white" : "bg-white text-black"
-      )}
+      className={`rounded-md ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}  
     >
-        {securityData[accessProfile].allowedControls.includes("button")  ?<Buttonbutton lockedData={lockedData} setLockedData={setLockedData} primaryTableData={primaryTableData} setPrimaryTableData={setPrimaryTableData} checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData}/>: <div></div>}          
-        {securityData[accessProfile].allowedControls.includes("avatar")?<Avataravatar /* d99b3 */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("radiogroup")?<RadioGroupradiogroup   /* cf04e */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("datepicker") ?<DatePickerdatepicker   /* be7c3 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("checkbox") ?<Checkboxcheckbox   /* 2289f */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("dropdown") ?<Dropdowndropdown   /* 0e57d */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} lockedData ={lockedData} setLockedData={setLockedData} dropdownData={dropdownData} setDropdownData={setDropdownData} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("upload") ?<Documentuploaderupload   /* 2cc02 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("label")?<Labellabel   /* 9be35 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("card") ?<Cardcard  /* 498e2 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("image")?<Imageimage /* eee6c */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("textinput") ?<TextInputtextinput   /* 56a48 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("icon")?<Iconicon /* 0a30c */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("list") ?<Listlist   /* e965e */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("pininput") ?<PinInputpinInput   /* 92978 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("progress")?<Progressprogress  /* 53986 */ isDynamic={false } index={idx} item={item} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("qrcode") ?<QrCodeqrcode   /* d45d1 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("radiobutton")?<RadioButtonradioButton  /* 92d8e */  checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("radio")?<Radioradio  /* 65f38 */  checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("speechtotext") ?<SpeechToTextInputspeechtotext   /* f8edf */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("texttospeech") ?<TextToSpeechOutputtexttospeech   /* 35a79 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-          {securityData[accessProfile].allowedControls.includes("text") ?<Texttext   /* f0149 */ isDynamic={false } index={idx} item={item} checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("switch")?<Switchswitch  /* 4a6e4 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("textarea") ?<TextAreatextarea   /* a5a38 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}/>: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("timepicker") ?<TimePickertimepicker   /* 8a8fa */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-          {securityData[accessProfile].allowedControls.includes("signature") ?<Signaturesignature   /* 63e12 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-          {securityData[accessProfile].allowedControls.includes("slider") ?<Sliderslider   /* de96f */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("textinput") ?<TextInputtextinput   /* 2cc5d */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("upload") ?<Documentuploaderupload   /* e78d7 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("textarea") ?<TextAreatextarea   /* 87afb */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}/>: <div></div>}
+        {allowedControls.includes("radio")?<Radioradio  /* f9609 */  checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("radiogroup")?<RadioGroupradiogroup   /* 5ad4f */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("switch")?<Switchswitch  /* a515a */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("pininput") ?<PinInputpininput   /* f6753 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("save")  ?<Buttonsave lockedData={lockedData} setLockedData={setLockedData} primaryTableData={primaryTableData} setPrimaryTableData={setPrimaryTableData} checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData}/>: <div></div>}          
+        {allowedControls.includes("radiobutton")?<RadioButtonradiobutton  /* 6d7d6 */  checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("checkbox") ?<CheckBoxcheckbox   /* 1c08f */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+          {allowedControls.includes("signature") ?<Signaturesignature   /* 75ba3 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("viewer") ?<DocumentViewerviewer   /* 2e45c */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("card") ?<Cardcard  /* 63ac3 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("timepicker") ?<TimePickertimePicker   /* 40a6b */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+          {allowedControls.includes("slider") ?<Sliderslider   /* 6c8f7 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("qrcode") ?<QrCodeqrcode   /* 772a6 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("image")?<Imageimage /* 54de2 */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("dropdown") ?<Dropdowndropdown   /* 7f41a */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} lockedData ={lockedData} setLockedData={setLockedData} dropdownData={dropdownData} setDropdownData={setDropdownData} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("icon")?<Iconicon /* 71de8 */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+          {allowedControls.includes("text") ?<Texttext   /* 5d0f8 */ isDynamic={false } index={idx} item={item} checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("label")?<Labellabel   /* 9bd6f */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("list") ?<Listlist   /* ec3b4 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("datepicker") ?<DatePickerdatepicker   /* be904 */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("jsonviewer")?<TreeViewerjsonviewer /* fbb2e */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("avatar")?<Avataravatar /* 24aed */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {securityData[accessProfile].allowedControls.includes("companycard") ?<CompanyCardcompanycard  /* 071eb */checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
+        {allowedControls.includes("progress")?<Progressprogress  /* d7ccf */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("texttospeech") ?<TextToSpeechOutputtexttospeech   /* 63351 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("speechtotext") ?<SpeechToTextInputspeechtotext   /* 5f5c9 */ checkToAdd={checkToAdd} setCheckToAdd={setCheckToAdd} refetch={refetch} setRefetch={setRefetch} encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("tabs") ?<Tabstabs /* b7d72 */ encryptionFlagCompData={encryptionFlagCompData}  />: <div></div>}
     </div>
  )
 }

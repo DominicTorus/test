@@ -2,7 +2,7 @@
 import { ToastContainer } from 'react-toastify'
 import { LanguageProvider } from '../components/languageContext'
 import LayoutDecider from '../components/LayoutDecider'
-import { ThemeWrapper } from '@/components/ThemeWrapper';
+import ThemeS from '../components/ThemeS'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <LanguageProvider>
       <div className=' relative h-[100vh] w-[100vw]  overflow-hidden'>
-        <ThemeWrapper>
+        <ThemeS>
           <LayoutDecider
             mode='fluid' 
             navigationStyles='vertical' 
@@ -27,7 +27,7 @@ export default function RootLayout({
             <main className ="h-full w-full">{children}</main>
             <ToastContainer />
           </LayoutDecider>
-        </ThemeWrapper>
+        </ThemeS>
       </div>
     </LanguageProvider>
   )
