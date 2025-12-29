@@ -15,10 +15,11 @@ import { AxiosService } from "@/app/components/axiosService";
 
 
 const RadioButtonradioButton = ({setCheckToAdd,encryptionFlagCompData}:any) => {
+  const token: string = getCookie('token');
+  const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
-  const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
   let readableControls :any = [];
   const [allCode,setAllCode]=useState<any>("");
@@ -43,11 +44,11 @@ const RadioButtonradioButton = ({setCheckToAdd,encryptionFlagCompData}:any) => {
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps; 
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps; 
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps; 
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps; 
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps; 
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps; 
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps; 
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps; 
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps; 
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps; 
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps; 
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps; 
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps; 
@@ -66,19 +67,47 @@ const RadioButtonradioButton = ({setCheckToAdd,encryptionFlagCompData}:any) => {
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps; 
   //////////////
 
+  const handleMapperValue=async()=>{
+  try{
+    const orchestrationData: any = await AxiosService.post(
+      '/UF/Orchestration',
+      {
+        key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+        componentId: "c2cb1a49935b44419561e81deffc08a7",
+        controlId: "63674a76c06c4bb9b13faaf347992d8e",
+        isTable: false,
+        from:"RadioButtonradioButton",
+        accessProfile:accessProfile
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    if(orchestrationData?.data?.error == true){
+      return;
+    }
+    setAllCode(orchestrationData?.data?.code);
+    }catch(err){
+      console.log(err);
+    }
+  }
+
   useEffect(()=>{
+    handleMapperValue();
     setfirstgroupc08a7((pre:any)=>({...pre,radiobutton:""}));
   },[radiobutton92d8e?.refresh])
 
-  const options= [
-      {value: 'True' ,content:''},
-      {value: 'False' ,content:''},
+  const options = [
+      {value: 'True' ,content:'dfgd'},
+      {value: 'False' ,content:'ghgfh'},
   ];
   const handleChange=(e:any)=>{
 setfirstgroupc08a7((prev: any) => ({ ...prev, radiobutton: e}));
   }
   const handleBlur=(e:any)=>{
-    let code:any=``;
+    let code: any = allCode;
       if (code == "") {
         //toast(code?.data?.errorDetails?.message, 'danger');
         //return

@@ -41,14 +41,10 @@ export interface TotalContextProps {
   setupload2cc02:React.Dispatch<React.SetStateAction<any>>
   upload2cc02Props: any 
   setupload2cc02Props: React.Dispatch<React.SetStateAction<any>>
-  label9be35: any,
-  setlabel9be35:React.Dispatch<React.SetStateAction<any>>
-  label9be35Props: any 
-  setlabel9be35Props: React.Dispatch<React.SetStateAction<any>>
-  card498e2: any,
-  setcard498e2:React.Dispatch<React.SetStateAction<any>>
-  card498e2Props: any 
-  setcard498e2Props: React.Dispatch<React.SetStateAction<any>>
+  label33b92: any,
+  setlabel33b92:React.Dispatch<React.SetStateAction<any>>
+  label33b92Props: any 
+  setlabel33b92Props: React.Dispatch<React.SetStateAction<any>>
   imageeee6c: any,
   setimageeee6c:React.Dispatch<React.SetStateAction<any>>
   imageeee6cProps: any 
@@ -61,6 +57,10 @@ export interface TotalContextProps {
   seticon0a30c:React.Dispatch<React.SetStateAction<any>>
   icon0a30cProps: any 
   seticon0a30cProps: React.Dispatch<React.SetStateAction<any>>
+  cardaf24d: any,
+  setcardaf24d:React.Dispatch<React.SetStateAction<any>>
+  cardaf24dProps: any 
+  setcardaf24dProps: React.Dispatch<React.SetStateAction<any>>
   liste965e: any,
   setliste965e:React.Dispatch<React.SetStateAction<any>>
   liste965eProps: any 
@@ -135,6 +135,8 @@ export interface TotalContextProps {
   setpropscheck_v1Props: React.Dispatch<React.SetStateAction<any>>
 
 ///////// dfd
+  dfd_mydfddata_v1Props: any 
+  setdfd_mydfddata_v1Props: React.Dispatch<React.SetStateAction<any>>
 
   refetch: any,
   setRefetch: React.Dispatch<React.SetStateAction<any>>
@@ -247,14 +249,7 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
     refetch:false,
     refresh:false,
     }) 
-   const [label9be35,setlabel9be35] = React.useState<any>({
-    isDisabled: false,
-    presetValues: '',
-    isHidden: false,
-    refetch:false,
-    refresh:false,
-    }) 
-   const [card498e2,setcard498e2] = React.useState<any>({
+   const [label33b92,setlabel33b92] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
@@ -276,6 +271,13 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
     refresh:false,
     }) 
    const [icon0a30c,seticon0a30c] = React.useState<any>({
+    isDisabled: false,
+    presetValues: '',
+    isHidden: false,
+    refetch:false,
+    refresh:false,
+    }) 
+   const [cardaf24d,setcardaf24d] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
@@ -409,11 +411,11 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
        checkboxcheckbox2289f:false,
        dropdowndropdown0e57d:false,
        documentuploaderupload2cc02:false,
-       labellabel9be35:false,
-       cardcard498e2:false,
+       labellabel33b92:false,
        imageimageeee6c:false,
        textinputtextinput56a48:false,
        iconicon0a30c:false,
+       cardcardaf24d:false,
        listliste965e:false,
        pininputpinInput92978:false,
        progressprogress53986:false,
@@ -439,6 +441,7 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
    const [propscheck_v1Props,setpropscheck_v1Props] = React.useState<any>([])
 
 ///////// dfd
+  const [dfd_mydfddata_v1Props,setdfd_mydfddata_v1Props] = React.useState<any>([])
     const [searchParam , setSearchParam] = React.useState<string>("")
     const [disableParam , setDisableParam] = React.useState<any>({})
     const [globalState , setGlobalState] = React.useState<any>({})
@@ -487,16 +490,16 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
         setdropdown0e57d, 
         upload2cc02,
         setupload2cc02, 
-        label9be35,
-        setlabel9be35, 
-        card498e2,
-        setcard498e2, 
+        label33b92,
+        setlabel33b92, 
         imageeee6c,
         setimageeee6c, 
         textinput56a48,
         settextinput56a48, 
         icon0a30c,
         seticon0a30c, 
+        cardaf24d,
+        setcardaf24d, 
         liste965e,
         setliste965e, 
         pininput92978,
@@ -537,6 +540,8 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
         //////////
 
         ///////// dfd
+        dfd_mydfddata_v1Props,
+        setdfd_mydfddata_v1Props,
         refetch,
         setRefetch,
         searchParam,

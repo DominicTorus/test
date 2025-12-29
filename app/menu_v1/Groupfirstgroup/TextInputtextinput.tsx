@@ -1,18 +1,18 @@
 'use client'
 
 
+
 import React, { useState,useContext,useEffect } from 'react'
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
+import { Modal } from "@/components/Modal";
+import { Text } from "@/components/Text";
+import { TextInput } from '@/components/TextInput';
 import i18n from '@/app/components/i18n';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { AxiosService } from '@/app/components/axiosService';
 import { getCookie } from '@/app/components/cookieMgment';
-import { useRouter } from 'next/navigation'
-import { Modal } from "@/components/Modal";
-import { ConfirmModal } from "@/components/ConfirmModal";
-import { Text } from "@/components/Text";
-import { TextInput } from '@/components/TextInput';
+import { useRouter } from 'next/navigation';
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
@@ -20,6 +20,7 @@ import * as v from 'valibot';
 
 
 const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFlagCompData}:any) => {  
+  const token: string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {validateRefetch , setValidateRefetch} = useContext(TotalContext) as TotalContextProps;
   const {validate , setValidate} = useContext(TotalContext) as TotalContextProps;
@@ -27,7 +28,6 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
-  const toast:any=useInfoMsg()
   const actionDetails :any = {
   "action": {
     "lock": {
@@ -58,14 +58,15 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
   "mapper": []
 }
   const [isRequredData,setIsRequredData]=useState(false)
+  const toast:any=useInfoMsg()
   const keyset:any=i18n.keyset("language"); 
+  const [allCode,setAllCode]=useState<any>("");
   let schemaArray :any =[];  
-  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'textinput',type:""})
+  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'textinput',type:"text"})
   const routes = useRouter()
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
   const encryptionFlagCont: boolean = encryptionFlagCompData?.flag || false;
-
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData?.dpd;
   let encryptionMethod: string = "";
@@ -81,11 +82,11 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -107,7 +108,11 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
 
   // Validation  
     const [error, setError] = useState<string>('');
+      /// vvv
 
+      /// vvv
+      /// vvv
+      /// vvv
   schemaArray = [
   "v.string()",
   "v.nonEmpty('This field is required.')"
@@ -146,7 +151,7 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
       setValidate((pre:any)=>({...pre,textinput:"invalid"}))
     }
     }
-    let code:any=``;
+    let code:any=allCode
      if (code != '') {
       let codeStates: any = {}
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -156,9 +161,56 @@ const TextInputtextinput = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encrypt
     codeExecution(code,codeStates)
     }
   }
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "307a9871bda44e8999c974e1ca156a48",
+          isTable: false,
+          from:"TextInputtextinput",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+       
+        return
+      }
+      setAllCode(orchestrationData?.data?.code)
+      
+      if(orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties){
+        let type:any={name:'textinput',type:'text'}
+        type={
+          name:'textinput',
+          type: orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textinput.type == 'string' ? 'text' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textinput.type =='integer' ? 'number' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textinput.type
+        }
+        setDynamicStateandType(type)
+       
+      }
+      if(Array.isArray(orchestrationData?.data?.dstData))
+      {
+        return
+      }else{
+      //  if(Object.keys(orchestrationData?.data?.dstData).length>0) 
+       // setfirstgroupc08a7((pre:any)=>({...pre,textinput:orchestrationData?.data?.dstData}))
+      }
+    }
+    catch(err)
+    {
+      console.log(err)
+    }
+  }
 
   useEffect(()=>{
-        if(!firstgroupc08a7?.textinput)
+      handleMapperValue()
+      if(!firstgroupc08a7?.textinput)
       { 
         setfirstgroupc08a7Props((pre:any)=>({...pre,required:true}))
         setIsRequredData(true)

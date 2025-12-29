@@ -1,5 +1,5 @@
-'use client'
 
+'use client'
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { codeExecution } from '@/app/utils/codeExecution';
@@ -12,10 +12,11 @@ import { useRouter } from 'next/navigation'
 import { eventBus } from '@/app/eventBus';
 import { te_refreshDto } from '@/app/interfaces/interfaces';
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
-import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 import {Modal} from '@/components/Modal';
+import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 const Switchswitch = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
+  const token:string = getCookie('token');
     const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
     const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
     const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
@@ -43,11 +44,11 @@ const Switchswitch = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => 
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -65,15 +66,43 @@ const Switchswitch = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => 
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   //////////////
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "fa577605b81447b98ddd711ec314a6e4",
+          isTable: false,
+          from:"Switchswitch",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+        return
+      }
+      setAllCode(orchestrationData?.data?.code)
+    }catch(err)
+    {
+      console.log(err)
+    }
+  }
 
   useEffect(() => {
+    handleMapperValue()
     setfirstgroupc08a7((pre:any)=>({...pre,switch:null}))
   },[switch4a6e4?.refresh])
 
 
   const handleChange = async (checked: boolean) => {
     setfirstgroupc08a7((prev: any) => ({ ...prev, switch: checked }))
-    let code:any= ``
+    let code:any= allCode
     if (code != '') {
       let codeStates: any = {}
             codeStates['firstgroup']  = firstgroupc08a7,
@@ -91,7 +120,6 @@ const Switchswitch = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => 
     <div 
       className=""
       style={{gridColumn: `8 / 11`,gridRow: `282 / 305`, gap:``, height: `100%`, overflow: 'auto'}} >
-      
       <Switch
         className=""
         contentAlign={"center"}
@@ -107,4 +135,8 @@ const Switchswitch = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => 
   </div>
   )
 }
+
 export default Switchswitch
+
+
+

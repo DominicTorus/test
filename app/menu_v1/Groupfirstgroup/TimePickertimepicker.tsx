@@ -1,6 +1,7 @@
 
 'use client'
-import React, { useState,useContext,useEffect } from 'react'
+import React, { useState,useContext,useEffect } from 'react';
+import { getCookie } from '@/app/components/cookieMgment';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import TimePicker from '@/components/TimePicker';
 import { Text } from '@/components/Text';
@@ -9,9 +10,13 @@ import { codeExecution } from '@/app/utils/codeExecution';
 import { AxiosService } from '@/app/components/axiosService';
 
 const TimePickertimepicker = ({checkToAdd,setCheckToAdd,refetch,setRefetch}:any) => {
+  const token: string = getCookie('token')
   const {validateRefetch , setValidateRefetch} = useContext(TotalContext) as TotalContextProps;
   const {validate , setValidate} = useContext(TotalContext) as TotalContextProps;
+  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const keyset: any = i18n.keyset('language')
+  const [allCode,setAllCode]=useState<any>("")
+  let code:any='';
   /////////////
   //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -23,11 +28,11 @@ const TimePickertimepicker = ({checkToAdd,setCheckToAdd,refetch,setRefetch}:any)
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -45,13 +50,44 @@ const TimePickertimepicker = ({checkToAdd,setCheckToAdd,refetch,setRefetch}:any)
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
     //////////////
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "9033650e33514a11ac1785f69c88a8fa",
+          isTable: false,
+          accessProfile:accessProfile,
+          from:"TimePickertimepicker"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.code)
+      {
+        setAllCode(orchestrationData?.data?.code)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    handleMapperValue()
+  },[timepicker8a8fa?.refresh])
 
   if (timepicker8a8fa?.isHidden) {
     return <></>
-  }
+  }  
+
   return (
   <div 
-    style={{gridColumn: `18 / 21`,gridRow: `282 / 305`, gap:``, height: `100%`, overflow: 'auto'}} >
+className="top "    style={{gridColumn: `18 / 21`,gridRow: `282 / 305`, gap:``, height: `100%`, overflow: 'auto'}} >
     <TimePicker 
       className=""
       disabled= {timepicker8a8fa?.isDisabled ? true : false}

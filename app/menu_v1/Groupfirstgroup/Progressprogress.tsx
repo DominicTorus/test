@@ -10,10 +10,13 @@ import { codeExecution } from '@/app/utils/codeExecution';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 
 const Progressprogress = ({encryptionFlagCompData, isDynamic, index, item}:any) => {
-  const {, set} = useContext(TotalContext) as TotalContextProps; 
-  const allCode:any = "";
+  const token: string = getCookie('token')
+  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   let customCode:any=""
 
+  const keyset: any = i18n.keyset('language')
+  const [allCode,setAllCode]=useState<any>("")
+  let code:any='';
   /////////////
   //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;  
@@ -25,11 +28,11 @@ const Progressprogress = ({encryptionFlagCompData, isDynamic, index, item}:any) 
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;  
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;  
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;  
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;  
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;  
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;  
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;  
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;  
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;  
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;  
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;  
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;  
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;  
@@ -47,7 +50,38 @@ const Progressprogress = ({encryptionFlagCompData, isDynamic, index, item}:any) 
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;  
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;  
   //////////////
+
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "7ff90cab730f44728221794d16a53986",
+          isTable: false,
+          accessProfile:accessProfile,
+          from:"progressprogress"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.code)
+      {
+        setAllCode(orchestrationData?.data?.code)
+      }
+    }catch(err){
+      console.log(err)
+    }
+    handleCustomCode()
+  }
+
+
   const handleCustomCode=async () => {
+    let customCode:any=''
     let code :any = allCode;
     if (code != '') {
       let codeStates: any = {};
@@ -60,22 +94,13 @@ const Progressprogress = ({encryptionFlagCompData, isDynamic, index, item}:any) 
     }
   }
   useEffect(()=>{
-    let temp:any = [0]?.progress
-    if (typeof temp != 'number') {
-      temp = 0
-    } else {
-      if (temp < 100) {
-        temp = temp
-      } else if (100 <= temp && temp < 1000) {
-        temp = temp / 10
-      }
-    }
-    setfirstgroupc08a7((pre:any)=>({...pre,progress:temp}))
-    handleCustomCode()
+    handleMapperValue()
   },[progress53986?.refresh])
+
   if (progress53986?.isHidden) {
     return <></>
   }
+
 return (
   <div 
 className="top "    style={{gridColumn: `13 / 16`,gridRow: `153 / 179`, gap:``, height: `100%`, overflow: 'auto'}} >
@@ -86,8 +111,7 @@ className="top "    style={{gridColumn: `13 / 16`,gridRow: `153 / 179`, gap:``, 
         headerPosition='top'
         headerText="Header"
         theme = {'success'}
-
-        value = {isDynamic ? item?.progress : (firstgroupc08a7?.progress || 0)}
+        value = {50}
     />
   </div>
   )

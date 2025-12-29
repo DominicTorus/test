@@ -25,6 +25,7 @@ import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 
 const TextToSpeechOutputtexttospeech = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFlagCompData}:any) => {  
+  const token: string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {validateRefetch , setValidateRefetch} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
@@ -60,13 +61,14 @@ const TextToSpeechOutputtexttospeech = ({checkToAdd,setCheckToAdd,refetch,setRef
   "events": {},
   "mapper": []
 }
-  const toast:any=useInfoMsg()
+  const toast:any=useInfoMsg();
   const keyset:any=i18n.keyset("language"); 
-  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'texttospeech',type:""})
-  const routes = useRouter()
+  const [allCode,setAllCode]=useState<any>(""); 
+  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'texttospeech',type:"text"});
+  const routes = useRouter();
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
-  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
+  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
   let encryptionMethod: string = "";
@@ -82,11 +84,11 @@ const TextToSpeechOutputtexttospeech = ({checkToAdd,setCheckToAdd,refetch,setRef
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -106,17 +108,17 @@ const TextToSpeechOutputtexttospeech = ({checkToAdd,setCheckToAdd,refetch,setRef
   //////////////
   
 
-  const handleChange = async(value: any) => {
+  const handleChange = async(e: any) => {
     await handleBlur();
     if(dynamicStateandType.type=="number"){
-    setfirstgroupc08a7((prev: any) => ({ ...prev, texttospeech: +value }))
+    setfirstgroupc08a7((prev: any) => ({ ...prev, texttospeech: +e.target.value }))
     }
     else{
-    setfirstgroupc08a7((prev: any) => ({ ...prev, texttospeech: value }))
+    setfirstgroupc08a7((prev: any) => ({ ...prev, texttospeech: e.target.value }))
     }
   }
   const handleBlur=async () => {
-    let code:any=``;
+    let code:any= allCode;
      if (code != '') {
       let codeStates: any = {}
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -130,6 +132,51 @@ const TextToSpeechOutputtexttospeech = ({checkToAdd,setCheckToAdd,refetch,setRef
   useEffect(()=>{
     handleBlur()
   },[validateRefetch.value])
+
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "2734a8162f944a729032862a27935a79",
+          isTable: false,
+          from:"TextInputtexttospeech",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+       
+        return
+      }
+      setAllCode(orchestrationData?.data?.code)
+      
+      if(orchestrationData?.data?.schemaData){
+      if(orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties){
+        let type:any={name:'texttospeech',type:'text'}
+        type={
+          name:'texttospeech',
+          type: orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.texttospeech.type == 'string' ? 'text' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.texttospeech.type =='integer' ? 'number' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.texttospeech.type
+        }
+        setDynamicStateandType(type);       
+      }
+    }
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    handleMapperValue();
+    setfirstgroupc08a7((pre:any)=>({...pre,texttospeech:""}));
+  },[texttospeech35a79?.refresh])
 
   if (texttospeech35a79?.isHidden) {
     return <></>

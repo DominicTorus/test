@@ -5,19 +5,21 @@ import React, { useState,useEffect,useContext,useRef } from 'react' ;
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { deleteAllCookies,getCookie } from '@/app/components/cookieMgment';
-import { Radio } from '@/components/Radio';
-import { Text } from '@/components/Text';
 import { useRouter } from 'next/navigation';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { AxiosService } from "@/app/components/axiosService";
-import {Modal} from '@/components/Modal';
+import { Radio } from '@/components/Radio';
+import { Text } from '@/components/Text';
+import { Modal } from '@/components/Modal';
+import { Icon } from '@/components/Icon';
 import { eventBus } from '@/app/eventBus';
 import { te_refreshDto } from "@/app/interfaces/interfaces";
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 
-const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:any) => {
+const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:any) =>{
+  const token:string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
@@ -32,12 +34,11 @@ const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:an
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   const toast:any=useInfoMsg();
   const confirmMsgFlag: boolean = false;
-  const [allCode,setAllCode]=useState<any>("");
+  const [allCode,setAllCode]=useState<any>("")
   const routes = useRouter();
   const keyset:any=i18n.keyset("language");
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
-
  /////////////
    //another screen
       const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -49,11 +50,11 @@ const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:an
       const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
       const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
       const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-      const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-      const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+      const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
       const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
       const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
       const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+      const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
       const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
       const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
       const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -71,16 +72,45 @@ const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:an
       const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
       const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   //////////////
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "3d2d27d967e645a6bac788f5f3165f38",
+          isTable: false,
+          from:"Radioradio",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+        return
+      }
+      setAllCode(orchestrationData?.data?.code)
+      return
+    }catch(err)
+      {
+        console.log(err)
+    }
+  }
   
   useEffect(()=>{
+    handleMapperValue()
     setfirstgroupc08a7((pre:any)=>({...pre,radio:""}));
   },[radio65f38?.refresh])
     
-  const handleChange =async (checked:boolean)=>{
+  const handleChange = async (checked: boolean) => {
     setfirstgroupc08a7((prev: any) => ({ ...prev, radio: checked}));
   }
     const handleBlur = async (e:any)=>{
-      let code:any= ``;
+      let code:any = allCode;
       if (code == "") {
         //toast(code?.data?.errorDetails?.message, 'danger');
         //return;
@@ -94,10 +124,10 @@ const Radioradio = ({setCheckToAdd,encryptionFlagComp,encryptionFlagCompData}:an
       }
     }
 
-
   if (radio65f38?.isHidden) {
     return <></>
   }
+
 return (
   <div 
     className="" 
@@ -112,11 +142,10 @@ return (
       headerText="Header"
       headerPosition="top"
       disabled= {radio65f38?.isDisabled ? true : false}
-      content={"Radio"}
-      value={"Radio"}
+      content="Radio"
+      value="Radio"
       checked={firstgroupc08a7.radio||false}
-    >
-    </Radio>
+    />
   </div>
   )
 }

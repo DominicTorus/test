@@ -17,7 +17,6 @@ import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys'
 import { te_eventEmitterDto, uf_ifoDto, uf_initiatePfDto } from '@/app/interfaces/interfaces';
 import { eventFunction } from '@/app/utils/eventFunction';
 import { Icon } from '@/components/Icon';
-import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 
 
@@ -28,7 +27,6 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
-  const handleDfdRefresh = useHandleDfdRefresh();
   const prevRefreshRef = useRef(false);
   const actionDetails :any = {
   "action": {
@@ -63,8 +61,9 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
   const toast:any=useInfoMsg()
   const keyset:any=i18n.keyset("language"); 
   let schemaArray :any =[]; 
-  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'speechtotext',type:""})
-  const routes = useRouter();
+  const [allCode,setAllCode]=useState<any>(""); 
+  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'speechtotext',type:"text"})
+  const routes = useRouter()
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
   const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
@@ -83,11 +82,11 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -118,7 +117,7 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
   }    
   }
   const handleBlur=async () => {
-    let code:any=``;
+    let code:any=allCode;
      if (code != '') {
       let codeStates: any = {}
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -127,7 +126,6 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
       codeStates['setsecondgroup'] = setsecondgroup311a5,
     codeExecution(code,codeStates)
     }    
-    
   }
 
 
@@ -138,6 +136,51 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
     prevRefreshRef.current= true
   },[validateRefetch.value])
 
+
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "b9c8a60606994cc891f3106caddf8edf",
+          isTable: false,
+          from:"TextInputspeechtotext",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+       
+        return
+      }
+      setAllCode(orchestrationData?.data?.code)
+      
+      if(orchestrationData?.data?.schemaData){
+      if(orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties){
+        let type:any={name:'speechtotext',type:'text'}
+        type={
+          name:'speechtotext',
+          type: orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.speechtotext.type == 'string' ? 'text' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.speechtotext.type =='integer' ? 'number' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.speechtotext.type
+        }
+        setDynamicStateandType(type);       
+      }
+    }
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    handleMapperValue();
+    setfirstgroupc08a7((pre:any)=>({...pre,speechtotext:""}));
+  },[speechtotextf8edf?.refresh])
   
   if (speechtotextf8edf?.isHidden) {
     return <></>
@@ -152,7 +195,7 @@ const SpeechToTextInputspeechtotext = ({checkToAdd,setCheckToAdd,refetch,setRefe
         onSearch={handleBlur}
         needTooltip={true}  
         tooltipProps={{title:"Tooltip",placement:"top-start"}}
-        contentAlign={"center"}
+        contentAlign={"left"}
       //  type={dynamicStateandType.type}
         value={firstgroupc08a7?.speechtotext||""}
         disabled= {speechtotextf8edf?.isDisabled ? true : false}

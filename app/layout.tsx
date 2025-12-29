@@ -115,25 +115,46 @@
     "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
   ],
   "loginDetails": {
-    "loginId": "sriram",
-    "firstName": "sriram",
-    "lastName": "s",
-    "email": "marip@torus.tech",
-    "mobile": "6345435345",
-    "2FAFlag": "N",
-    "scope": "client_admin",
+    "firstName": "Peer",
+    "lastName": "m",
+    "username": "",
+    "email": "peerm@torus.tech",
+    "mobile": "8124805539",
+    "loginId": "Peer@786",
+    "dateAdded": "2024-10-11T04:37:31.922Z",
     "status": "active",
+    "users": "Peer@786Peer m",
     "accessProfile": [
       "admin"
     ],
-    "accessExpires": "2025-11-30",
-    "dateAdded": "2025-09-01T11:13:43.262Z",
-    "isRestricted": false,
-    "lastActive": "2025-09-24T13:22:03.016Z",
-    "users": "sriramsriram s",
-    "profile": "",
+    "lastActive": "2025-12-29T09:59:50.236Z",
+    "profile": "https://cdns3dfsdev.toruslowcode.com/",
+    "quickLinks": [
+      {
+        "label": "Company Profile",
+        "key": "PersonalcompanyProfile",
+        "routes": "/control-center/company-profile"
+      },
+      {
+        "label": "Build Application",
+        "key": "build",
+        "routes": "/"
+      },
+      {
+        "label": "My Account",
+        "key": "PersonalmyAccount",
+        "routes": "/control-center/account-profile"
+      },
+      {
+        "label": "Tenant",
+        "key": "tenant",
+        "routes": "/control-center/tenant"
+      }
+    ],
+    "client": "CT003",
     "edit": "",
-    "client": "CT261"
+    "noOfProductsService": 0,
+    "userUniqueId": ""
   },
   "webOnBoarding": {
     "loadingImage": "/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif",
@@ -149,11 +170,11 @@
   ],
   "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1",
   "appGroupDesc": "CG",
-  "logType": "mongodb",
+  "logType": "dfs",
   "appDesc": "TG1",
   "appLogo": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png",
   "isOld": true,
-  "clientCode": "CT261"
+  "clientCode": "CT003"
 } */
 import './globals.css';
 import type { Metadata } from 'next';

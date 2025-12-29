@@ -20,6 +20,7 @@ interface CardProps {
   selected?: boolean;
   title?: string;
   prefixValue?: string;
+  label?: string;
   icon?: string | React.ReactNode;
   needTooltip?: boolean;
   tooltipProps?: TooltipPropsType;
@@ -41,6 +42,7 @@ export const Card: React.FC<CardProps> = ({
   selected = false,
   title,
   prefixValue,
+  label,
   icon,
   needTooltip = false,
   tooltipProps,
@@ -154,7 +156,7 @@ export const Card: React.FC<CardProps> = ({
       )}
 
       {/* Icon and Prefix Section */}
-      {(icon || prefixValue) && (
+      {(icon || label) && (
         <div className={`flex items-center flex-shrink-0 ${getContentAlignClasses()}`} style={{ gap: "min(8px, 2%)" }}>
           {icon && (
             <div className="flex items-center justify-center flex-shrink-0">
@@ -165,15 +167,17 @@ export const Card: React.FC<CardProps> = ({
               )}
             </div>
           )}
-          {prefixValue && (
-            <span className="font-semibold flex items-center">{prefixValue}</span>
+          {label && (
+            <span className="font-semibold flex items-center">{label}</span>
           )}
         </div>
       )}
 
       {/* Content Section */}
       <div className={`flex flex-end min-h-0 ${getContentAlignClasses()}`}>
-        {children}
+        {prefixValue && (
+            <span className="font-semibold flex items-center">{prefixValue}</span>
+          )}{children}
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ function objectToQueryString(obj: any) {
 }
  
 
-const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFlagCompData}: { lockedData:any,setLockedData:any,checkToAdd:any,setCheckToAdd:any,refetch:any,setRefetch:any,primaryTableData:any,setPrimaryTableData:any,encryptionFlagCompData:any,}) => {
+const Buttonbutton = ({ lockedData,setLockedData,primaryTableData, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFlagCompData}: { lockedData:any,setLockedData:any,checkToAdd:any,setCheckToAdd:any,refetch:any,setRefetch:any,primaryTableData:any,setPrimaryTableData:any,encryptionFlagCompData:any,}) => {
   const token:string = getCookie('token');
   const decodedTokenObj:any = decodeToken(token);
   const createdBy:string =decodedTokenObj.users;
@@ -75,6 +75,7 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
   let encryptionMethod: string = "";
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   let actionLockData = {"lockMode":"","name":"","ttl":""}
+  const [allCode,setAllCode]=useState<any>("");
     
  /////////////
    //another screen
@@ -87,11 +88,11 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -114,6 +115,7 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   let customCode:any;
   const handleCustomCode=async () => {
+    code = allCode ||""
     if (code != '') {
       let codeStates: any = {};
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -127,9 +129,28 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
   }
   const handleMapper=async () => {
     try{     
-    }catch(err)
-    {
-      console.log(err)
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "4476786a93a6424a88a7c9e07d86c543",
+          isTable: false,
+          from:"ButtonButton",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.error == true){
+        return
+      }
+      setAllCode(orchestrationData?.data?.code);
+    }catch(err){
+        console.log(err);
     }
   }
 
@@ -177,7 +198,7 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
       setValidateRefetch((pre:any)=>({...pre,value:!pre.value,init:pre.init+1}));
     } 
     let saveCheck=false;
-    Object.keys(validate).map((item)=>{
+        Object.keys(validate).map((item)=>{
       if(validate[item] == 'invalid'){
         saveCheck=true;
     }})
@@ -186,8 +207,8 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
       return
     }
     try{  
-    await delay(1000);
-    await handleCustomCode();
+      await delay(1000);
+      await handleCustomCode();
     }catch (err: any) {
       if(typeof err == 'string')
         toast(err, 'danger');
@@ -218,7 +239,7 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
           headerPosition='top'
           headerText="Submit"
           icon="Md11Mp"
-          iconDisplay='Start with Icon'   
+          iconDisplay='Start with Icon'
         >
           {keyset("Button")}
         </Button>
@@ -228,5 +249,4 @@ const Buttonbutton =  ({ lockedData,setLockedData,primaryTableData, setPrimaryTa
 }
 
 export default Buttonbutton
-
 

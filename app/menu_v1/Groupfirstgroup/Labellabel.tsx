@@ -16,21 +16,23 @@ import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys'
 import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 const Labellabel = ({encryptionFlagCompData}:any) => {
-  const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
+  const token:string = getCookie('token'); 
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
-  const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
+  const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
+  const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
-  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
+  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
   let encryptionMethod: string = "";
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
-  const [allCode,setAllCode]=useState<any>("");
   const toast:any=useInfoMsg();
   const routes = useRouter();
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
+  const [allCode,setAllCode]=useState<any>("");
+
  /////////////
    //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -42,11 +44,11 @@ const Labellabel = ({encryptionFlagCompData}:any) => {
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -66,9 +68,42 @@ const Labellabel = ({encryptionFlagCompData}:any) => {
   //////////////
 
 
+const handleMapperValue=async()=>{
+  try{
+    const orchestrationData: any = await AxiosService.post(
+      '/UF/Orchestration',
+      {
+        key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+        componentId: "c2cb1a49935b44419561e81deffc08a7",
+        controlId: "249105c8421b4c2fb0fbe40c38933b92",
+        isTable: false,
+        from:"labellabel",
+        accessProfile:accessProfile
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+    if(orchestrationData?.data?.error == true){
+      return
+    }
+    setAllCode(orchestrationData?.data?.code);
+  }catch(err){
+    console.log(err)
+  }
+}
+
+useEffect(()=>{
+  handleMapperValue();
+  setfirstgroupc08a7((pre:any)=>({...pre,label:""}));
+},[label33b92?.refresh])
+
+
 const handleClick =async(e:any)=>{
   setfirstgroupc08a7((prev: any) => ({ ...prev, label: e.target.value }));
-  let code:any="";  
+  let code = allCode;
     if (code != '') {
     let codeStates: any = {};
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -80,7 +115,7 @@ const handleClick =async(e:any)=>{
 }
 
 
-  if (label9be35?.isHidden) {
+  if (label33b92?.isHidden) {
     return <></>
   }  
 
@@ -89,16 +124,14 @@ const handleClick =async(e:any)=>{
       style={{gridColumn: `13 / 16`,gridRow: `63 / 89`, gap:``, height: `100%`, overflow: 'auto'}} >
       <Label 
         className=""
-        icon="Md11Mp"
+        icon="Md10Mp"
         iconDisplay="Start with Icon"
-        disabled= {label9be35?.isDisabled ? true : false}
+        disabled= {label33b92?.isDisabled ? true : false}
         theme="success"
-        interactive={true}
-        copy
-        copyText="sivam"
-        contentAlign={"left"}
+        interactive={false}
+        contentAlign={"center"}
         needTooltip={true}  
-        tooltipProps={{title:"Tooltip",placement:"top-end"}}
+        tooltipProps={{title:"Tooltip",placement:"top-start"}}
         headerPosition='top'
         headerText="Header"
       onClick = {handleClick}

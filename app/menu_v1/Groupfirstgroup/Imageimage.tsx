@@ -27,11 +27,11 @@ const Imageimage =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -57,7 +57,11 @@ const Imageimage =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
 
   const handleCode=async () => {
     let code:any;
-    code= "";
+    const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",  componentId:"c2cb1a49935b44419561e81deffc08a7",controlId:"a1f7082f8b1f4ece8c2a5c7c45aeee6c",isTable:false,accessProfile:accessProfile,from:"imageimage"},{
+      headers: {
+        Authorization: `Bearer ${token}`
+    }})
+    code=orchestrationData?.data?.code
     if (code == '') {
       //toast(code?.message, 'danger')
       //return

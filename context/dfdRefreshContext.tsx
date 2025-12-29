@@ -126,10 +126,20 @@ export async function dfdRefreshContext(dfdkey:any,setState:any,page:any,count:a
 export function useHandleDfdRefresh(){
 
 
+    const {dfd_mydfddata_v1Props,setdfd_mydfddata_v1Props} = useContext(TotalContext) as TotalContextProps;
     const toast=useInfoMsg();
     const token:string = getCookie('token'); 
 
     return (nodename:any,page:any=1,count:any=10,dpdEncryption:any) => {
+            if("linechart0ad1b"==nodename){
+                dfdRefreshContext("CK:CT003:FNGK:AF:FNK:DF-DFD:CATK:CG:AFGK:TG1:AFK:myDfdData:AFVK:v1",setdfd_mydfddata_v1Props,page,count,dpdEncryption,toast,token);
+            }
+            if("piechart4e57f"==nodename){
+                dfdRefreshContext("CK:CT003:FNGK:AF:FNK:DF-DFD:CATK:CG:AFGK:TG1:AFK:myDfdData:AFVK:v1",setdfd_mydfddata_v1Props,page,count,dpdEncryption,toast,token);
+            }
+            if("bartchart015eb"==nodename){
+                dfdRefreshContext("CK:CT003:FNGK:AF:FNK:DF-DFD:CATK:CG:AFGK:TG1:AFK:myDfdData:AFVK:v1",setdfd_mydfddata_v1Props,page,count,dpdEncryption,toast,token);
+            }
     };
 }
 

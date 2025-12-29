@@ -5,6 +5,7 @@ import { useGlobal } from "@/context/GlobalContext";
 import { Icon } from "./Icon";
 import { getFontSizeClass, getBorderRadiusClass } from"@/app/utils/branding";
 import { BiSort } from "react-icons/bi";
+import { twMerge } from "tailwind-merge";
 
 interface RenderRowActionsProps {
   item: any;
@@ -27,7 +28,7 @@ interface TableProps {
   renderRowActions?: (props: RenderRowActionsProps) => React.ReactNode;
   selectedIds?: string[];
   onSelectionChange?: (selectedIds: string[]) => void;
-  selectionMode?: 'single' | 'multi';
+  selectionMode?: 'Single' | 'Multi';
   getRowId?: (row: any, index: number) => string;
   edgePadding?: boolean;
   wordWrap?: boolean;
@@ -51,7 +52,7 @@ export const Table: React.FC<TableProps> = ({
   renderRowActions,
   selectedIds=[],
   onSelectionChange,
-  selectionMode = 'multi',
+  selectionMode = 'single',
   getRowId,
   edgePadding = true,
   wordWrap = false,
@@ -170,7 +171,12 @@ export const Table: React.FC<TableProps> = ({
           newSelectedIds.push(id);
         }
       });
-      onSelectionChange(newSelectedIds);
+      if(selectedIds?.length==0 && selectionMode!='Single')
+      {
+        onSelectionChange(newSelectedIds);
+        return
+      }
+      onSelectionChange([]);
     }
   };
 
@@ -388,10 +394,7 @@ export const Table: React.FC<TableProps> = ({
                         }
                       }}
                       onChange={handleSelectAllRows}
-                      className="w-4 h-4 cursor-pointer"
-                      style={{
-                        accentColor: branding.brandColor,
-                      }}
+                      className={twMerge("accent-[var(--selection-color)] hover:accent-[var(--hover-color)] " , ``)}
                     />
                   </div>
                 </th>
@@ -467,7 +470,7 @@ export const Table: React.FC<TableProps> = ({
 
               {/* Column Visibility Control */}
               {tableSettings && 
-              <th className="">
+                 <th className="px-4 py-3 w-12">
                 <button
                   onClick={() => setShowColumnModal(!showColumnModal)}
                   className={`
@@ -555,14 +558,11 @@ export const Table: React.FC<TableProps> = ({
                     <td className="px-4 py-3 w-12">
                       <div className="flex items-center justify-center">
                         <input
-                          type={selectionMode === 'single' ? "radio" : "checkbox"}
+                          type={ "checkbox"}
                           checked={isSelected}
                           onChange={() => handleRowSelection(row, index)}
                           onClick={(e) => e.stopPropagation()}
-                          className="w-4 h-4 cursor-pointer"
-                          style={{
-                            accentColor: branding.brandColor,
-                          }}
+                          className={twMerge("accent-[var(--selection-color)] hover:accent-[var(--hover-color)] " , ``)}
                         />
                       </div>
                     </td>

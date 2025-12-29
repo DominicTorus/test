@@ -15,7 +15,6 @@ import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/Modal';
 import { eventBus } from '@/app/eventBus';
 
-
 const Listlist = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const token:string = getCookie('token'); 
   const decodedTokenObj: any = decodeToken(token);
@@ -23,14 +22,14 @@ const Listlist = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
-  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false;
+  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
   let encryptionMethod: string = "";
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   const [allCode,setAllCode]=useState<any>("");
-  const prevRefreshRef = useRef(false);
   const routes = useRouter();
+  const prevRefreshRef = useRef(false);
   const toast:any=useInfoMsg();
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
@@ -45,11 +44,11 @@ const Listlist = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -83,9 +82,12 @@ const Listlist = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
 
 let dataItems = items
 
-const handleonItemClick=async(value:any)=>{
-  setfirstgroupc08a7((prev: any) => ({ ...prev, list: value||"" }));
-   let code:any="";
+const handleonItemClick=async(value:any={})=>{
+    const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",  componentId:"c2cb1a49935b44419561e81deffc08a7",controlId:"03f002c4818c4d588bc05b3d420e965e",isTable:false,accessProfile:accessProfile,from:"listlist"},{
+    headers: {
+      Authorization: `Bearer ${token}`
+  }})
+   let code:any=orchestrationData?.data?.code;
 
     if (code != '') {
     let codeStates: any = {};
@@ -95,12 +97,13 @@ const handleonItemClick=async(value:any)=>{
       codeStates['setsecondgroup'] = setsecondgroup311a5,
   codeExecution(code,codeStates);
   }
+  setfirstgroupc08a7((prev: any) => ({ ...prev, list: value||"" }));
 }
 
 useEffect(() => {
   if (prevRefreshRef.current) {
     setfirstgroupc08a7((pre:any)=>({...pre,list:""}));
-    handleonItemClick(null);
+    handleonItemClick();
   }else 
   prevRefreshRef.current= true    
 },[liste965e?.refresh])

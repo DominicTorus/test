@@ -21,11 +21,11 @@ const Signaturesignature = ({checkToAdd,setCheckToAdd,refetch,setRefetch}:any) =
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -86,6 +86,9 @@ const Signaturesignature = ({checkToAdd,setCheckToAdd,refetch,setRefetch}:any) =
       sigCanvas?.current?.clear();
     }
   }, [firstgroupc08a7?.signature]);
+ 
+ 
+  
   return (
     <div 
       style={{gridColumn: `2 / 6`,gridRow: `321 / 348`, gap:``, height: `100%`, overflow: 'auto'}} >

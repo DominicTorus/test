@@ -19,9 +19,10 @@ import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
     
 const Sliderslider = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFlagCompData}:any) => {
+  const token: string = getCookie('token');
+  const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
-  const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
   let code:any="";
   const prevRefreshRef = useRef(false);
@@ -32,6 +33,7 @@ const Sliderslider = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFla
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   const toast:any=useInfoMsg();
   const routes = useRouter();
+  const [allCode,setAllCode]=useState<any>("");
  /////////////
    //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -43,11 +45,11 @@ const Sliderslider = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFla
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -67,6 +69,37 @@ const Sliderslider = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFla
   //////////////
   const keyset:any=i18n.keyset("language");
 
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "2a2f2ceca1b4436e98707c31558de96f",
+          isTable: false,
+          accessProfile:accessProfile,
+          from:"sliderslider"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.code)
+      {
+        setAllCode(orchestrationData?.data?.code)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    handleMapperValue()
+  },[sliderde96f?.refresh])
+
   useEffect(() => { 
     setfirstgroupc08a7((pre:any)=>({...pre,slider:""}))
   },[sliderde96f?.refresh])
@@ -75,6 +108,7 @@ const Sliderslider = ({checkToAdd,setCheckToAdd,refetch,setRefetch,encryptionFla
     setfirstgroupc08a7((prev: any) => ({ ...prev, slider: newValue}));
   }
   const handleBlur=async(e:any)=>{
+    code = allCode
      if (code != '') {
       let codeStates: any = {};
             codeStates['firstgroup']  = firstgroupc08a7,

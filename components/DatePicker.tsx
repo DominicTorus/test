@@ -134,16 +134,24 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           borderRadius: "var(--border-radius)",
           overflow: "hidden",
         }}
+        onMouseEnter={(e) => {
+          if (!disabled && !readOnly && validationState !== "invalid") {
+            e.currentTarget.style.borderColor = branding.hoverColor;
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!disabled && !readOnly && validationState !== "invalid" && document.activeElement !== e.currentTarget) {
+            e.currentTarget.style.borderColor = "";
+          }
+        }}
         onFocus={(e) => {
-          if (validationState !== "invalid") {
-            e.currentTarget.style.borderColor = "var(--brand-color)";
-            e.currentTarget.style.boxShadow = "0 0 0 2px var(--brand-color-transparent)";
+          if (!disabled && !readOnly && validationState !== "invalid") {
+            e.currentTarget.style.borderColor = branding.selectionColor;
           }
         }}
         onBlur={(e) => {
-          if (validationState !== "invalid") {
-            e.currentTarget.style.borderColor = isDark ? "#4B5563" : "#D1D5DB";
-            e.currentTarget.style.boxShadow = "none";
+          if (!disabled && !readOnly && validationState !== "invalid") {
+            e.currentTarget.style.borderColor = "";
           }
           onBlur?.(e);
         }}

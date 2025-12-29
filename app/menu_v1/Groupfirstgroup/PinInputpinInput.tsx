@@ -19,15 +19,16 @@ const PinInputpinInput = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   const token: string = getCookie('token');
   const {validateRefetch , setValidateRefetch} = useContext(TotalContext) as TotalContextProps;
   const {validate , setValidate} = useContext(TotalContext) as TotalContextProps;
+  const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
-  const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
   const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'pininput',type:"text"});
   const toast:any=useInfoMsg(); 
   const routes = useRouter();
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
+  const [allCode,setAllCode]=useState<any>("");
   /////////////
   //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -39,11 +40,11 @@ const PinInputpinInput = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -62,12 +63,41 @@ const PinInputpinInput = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   //////////////
   
-  const handleUpdate = async (data:any) => {
-    setfirstgroupc08a7((prev: any) => ({ ...prev, pininput: data}));
-  }  
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "f03cead3030c462aa71236ad80792978",
+          isTable: false,
+          from:"pinInputpininput",
+          accessProfile:accessProfile
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      setAllCode(orchestrationData?.data?.code);
+    }
+    catch(err)
+    {
+      console.log(err);
+    }
+  }
 
+  useEffect(()=>{
+    handleMapperValue()
+  },[refresh.pininputpininput92978])
+
+  const handleUpdate = async(data:any) => {
+    setfirstgroupc08a7((prev: any) => ({ ...prev, pininput: data}))
+  }  
   const handleBlur = async(data:any)=>{  
-    let code:any="";
+    let code:any= allCode;
     if (code != '') {
     let codeStates: any = {};
     codeStates['firstgroup']  = firstgroupc08a7;

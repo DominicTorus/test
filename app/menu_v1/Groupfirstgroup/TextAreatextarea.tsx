@@ -1,15 +1,14 @@
 
 'use client'
-import React, { useState,useContext,useEffect, useRef } from 'react'
+import React, { useState,useContext,useEffect, useRef } from 'react';
 import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { Modal } from "@/components/Modal";
-import { ConfirmModal } from "@/components/ConfirmModal";
 import { Text } from "@/components/Text";
 import { TextArea } from '@/components/TextArea';
 import { codeExecution } from '@/app/utils/codeExecution';
-import { AxiosService } from '@/app/components/axiosService'
+import { AxiosService } from '@/app/components/axiosService';
 import { getCookie } from '@/app/components/cookieMgment';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps,getRouteScreenDetails } from '@/app/utils/assemblerKeys';
@@ -17,21 +16,22 @@ import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 
 const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
+  const token: string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
   let code:any="";
   const prevRefreshRef = useRef(false);
-  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false;
+  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
   let encryptionDpd: string = "";
-  encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
+  encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd
   let encryptionMethod: string = "";
-  encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
-  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'textarea',type:"text"});
-  const [allCode,setAllCode]=useState<any>("");
-  const toast:any=useInfoMsg();
-  const routes = useRouter();
+  encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method
+  const [dynamicStateandType,setDynamicStateandType]=useState<any>({name:'textarea',type:"string"})
+  const [allCode,setAllCode]=useState<any>("")
+  const toast:any=useInfoMsg()
+  const routes = useRouter()
  /////////////
    //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;
@@ -43,11 +43,11 @@ const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;
@@ -66,6 +66,58 @@ const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   //////////////
 
+  const handleMapperValue=async()=>{
+    try{
+      const orchestrationData: any = await AxiosService.post(
+        '/UF/Orchestration',
+        {
+          key: "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+          componentId: "c2cb1a49935b44419561e81deffc08a7",
+          controlId: "03428261212a43e1b8162537b5ba5a38",
+          isTable: false,
+          accessProfile:accessProfile,
+          from:"textareatextarea"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+      if(orchestrationData?.data?.schemaData){
+        let allSchemas:any[]=orchestrationData?.data?.schemaData[0]?.schema||[]
+        let type:any={name:'textarea',type:'text'}
+        allSchemas.map((item:any)=>{
+          if(item.name=='textarea')
+          {
+            type=item
+  
+          }
+        })
+        setDynamicStateandType(type)       
+      }
+      if(orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties){
+        let type:any={name:'textarea',type:'text'}
+        type={
+          name:'textarea',
+          type: orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textarea.type == 'string' ? 'text' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textarea.type =='integer' ? 'number' : orchestrationData?.data?.schemaData[0].schema.responses["200"].content["application/json"].schema.items.properties.textarea.type
+        }
+        setDynamicStateandType(type)
+       
+      }
+      if(orchestrationData?.data?.code)
+      {
+        setAllCode(orchestrationData?.data?.code)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    handleMapperValue()
+  },[textareaa5a38?.refresh])
+  
   useEffect(()=>{
     if (prevRefreshRef.current) {
       setfirstgroupc08a7((pre:any)=>({...pre,textarea:""}))
@@ -74,6 +126,7 @@ const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   },[textareaa5a38?.refresh])
 
   const handleBlur=async(e:any)=>{
+    code = allCode
     if (code != '') {
       let codeStates: any = {}
       codeStates['firstgroup']  = firstgroupc08a7,
@@ -84,12 +137,7 @@ const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
     }
   }
   const handleChange = async(e: any) => {
-    if(dynamicStateandType.type=="number"){
-      setfirstgroupc08a7((prev: any) => ({ ...prev, textarea: +e?.target?.value }))
-    }
-    else{
     setfirstgroupc08a7((prev: any) => ({ ...prev, textarea: e?.target?.value }))
-    }
   }
   const handleFocus=async(e:any)=>{
   }
@@ -98,7 +146,6 @@ const TextAreatextarea = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)
   }
 return (
   <div 
-    className="top " 
   style={{gridColumn: `13 / 16`,gridRow: `282 / 305`, gap:``, height: `100%`, overflow: 'auto'}} >
     <TextArea
       className=""
@@ -108,7 +155,7 @@ return (
       placeholder = {'type here...'}
       needTooltip={true}  
       tooltipProps={{title:"Tooltip",placement:"top-start"}}
-      contentAlign={"center"}
+      contentAlign={"left"}
       headerPosition='top'
       headerText="Header"
       pin = {'brick-brick'}

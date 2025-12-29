@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useContext, useEffect, useRef } from 'react' 
+
+import React, { useState, useContext, useEffect, useRef } from 'react'; 
 import { Text } from '@/components/Text';
 import { Card } from '@/components/Card';
 import { Modal } from '@/components/Modal';
@@ -9,30 +10,29 @@ import { getCookie } from '@/app/components/cookieMgment';
 import { AxiosService } from "@/app/components/axiosService";
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useInfoMsg } from "@/app/components/infoMsgHandler";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { eventBus } from '@/app/eventBus';
 import { getFilterProps, getRouteScreenDetails } from '@/app/utils/assemblerKeys';
 import { te_refreshDto } from '@/app/interfaces/interfaces';
 import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 
 const Cardcard = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
-  const token: string = getCookie('token');
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
   const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
-  const handleDfdRefresh = useHandleDfdRefresh();
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
-  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
+  const handleDfdRefresh = useHandleDfdRefresh();
+  const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
   let encryptionMethod: string = "";
-  encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;  
+  encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method;
   const [showProfileAsModalOpen, setShowProfileAsModalOpen] = React.useState(false);
   const [showElementAsPopupOpen, setShowElementAsPopupOpen] = React.useState(false);
+  const token: string = getCookie('token');
   const toast:any=useInfoMsg();
   const routes = useRouter();
   const prevRefreshRef = useRef(false);
- 
   /////////////
    //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps  
@@ -44,11 +44,11 @@ const Cardcard = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps  
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps  
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps  
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps  
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps  
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps  
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps  
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps  
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps  
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps  
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps  
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps  
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps  
@@ -65,49 +65,68 @@ const Cardcard = ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) => {
   const {sliderde96f, setsliderde96f}= useContext(TotalContext) as TotalContextProps  
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps  
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps  
-  ////////////// 
+  //////////////
+ 
   
+  const handleMapperDetails=async()=>{
+    try{
+    let code:any;
+    const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",  componentId:"c2cb1a49935b44419561e81deffc08a7",controlId:"2f57d46093784cf696f294671abaf24d",isTable:false,accessProfile:accessProfile,from:"cardcard"},{
+      headers: {
+        Authorization: `Bearer ${token}`
+    }})
+    code = orchestrationData?.data?.code
+    if (code != '') {
+          let codeStates: any = {}
+          codeStates['firstgroup']  = firstgroupc08a7,
+          codeStates['setfirstgroup'] = setfirstgroupc08a7,
+          codeStates['secondgroup']  = secondgroup311a5,
+          codeStates['setsecondgroup'] = setsecondgroup311a5,
+        codeExecution(code,codeStates)
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   const handleClick=async(value:any)=>{
-   }
+  }
 
 
-  useEffect(() => {
+useEffect(() => {
     setfirstgroupc08a7((pre:any)=>({...pre,card:""}));
-  },[card498e2?.refresh])
+  },[cardaf24d?.refresh])
 
-  const style = {    
+  const style = {
+    
     display: 'flex',
-    //boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.2)', 
+   // boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.2)', 
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
 
-  if (card498e2?.isHidden) {
+  if (cardaf24d?.isHidden) {
     return <></>
   }  
   return (
     <div 
-    style={{gridColumn: `13 / 16`,gridRow: `111 / 136`, gap:``, height: `100%`, overflow: 'auto'}} >
+    style={{gridColumn: `13 / 16`,gridRow: `113 / 134`, gap:``, height: `100%`, overflow: 'auto'}} >
       <Card 
-        style={style}
-        className=""
-        theme="success"
-        view="filled"
-        icon="Md10Mp"
-        prefixValue="card"
-        disabled= {card498e2?.isDisabled ? true : false}
-        onClick={handleClick}  
-        needTooltip={true}  
-        tooltipProps={{title:"Tooltip",placement:"top-start"}}
-        contentAlign={"center"}
-        headerPosition='top'
-        headerText="Header"
-        >
-₹{firstgroupc08a7?.card?firstgroupc08a7?.card:"0"}
+      style={style}
+      className=""   
+      theme="success"
+      view="filled"
+      icon="Md10Mp"
+      label="card"
+      prefixValue="₹"
+      disabled= {cardaf24d?.isDisabled ? true : false}
+      onClick={handleClick} 
+      contentAlign={"center"}
+      >
+      {firstgroupc08a7?.card?firstgroupc08a7?.card:"0"}
       </Card>
-      </div>
+    </div>
   )
 }
 

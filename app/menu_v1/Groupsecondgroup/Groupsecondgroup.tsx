@@ -5,13 +5,13 @@ import { uf_authorizationCheckDto } from '@/app/interfaces/interfaces';
 import { codeExecution } from '@/app/utils/codeExecution';
 import { useRouter } from 'next/navigation';
 import { getRouteScreenDetails } from '@/app/utils/assemblerKeys';
-import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
 import { Icon } from '@/components/Icon';
 import { Modal } from '@/components/Modal';
 import { eventBus } from '@/app/eventBus';
 import clsx from "clsx";
+import { useHandleDfdRefresh } from '@/context/dfdRefreshContext';
 import LineChartslinechart  from "./LineChartslinechart";
 import PieChartspiechart  from "./PieChartspiechart";
 import BarChartsbartchart  from "./BarChartsbartchart";
@@ -21,17 +21,18 @@ import { TotalContext, TotalContextProps } from '@/app/globalContext';
 import { useTheme } from '@/hooks/useTheme';
 
 
-const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,isFormOpen=false}:any) => {
+const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setPrimaryTableData,checkToAdd,setCheckToAdd,refetch,setRefetch,dropdownData,setDropdownData,encryptionFlagPageData, nodeData, setNodeData,paginationDetails,isFormOpen=false}:any)=> {
   const token:string = getCookie('token'); 
   const {refresh, setRefresh} = useContext(TotalContext) as TotalContextProps;
   const {memoryVariables, setMemoryVariables} = useContext(TotalContext) as TotalContextProps;
-  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const {globalState , setGlobalState} = useContext(TotalContext) as TotalContextProps;
+  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
   const handleDfdRefresh = useHandleDfdRefresh();
-  const code:any = ``;
+  let code:any = ``;
   let idx = "";
   let item = "";
   const { isDark, isHighContrast, bgStyle, textStyle } = useTheme();
+  const {dfd_mydfddata_v1Props, setdfd_mydfddata_v1Props} = useContext(TotalContext) as TotalContextProps;
   const encryptionFlagComp: boolean = encryptionFlagPageData?.flag || false;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagPageData?.dpd;
@@ -60,6 +61,7 @@ const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setP
 };
   const prevRefreshRef = useRef(false);
   const [allowedComponent,setAllowedComponent]=useState<any>("");
+  const [allowedControls,setAllowedControls]=useState<any>("");
   const toast=useInfoMsg();
   const confirmMsgFlag: boolean = false;
   const [allCode,setAllCode]=useState<any>("");
@@ -73,22 +75,33 @@ const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setP
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;
   const {linechart0ad1b, setlinechart0ad1b}= useContext(TotalContext) as TotalContextProps;
-  const {linechart0ad1bProps, setlinechart0ad1bProps}= useContext(TotalContext) as TotalContextProps;
   const {piechart4e57f, setpiechart4e57f}= useContext(TotalContext) as TotalContextProps;
-  const {piechart4e57fProps, setpiechart4e57fProps}= useContext(TotalContext) as TotalContextProps;
   const {bartchart015eb, setbartchart015eb}= useContext(TotalContext) as TotalContextProps;
-  const {bartchart015ebProps, setbartchart015ebProps}= useContext(TotalContext) as TotalContextProps;
   //////////////
   const [open, setOpen] = React.useState(false);
   async function securityCheck() {
+  const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",componentId:"f4555848ac0a4de59dcbd10b142311a5",from:"GroupSecondgroup",accessProfile:accessProfile},{
+    headers: {
+      Authorization: `Bearer ${token}`
+    }})
+  code = orchestrationData?.data?.code;
+  const security:any[] = orchestrationData?.data?.security;
+  const allowedGroups:any[] = orchestrationData?.data?.allowedGroups;
+  if(orchestrationData?.data?.error === true){
+    toast(orchestrationData?.data?.errorDetails?.message, 'danger')
+    return
+  }
+  setAllowedControls(security) 
+  setAllowedComponent(allowedGroups) 
+    
   /////////////
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("linechart")){
+    if(orchestrationData?.data?.readableControls.includes("linechart")){
       setlinechart0ad1b({...linechart0ad1b,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("piechart")){
+    if(orchestrationData?.data?.readableControls.includes("piechart")){
       setpiechart4e57f({...piechart4e57f,isDisabled:true});
     }
-    if(securityData[accessProfile]?.['readOnlyControls'].includes("bartchart")){
+    if(orchestrationData?.data?.readableControls.includes("bartchart")){
       setbartchart015eb({...bartchart015eb,isDisabled:true});
     }
   //////////////
@@ -107,8 +120,8 @@ const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setP
     const handleOnload=()=>{
   }
   const handleOnChange=()=>{
-  }
 
+  }
   const secondgroup311a5Ref = useRef<any>(null);
   const handleClearSearch = () => {
     secondgroup311a5Ref.current?.setSearchParams();
@@ -128,7 +141,7 @@ const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setP
   }, [secondgroup311a5Props?.refresh])
 
   return (
-  <div  
+    <div 
       style={{          
         gridColumn: '2 / 24',
         gridRow: '407 / 551',
@@ -154,9 +167,9 @@ const Groupsecondgroup = ({lockedData={},setLockedData,primaryTableData={}, setP
         isDark ? "bg-gray-800 text-white" : "bg-white text-black"
       )}
     >
-        {securityData[accessProfile].allowedControls.includes("linechart") ?<LineChartslinechart /* 0ad1b */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("piechart") ?<PieChartspiechart /* 4e57f */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
-        {securityData[accessProfile].allowedControls.includes("bartchart") ?<BarChartsbartchart /* 015eb */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("linechart") ?<LineChartslinechart /* 0ad1b */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("piechart") ?<PieChartspiechart /* 4e57f */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
+        {allowedControls.includes("bartchart") ?<BarChartsbartchart /* 015eb */ encryptionFlagCompData={encryptionFlagCompData} />: <div></div>}
     </div>
  )
 }

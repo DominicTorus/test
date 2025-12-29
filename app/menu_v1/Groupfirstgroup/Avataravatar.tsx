@@ -8,14 +8,15 @@ import { Avatar } from "@/components/Avatar";
 import { codeExecution } from '@/app/utils/codeExecution'
 import { deleteAllCookies,getCookie } from '@/app/components/cookieMgment'
 
-const Avataravatar =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) =>{
-  const token:string = getCookie('token');
-  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps
+const Avataravatar =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any)=> { 
   const encryptionFlagCont: boolean = encryptionFlagCompData.flag || false ;
   let encryptionDpd: string = "";
   encryptionDpd = encryptionDpd !=='' ? encryptionDpd: encryptionFlagCompData.dpd;
   let encryptionMethod: string = "";
   encryptionMethod  = encryptionMethod !=='' ? encryptionMethod: encryptionFlagCompData.method
+  const token:string = getCookie('token');
+  const {accessProfile, setAccessProfile} = useContext(TotalContext) as TotalContextProps;
+  const [allCode,setAllCode]=useState<any>("");
  /////////////
   //another screen
   const {firstgroupc08a7, setfirstgroupc08a7}= useContext(TotalContext) as TotalContextProps;  
@@ -27,11 +28,11 @@ const Avataravatar =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) =>
   const {checkbox2289f, setcheckbox2289f}= useContext(TotalContext) as TotalContextProps;  
   const {dropdown0e57d, setdropdown0e57d}= useContext(TotalContext) as TotalContextProps;  
   const {upload2cc02, setupload2cc02}= useContext(TotalContext) as TotalContextProps;  
-  const {label9be35, setlabel9be35}= useContext(TotalContext) as TotalContextProps;  
-  const {card498e2, setcard498e2}= useContext(TotalContext) as TotalContextProps;  
+  const {label33b92, setlabel33b92}= useContext(TotalContext) as TotalContextProps;  
   const {imageeee6c, setimageeee6c}= useContext(TotalContext) as TotalContextProps;  
   const {textinput56a48, settextinput56a48}= useContext(TotalContext) as TotalContextProps;  
   const {icon0a30c, seticon0a30c}= useContext(TotalContext) as TotalContextProps;  
+  const {cardaf24d, setcardaf24d}= useContext(TotalContext) as TotalContextProps;  
   const {liste965e, setliste965e}= useContext(TotalContext) as TotalContextProps;  
   const {pininput92978, setpininput92978}= useContext(TotalContext) as TotalContextProps;  
   const {progress53986, setprogress53986}= useContext(TotalContext) as TotalContextProps;  
@@ -49,29 +50,40 @@ const Avataravatar =  ({checkToAdd,setCheckToAdd,encryptionFlagCompData}:any) =>
   const {secondgroup311a5, setsecondgroup311a5}= useContext(TotalContext) as TotalContextProps;  
   const {secondgroup311a5Props, setsecondgroup311a5Props}= useContext(TotalContext) as TotalContextProps;  
   //////////////
+
   const handleCode=async () => {
-    let code:any="";
-    
-    if (code != '') {
-        let codeStates: any = {};
-            codeStates['firstgroupc08a7']  = firstgroupc08a7,
-            codeStates['setfirstgroupc08a7'] = setfirstgroupc08a7,
-            codeStates['secondgroup311a5']  = secondgroup311a5,
-            codeStates['setsecondgroup311a5'] = setsecondgroup311a5,
+    let code:any;
+    const orchestrationData:any = await AxiosService.post("/UF/Orchestration",{key:"CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",  componentId:"c2cb1a49935b44419561e81deffc08a7",controlId:"f4f96f2f8a1d4b95b48d80fc9eed99b3",isTable:false,accessProfile:accessProfile,from:"avataravatar"},{
+      headers: {
+        Authorization: `Bearer ${token}`
+    }})
+    code=orchestrationData?.data?.code
+    if (code == '') {
+      //toast(code?.message, 'danger')
+      //return
+    }  else if (code != '') {
+        let codeStates: any = {}
+            codeStates['firstgroup']  = firstgroupc08a7,
+            codeStates['setfirstgroup'] = setfirstgroupc08a7,
+            codeStates['secondgroup']  = secondgroup311a5,
+            codeStates['setsecondgroup'] = setsecondgroup311a5,
       codeExecution(code,codeStates)
     }
   }
 
   useEffect(() => {
+    setfirstgroupc08a7((pre:any)=>({...pre,avatar:""}));
     handleCode()
-  }, [])
+  }, [avatard99b3?.refresh])
 
   if (avatard99b3?.isHidden) {
     return <></>
   } 
 
   return (
-    <div style={{gridColumn: `8 / 11`,gridRow: `18 / 46`, gap:``, height: `100%`, overflow: 'auto'}}>
+    <div 
+      className="" 
+      style={{gridColumn: `8 / 11`,gridRow: `18 / 46`, gap:``, height: `100%`, overflow: 'auto'}}>
       <Avatar
         className=""
         icon="Md10Mp"
