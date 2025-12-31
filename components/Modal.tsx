@@ -88,6 +88,8 @@ export const Modal: React.FC<ModalProps> = ({
       onClick={handleOverlayClick}
     >
       <div
+        role="dialog"
+        aria-modal="true"
         className={`
           ${className}
           animate-scaleIn

@@ -39,14 +39,14 @@ const LayoutDecider = ({
   const {borderColor} = useTheme()
   const { brandColor, hoverColor, selectionColor } = branding;
   const encryptionFlagApp: boolean = false;    
-  const encryptionDpd: string = "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1";
+  const encryptionDpd: string = "CK:CT309:FNGK:AF:FNK:CDF-DPD:CATK:AG001:AFGK:A001:AFK:mydpd:AFVK:v1";
   const encryptionMethod: string = "";
-  const logo = "https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png"
-  const appName = "TG1"
+  const logo = ""
+  const appName = "application"
   const toast = useInfoMsg()
   const [loading, setLoading] = useState(true)
   const [updatedNavData, setUpdatedNavData] = useState<MenuItem[]>([])
-  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v5:bldc"
+  const aKey :string = "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT309:AFGK:AG001:AFK:A001:AFVK:v1:bldc"
   const [rawNavData, setRawNavData] = useState<MenuItem[] | null>(null);
   const navData: MenuItem[] = [
   {
@@ -74,13 +74,29 @@ const LayoutDecider = ({
     "icon": "https://cdns3dfsdev.toruslowcode.com/torus/9.1/resources/icons/admin-svgrepo-com.svg"
   },
   {
-    "menuGroupLabel": "Menu",
+    "menuGroupLabel": "progress",
     "screenDetails": [
       {
-        "name": "menu",
-        "key": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1",
+        "name": "progress",
+        "key": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:progress:AFVK:v1",
         "allowedAccessProfile": [
-          "Employee"
+          "Template 1",
+          "Template 2"
+        ],
+        "static": false
+      }
+    ],
+    "items": []
+  },
+  {
+    "menuGroupLabel": "tablecheck",
+    "screenDetails": [
+      {
+        "name": "tablecheck",
+        "key": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:tablecheck:AFVK:v1",
+        "allowedAccessProfile": [
+          "Template 1",
+          "Template 2"
         ],
         "static": false
       }
@@ -357,10 +373,14 @@ const LayoutDecider = ({
   }
 
    if (loading == true){
-    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><img src="/torus/9.1/CT003/resources/splashImage/bea83775357853.5c4a1808c8a7b.gif" alt="loadingImage" /></div>);
+    return (<div className='flex w-[100vw] h-[100vh] bg-slate-200 justify-center items-center '><span>Loading...</span></div>);
   }
   return (
-    <div className={`flex h-screen w-screen flex-col overflow-auto`}>
+    <div className={`flex h-screen w-screen flex-col overflow-auto 
+  bg-gradient-to-b
+  from-blue-700
+  to-white
+  `}>
       <div className={`g-root flex-shrink-0`}>
         <TopNav
           navData={updatedNavData}

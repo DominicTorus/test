@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap');  
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 
@@ -9,10 +8,9 @@
 /* CSS Variables for Typography - These will be set dynamically by setUpKey.tsx */
 :root {
   --g-font-family-sans: "Inter", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  --g-font-family-Roboto:"Roboto", sans-serif;
-  --font-body:var(--g-font-family-Roboto);
-  --font-header:var(--g-font-family-Roboto);  
-  --font-display:var(--g-font-family-Roboto);}
+  --font-body:var(--g-font-family-sans);
+  --font-header:var(--g-font-family-monospace);  
+  --font-display:var(--g-font-family-sans);}
 
 
 /* .pc-Grid .container-fluid, .pc-Grid .container {

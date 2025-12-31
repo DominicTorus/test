@@ -296,7 +296,7 @@ export const Signature = forwardRef<SignatureRef, SignatureProps>(({
           }}
           onFocus={(e) => {
             if (!isDisabled && !readOnly) {
-              e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(branding.selectionColor, 0.2)}`;
+              e.currentTarget.style.backgroundColor = branding.selectionColor;
             }
           }}
           onBlur={(e) => {

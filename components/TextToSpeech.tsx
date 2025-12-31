@@ -45,14 +45,12 @@ function TextAreaWithEndContent({ endContent, placeholder, branding, isDark, ...
     <div className={`relative w-full h-full ${className || ''} overflow-hidden`}>
       <textarea
         {...domProps}
-        rows={domProps.rows || 4}
+
         placeholder={placeholder}
         className={`
           w-full
           h-full
-          px-3 py-2
-          sm:px-4 sm:py-3
-          pr-14 sm:pr-16
+          p-2
           border-2
           ${isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'}
           resize-vertical
@@ -143,9 +141,6 @@ export function TextToSpeech(props: TextToSpeechProps){
         text-white
         text-base sm:text-lg md:text-xl
         shadow-md
-        w-8 h-8
-        sm:w-9 sm:h-9
-        md:w-10 md:h-10
         p-0
         min-w-0
         transition-all duration-200
@@ -154,6 +149,8 @@ export function TextToSpeech(props: TextToSpeechProps){
       `}
       style={{
         backgroundColor: branding.brandColor,
+        width: '10%',
+        height: '10%',
       }}
       onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
         if (!isSpeaking && !props.disabled) {
@@ -166,7 +163,7 @@ export function TextToSpeech(props: TextToSpeechProps){
         }
       }}
     >
-      <FiVolume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+      <FiVolume2 style={{ width: '60%', height: '60%' }} />
     </button>
   );
 
@@ -223,7 +220,7 @@ export function TextToSpeech(props: TextToSpeechProps){
         <TextAreaWithEndContent
           {...props}
           value={text}
-          rows={props?.rows||4}
+          // rows={props?.rows||4}
           disabled={props.disabled}
           placeholder={props.placeholder}
           onChange={(e) => {

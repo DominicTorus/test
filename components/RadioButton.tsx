@@ -214,7 +214,6 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
       <Tooltip
         title={tooltipProps.title}
         placement={tooltipProps.placement}
-        triggerClassName='inline-flex'
       >
         {finalElement}
       </Tooltip>

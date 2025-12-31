@@ -1,5 +1,5 @@
 let data:any ={
-  "UpPostgres": {
+  "mydpd": {
     "encryptionType": {
       "name": "encryptionType",
       "_type": "select",

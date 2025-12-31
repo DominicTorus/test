@@ -29,7 +29,7 @@ interface LoginProps {
   image?: string
 }
 
-const LoginForm = ({ logo, appName = "TG1", loginType = "standard", image }: LoginProps) => {
+const LoginForm = ({ logo, appName = "application", loginType = "standard", image }: LoginProps) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     email: '',
     password: ''
@@ -42,7 +42,7 @@ const LoginForm = ({ logo, appName = "TG1", loginType = "standard", image }: Log
   const { branding } = useGlobal()
   const { brandColor } = branding
   const { bgColor, borderColor, textColor } = useTheme()
-  const onBoardingKey : string = "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
+  const onBoardingKey : string = "User Screen"
   const tenant = process.env.NEXT_PUBLIC_TENANT_CODE
   const [imageandLogoValid, setImageandLogoValid] = useState({
     image: image ? true : false,
@@ -60,13 +60,13 @@ const LoginForm = ({ logo, appName = "TG1", loginType = "standard", image }: Log
       if (tenant && formData.email && formData.password) {
         setLoading(true)
 
-        setCookie('cfg_theme','dark')
+        setCookie('cfg_theme','light')
 
         const api_signinBody: api_signinDto = {
           client: tenant,
           username: formData.email,
           password: formData.password,
-          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG1:AFVK:v5:bldc",
+          key: "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT309:AFGK:AG001:AFK:A001:AFVK:v1:bldc",
           ufClientType: 'UFW'
         }
         const api_signin = await axios.post(
@@ -96,9 +96,14 @@ const LoginForm = ({ logo, appName = "TG1", loginType = "standard", image }: Log
           let screenDetails: any = {
             keys:[
   {
-    "screenName": "menu",
-    "screensName": "menu-v1",
-    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
+    "screenName": "progress",
+    "screensName": "progress-v1",
+    "ufKey": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:progress:AFVK:v1"
+  },
+  {
+    "screenName": "tablecheck",
+    "screensName": "tablecheck-v1",
+    "ufKey": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:tablecheck:AFVK:v1"
   }
 ]
           }

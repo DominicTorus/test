@@ -196,9 +196,9 @@ export const Table: React.FC<TableProps> = ({
   };
 
   const tableElement = (
-    <div className={`w-full ${edgePadding ? "p-4" : ""} ${className}`}>
-      <div className="flex gap-4 mb-4">
-        {search && (
+    <div className={`w-full h-full flex flex-col ${edgePadding ? "" : ""} ${className}`}>
+      {search && (
+        <div className="flex mb-4 flex-shrink-0">
           <div className="flex-1">
             <input
               type="text"
@@ -235,9 +235,8 @@ export const Table: React.FC<TableProps> = ({
               }}
             />
           </div>
-        )}
-
-      </div>
+        </div>
+      )}
 
       {/* Column Visibility Modal */}
       {showColumnModal && (
@@ -249,7 +248,6 @@ export const Table: React.FC<TableProps> = ({
               border-2
               p-6
               w-96
-              max-h-[80vh]
               overflow-auto
               shadow-xl
             `}
@@ -364,23 +362,24 @@ export const Table: React.FC<TableProps> = ({
         </div>
       )}
 
-      <div className="overflow-x-auto border rounded-lg" style={{
-        maxHeight: '600px',
-        overflow: 'auto'
-      }}>
-        <table
-          className={`
-            w-full
-            ${getBorderRadiusClass(branding.borderRadius)}
-            ${isDark ? "bg-gray-800" : "bg-white"}
-          `}
-        >
-          <thead
+      <div className="border rounded-lg flex-1 flex flex-col overflow-hidden">
+        <div className="overflow-auto flex-1 min-h-0">
+          <table
             className={`
-              sticky top-0 z-10
-              ${isDark ? "bg-gray-700" : "bg-gray-100"}
+              w-full
+              ${getBorderRadiusClass(branding.borderRadius)}
+              ${isDark ? "bg-gray-800" : "bg-white"}
             `}
           >
+            <thead
+              className={`
+                sticky top-0 z-10
+                ${isDark ? "bg-gray-700" : "bg-gray-100"}
+              `}
+              style={{
+                boxShadow: isDark ? "0 2px 4px rgba(0,0,0,0.3)" : "0 2px 4px rgba(0,0,0,0.1)"
+              }}
+            >
             <tr>
               {tableSelection && (
                 <th className="px-4 py-3 w-12">
@@ -607,13 +606,14 @@ export const Table: React.FC<TableProps> = ({
               );
             }))}
 
-            
+
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>
   );
-
-  return <>{tableElement}</>;
+// return <></>
+  return tableElement;
 };

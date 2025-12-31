@@ -5,134 +5,142 @@
 import React from 'react';
 import { getCookie } from './components/cookieMgment';
 export interface TotalContextProps {
-  firstgroupc08a7: any 
-  setfirstgroupc08a7: React.Dispatch<React.SetStateAction<any>>
-  firstgroupc08a7Props: any 
-  setfirstgroupc08a7Props: React.Dispatch<React.SetStateAction<any>>
-  secondgroup311a5: any 
-  setsecondgroup311a5: React.Dispatch<React.SetStateAction<any>>
-  secondgroup311a5Props: any 
-  setsecondgroup311a5Props: React.Dispatch<React.SetStateAction<any>>
-  button6c543: any,
-  setbutton6c543:React.Dispatch<React.SetStateAction<any>>
-  button6c543Props: any 
-  setbutton6c543Props: React.Dispatch<React.SetStateAction<any>>
-  avatard99b3: any,
-  setavatard99b3:React.Dispatch<React.SetStateAction<any>>
-  avatard99b3Props: any 
-  setavatard99b3Props: React.Dispatch<React.SetStateAction<any>>
-  radiogroupcf04e: any,
-  setradiogroupcf04e:React.Dispatch<React.SetStateAction<any>>
-  radiogroupcf04eProps: any 
-  setradiogroupcf04eProps: React.Dispatch<React.SetStateAction<any>>
-  datepickerbe7c3: any,
-  setdatepickerbe7c3:React.Dispatch<React.SetStateAction<any>>
-  datepickerbe7c3Props: any 
-  setdatepickerbe7c3Props: React.Dispatch<React.SetStateAction<any>>
-  checkbox2289f: any,
-  setcheckbox2289f:React.Dispatch<React.SetStateAction<any>>
-  checkbox2289fProps: any 
-  setcheckbox2289fProps: React.Dispatch<React.SetStateAction<any>>
-  dropdown0e57d: any,
-  setdropdown0e57d:React.Dispatch<React.SetStateAction<any>>
-  dropdown0e57dProps: any 
-  setdropdown0e57dProps: React.Dispatch<React.SetStateAction<any>>
-  upload2cc02: any,
-  setupload2cc02:React.Dispatch<React.SetStateAction<any>>
-  upload2cc02Props: any 
-  setupload2cc02Props: React.Dispatch<React.SetStateAction<any>>
-  label33b92: any,
-  setlabel33b92:React.Dispatch<React.SetStateAction<any>>
-  label33b92Props: any 
-  setlabel33b92Props: React.Dispatch<React.SetStateAction<any>>
-  imageeee6c: any,
-  setimageeee6c:React.Dispatch<React.SetStateAction<any>>
-  imageeee6cProps: any 
-  setimageeee6cProps: React.Dispatch<React.SetStateAction<any>>
-  textinput56a48: any,
-  settextinput56a48:React.Dispatch<React.SetStateAction<any>>
-  textinput56a48Props: any 
-  settextinput56a48Props: React.Dispatch<React.SetStateAction<any>>
-  icon0a30c: any,
-  seticon0a30c:React.Dispatch<React.SetStateAction<any>>
-  icon0a30cProps: any 
-  seticon0a30cProps: React.Dispatch<React.SetStateAction<any>>
-  cardaf24d: any,
-  setcardaf24d:React.Dispatch<React.SetStateAction<any>>
-  cardaf24dProps: any 
-  setcardaf24dProps: React.Dispatch<React.SetStateAction<any>>
-  liste965e: any,
-  setliste965e:React.Dispatch<React.SetStateAction<any>>
-  liste965eProps: any 
-  setliste965eProps: React.Dispatch<React.SetStateAction<any>>
-  pininput92978: any,
-  setpininput92978:React.Dispatch<React.SetStateAction<any>>
-  pininput92978Props: any 
-  setpininput92978Props: React.Dispatch<React.SetStateAction<any>>
-  progress53986: any,
-  setprogress53986:React.Dispatch<React.SetStateAction<any>>
-  progress53986Props: any 
-  setprogress53986Props: React.Dispatch<React.SetStateAction<any>>
-  qrcoded45d1: any,
-  setqrcoded45d1:React.Dispatch<React.SetStateAction<any>>
-  qrcoded45d1Props: any 
-  setqrcoded45d1Props: React.Dispatch<React.SetStateAction<any>>
-  radiobutton92d8e: any,
-  setradiobutton92d8e:React.Dispatch<React.SetStateAction<any>>
-  radiobutton92d8eProps: any 
-  setradiobutton92d8eProps: React.Dispatch<React.SetStateAction<any>>
-  radio65f38: any,
-  setradio65f38:React.Dispatch<React.SetStateAction<any>>
-  radio65f38Props: any 
-  setradio65f38Props: React.Dispatch<React.SetStateAction<any>>
-  speechtotextf8edf: any,
-  setspeechtotextf8edf:React.Dispatch<React.SetStateAction<any>>
-  speechtotextf8edfProps: any 
-  setspeechtotextf8edfProps: React.Dispatch<React.SetStateAction<any>>
-  texttospeech35a79: any,
-  settexttospeech35a79:React.Dispatch<React.SetStateAction<any>>
-  texttospeech35a79Props: any 
-  settexttospeech35a79Props: React.Dispatch<React.SetStateAction<any>>
-  textf0149: any,
-  settextf0149:React.Dispatch<React.SetStateAction<any>>
-  textf0149Props: any 
-  settextf0149Props: React.Dispatch<React.SetStateAction<any>>
-  switch4a6e4: any,
-  setswitch4a6e4:React.Dispatch<React.SetStateAction<any>>
-  switch4a6e4Props: any 
-  setswitch4a6e4Props: React.Dispatch<React.SetStateAction<any>>
-  textareaa5a38: any,
-  settextareaa5a38:React.Dispatch<React.SetStateAction<any>>
-  textareaa5a38Props: any 
-  settextareaa5a38Props: React.Dispatch<React.SetStateAction<any>>
-  timepicker8a8fa: any,
-  settimepicker8a8fa:React.Dispatch<React.SetStateAction<any>>
-  timepicker8a8faProps: any 
-  settimepicker8a8faProps: React.Dispatch<React.SetStateAction<any>>
-  signature63e12: any,
-  setsignature63e12:React.Dispatch<React.SetStateAction<any>>
-  signature63e12Props: any 
-  setsignature63e12Props: React.Dispatch<React.SetStateAction<any>>
-  sliderde96f: any,
-  setsliderde96f:React.Dispatch<React.SetStateAction<any>>
-  sliderde96fProps: any 
-  setsliderde96fProps: React.Dispatch<React.SetStateAction<any>>
-  linechart0ad1b: any,
-  setlinechart0ad1b:React.Dispatch<React.SetStateAction<any>>
-  linechart0ad1bProps: any 
-  setlinechart0ad1bProps: React.Dispatch<React.SetStateAction<any>>
-  piechart4e57f: any,
-  setpiechart4e57f:React.Dispatch<React.SetStateAction<any>>
-  piechart4e57fProps: any 
-  setpiechart4e57fProps: React.Dispatch<React.SetStateAction<any>>
-  bartchart015eb: any,
-  setbartchart015eb:React.Dispatch<React.SetStateAction<any>>
-  bartchart015ebProps: any 
-  setbartchart015ebProps: React.Dispatch<React.SetStateAction<any>>
+  groupbffe9: any 
+  setgroupbffe9: React.Dispatch<React.SetStateAction<any>>
+  groupbffe9Props: any 
+  setgroupbffe9Props: React.Dispatch<React.SetStateAction<any>>
+  usertable8d993: any 
+  setusertable8d993: React.Dispatch<React.SetStateAction<any>>
+  usertable8d993Props: any 
+  setusertable8d993Props: React.Dispatch<React.SetStateAction<any>>
+  usertable2b6e16: any 
+  setusertable2b6e16: React.Dispatch<React.SetStateAction<any>>
+  usertable2b6e16Props: any 
+  setusertable2b6e16Props: React.Dispatch<React.SetStateAction<any>>
+  groupbf5ce: any 
+  setgroupbf5ce: React.Dispatch<React.SetStateAction<any>>
+  groupbf5ceProps: any 
+  setgroupbf5ceProps: React.Dispatch<React.SetStateAction<any>>
+  usertablee2c3b: any 
+  setusertablee2c3b: React.Dispatch<React.SetStateAction<any>>
+  usertablee2c3bProps: any 
+  setusertablee2c3bProps: React.Dispatch<React.SetStateAction<any>>
+  tablegroup1fc0b: any 
+  settablegroup1fc0b: React.Dispatch<React.SetStateAction<any>>
+  tablegroup1fc0bProps: any 
+  settablegroup1fc0bProps: React.Dispatch<React.SetStateAction<any>>
+  texttablebadf1: any 
+  settexttablebadf1: React.Dispatch<React.SetStateAction<any>>
+  texttablebadf1Props: any 
+  settexttablebadf1Props: React.Dispatch<React.SetStateAction<any>>
+  qrcode1c711: any,
+  setqrcode1c711:React.Dispatch<React.SetStateAction<any>>
+  qrcode1c711Props: any 
+  setqrcode1c711Props: React.Dispatch<React.SetStateAction<any>>
+  sliderf7242: any,
+  setsliderf7242:React.Dispatch<React.SetStateAction<any>>
+  sliderf7242Props: any 
+  setsliderf7242Props: React.Dispatch<React.SetStateAction<any>>
+  progress1c37ec: any,
+  setprogress1c37ec:React.Dispatch<React.SetStateAction<any>>
+  progress1c37ecProps: any 
+  setprogress1c37ecProps: React.Dispatch<React.SetStateAction<any>>
+  treeviewer4d8cf: any,
+  settreeviewer4d8cf:React.Dispatch<React.SetStateAction<any>>
+  treeviewer4d8cfProps: any 
+  settreeviewer4d8cfProps: React.Dispatch<React.SetStateAction<any>>
+  signatureb24c1: any,
+  setsignatureb24c1:React.Dispatch<React.SetStateAction<any>>
+  signatureb24c1Props: any 
+  setsignatureb24c1Props: React.Dispatch<React.SetStateAction<any>>
+  pininputd19b1: any,
+  setpininputd19b1:React.Dispatch<React.SetStateAction<any>>
+  pininputd19b1Props: any 
+  setpininputd19b1Props: React.Dispatch<React.SetStateAction<any>>
+  liste1b9e: any,
+  setliste1b9e:React.Dispatch<React.SetStateAction<any>>
+  liste1b9eProps: any 
+  setliste1b9eProps: React.Dispatch<React.SetStateAction<any>>
+  text_to_speech7626c: any,
+  settext_to_speech7626c:React.Dispatch<React.SetStateAction<any>>
+  text_to_speech7626cProps: any 
+  settext_to_speech7626cProps: React.Dispatch<React.SetStateAction<any>>
+  checkbox0cfd1: any,
+  setcheckbox0cfd1:React.Dispatch<React.SetStateAction<any>>
+  checkbox0cfd1Props: any 
+  setcheckbox0cfd1Props: React.Dispatch<React.SetStateAction<any>>
+  radiobutton81392: any,
+  setradiobutton81392:React.Dispatch<React.SetStateAction<any>>
+  radiobutton81392Props: any 
+  setradiobutton81392Props: React.Dispatch<React.SetStateAction<any>>
+  radio54f01: any,
+  setradio54f01:React.Dispatch<React.SetStateAction<any>>
+  radio54f01Props: any 
+  setradio54f01Props: React.Dispatch<React.SetStateAction<any>>
+  image3343d: any,
+  setimage3343d:React.Dispatch<React.SetStateAction<any>>
+  image3343dProps: any 
+  setimage3343dProps: React.Dispatch<React.SetStateAction<any>>
+  buttonf8d11: any,
+  setbuttonf8d11:React.Dispatch<React.SetStateAction<any>>
+  buttonf8d11Props: any 
+  setbuttonf8d11Props: React.Dispatch<React.SetStateAction<any>>
+  pivottable703fa: any,
+  setpivottable703fa:React.Dispatch<React.SetStateAction<any>>
+  pivottable703faProps: any 
+  setpivottable703faProps: React.Dispatch<React.SetStateAction<any>>
+  ide6871: any,
+  setide6871:React.Dispatch<React.SetStateAction<any>>
+  ide6871Props: any 
+  setide6871Props: React.Dispatch<React.SetStateAction<any>>
+  name15d49: any,
+  setname15d49:React.Dispatch<React.SetStateAction<any>>
+  name15d49Props: any 
+  setname15d49Props: React.Dispatch<React.SetStateAction<any>>
+  show8fe5a: any,
+  setshow8fe5a:React.Dispatch<React.SetStateAction<any>>
+  show8fe5aProps: any 
+  setshow8fe5aProps: React.Dispatch<React.SetStateAction<any>>
+  approve25433: any,
+  setapprove25433:React.Dispatch<React.SetStateAction<any>>
+  approve25433Props: any 
+  setapprove25433Props: React.Dispatch<React.SetStateAction<any>>
+  ids51838: any,
+  setids51838:React.Dispatch<React.SetStateAction<any>>
+  ids51838Props: any 
+  setids51838Props: React.Dispatch<React.SetStateAction<any>>
+  namesb9438: any,
+  setnamesb9438:React.Dispatch<React.SetStateAction<any>>
+  namesb9438Props: any 
+  setnamesb9438Props: React.Dispatch<React.SetStateAction<any>>
+  reject88458: any,
+  setreject88458:React.Dispatch<React.SetStateAction<any>>
+  reject88458Props: any 
+  setreject88458Props: React.Dispatch<React.SetStateAction<any>>
+  namef9057: any,
+  setnamef9057:React.Dispatch<React.SetStateAction<any>>
+  namef9057Props: any 
+  setnamef9057Props: React.Dispatch<React.SetStateAction<any>>
+  idb89e2: any,
+  setidb89e2:React.Dispatch<React.SetStateAction<any>>
+  idb89e2Props: any 
+  setidb89e2Props: React.Dispatch<React.SetStateAction<any>>
+  nameffb02: any,
+  setnameffb02:React.Dispatch<React.SetStateAction<any>>
+  nameffb02Props: any 
+  setnameffb02Props: React.Dispatch<React.SetStateAction<any>>
+  names00fe1: any,
+  setnames00fe1:React.Dispatch<React.SetStateAction<any>>
+  names00fe1Props: any 
+  setnames00fe1Props: React.Dispatch<React.SetStateAction<any>>
 
 ////// screen states 
-  propscheck_v1Props: any 
-  setpropscheck_v1Props: React.Dispatch<React.SetStateAction<any>>
+  progress_v1Props: any 
+  setprogress_v1Props: React.Dispatch<React.SetStateAction<any>>
+  bindranscreen_v1Props: any 
+  setbindranscreen_v1Props: React.Dispatch<React.SetStateAction<any>>
+  tablecheck_v1Props: any 
+  settablecheck_v1Props: React.Dispatch<React.SetStateAction<any>>
 
 ///////// dfd
   dfd_mydfddata_v1Props: any 
@@ -178,8 +186,8 @@ export const TotalContext = React.createContext<TotalContextProps | {}>({})
 
 const GlobalContext = ({children} : {children: React.ReactNode}) => {
       //////////
-        const [firstgroupc08a7, setfirstgroupc08a7 ] = React.useState<any>({}) 
-    const [firstgroupc08a7Props, setfirstgroupc08a7Props ] = React.useState<any>({
+        const [groupbffe9, setgroupbffe9 ] = React.useState<any>({}) 
+    const [groupbffe9Props, setgroupbffe9Props ] = React.useState<any>({
       validation:false,
       required:false,
       refetch:false,
@@ -189,8 +197,32 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       isHidden: false,
       selectedIds:[]
       }) 
-        const [secondgroup311a5, setsecondgroup311a5 ] = React.useState<any>({}) 
-    const [secondgroup311a5Props, setsecondgroup311a5Props ] = React.useState<any>({
+    
+    const [usertable8d993, setusertable8d993 ] = React.useState<any>([]) 
+    const [usertable8d993Props, setusertable8d993Props ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[],
+      refresh:false,
+      }) 
+    
+    const [usertable2b6e16, setusertable2b6e16 ] = React.useState<any>([]) 
+    const [usertable2b6e16Props, setusertable2b6e16Props ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[],
+      refresh:false,
+      }) 
+        const [groupbf5ce, setgroupbf5ce ] = React.useState<any>({}) 
+    const [groupbf5ceProps, setgroupbf5ceProps ] = React.useState<any>({
       validation:false,
       required:false,
       refetch:false,
@@ -200,203 +232,210 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       isHidden: false,
       selectedIds:[]
       }) 
-   const [button6c543,setbutton6c543] = React.useState<any>({
+    
+    const [usertablee2c3b, setusertablee2c3b ] = React.useState<any>([]) 
+    const [usertablee2c3bProps, setusertablee2c3bProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[],
+      refresh:false,
+      }) 
+        const [tablegroup1fc0b, settablegroup1fc0b ] = React.useState<any>({}) 
+    const [tablegroup1fc0bProps, settablegroup1fc0bProps ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      refresh:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[]
+      }) 
+    
+    const [texttablebadf1, settexttablebadf1 ] = React.useState<any>([]) 
+    const [texttablebadf1Props, settexttablebadf1Props ] = React.useState<any>({
+      validation:false,
+      required:false,
+      refetch:false,
+      isDisabled: false,
+      presetValues: '',
+      isHidden: false,
+      selectedIds:[],
+      refresh:false,
+      }) 
+   const [qrcode1c711,setqrcode1c711] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [avatard99b3,setavatard99b3] = React.useState<any>({
+   const [sliderf7242,setsliderf7242] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [radiogroupcf04e,setradiogroupcf04e] = React.useState<any>({
+   const [progress1c37ec,setprogress1c37ec] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [datepickerbe7c3,setdatepickerbe7c3] = React.useState<any>({
+   const [treeviewer4d8cf,settreeviewer4d8cf] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [checkbox2289f,setcheckbox2289f] = React.useState<any>({
+   const [signatureb24c1,setsignatureb24c1] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [dropdown0e57d,setdropdown0e57d] = React.useState<any>({
+   const [pininputd19b1,setpininputd19b1] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [upload2cc02,setupload2cc02] = React.useState<any>({
+   const [liste1b9e,setliste1b9e] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [label33b92,setlabel33b92] = React.useState<any>({
+   const [text_to_speech7626c,settext_to_speech7626c] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [imageeee6c,setimageeee6c] = React.useState<any>({
+   const [checkbox0cfd1,setcheckbox0cfd1] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [textinput56a48,settextinput56a48] = React.useState<any>({
+   const [radiobutton81392,setradiobutton81392] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [icon0a30c,seticon0a30c] = React.useState<any>({
+   const [radio54f01,setradio54f01] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [cardaf24d,setcardaf24d] = React.useState<any>({
+   const [image3343d,setimage3343d] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [liste965e,setliste965e] = React.useState<any>({
+   const [buttonf8d11,setbuttonf8d11] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [pininput92978,setpininput92978] = React.useState<any>({
+   const [pivottable703fa,setpivottable703fa] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [progress53986,setprogress53986] = React.useState<any>({
+   const [ide6871,setide6871] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [qrcoded45d1,setqrcoded45d1] = React.useState<any>({
+   const [name15d49,setname15d49] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [radiobutton92d8e,setradiobutton92d8e] = React.useState<any>({
+   const [show8fe5a,setshow8fe5a] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [radio65f38,setradio65f38] = React.useState<any>({
+   const [approve25433,setapprove25433] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [speechtotextf8edf,setspeechtotextf8edf] = React.useState<any>({
+   const [ids51838,setids51838] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [texttospeech35a79,settexttospeech35a79] = React.useState<any>({
+   const [namesb9438,setnamesb9438] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [textf0149,settextf0149] = React.useState<any>({
+   const [reject88458,setreject88458] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [switch4a6e4,setswitch4a6e4] = React.useState<any>({
+   const [namef9057,setnamef9057] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [textareaa5a38,settextareaa5a38] = React.useState<any>({
+   const [idb89e2,setidb89e2] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [timepicker8a8fa,settimepicker8a8fa] = React.useState<any>({
+   const [nameffb02,setnameffb02] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
     refetch:false,
     refresh:false,
     }) 
-   const [signature63e12,setsignature63e12] = React.useState<any>({
-    isDisabled: false,
-    presetValues: '',
-    isHidden: false,
-    refetch:false,
-    refresh:false,
-    }) 
-   const [sliderde96f,setsliderde96f] = React.useState<any>({
-    isDisabled: false,
-    presetValues: '',
-    isHidden: false,
-    refetch:false,
-    refresh:false,
-    }) 
-   const [linechart0ad1b,setlinechart0ad1b] = React.useState<any>({
-    isDisabled: false,
-    presetValues: '',
-    isHidden: false,
-    refetch:false,
-    refresh:false,
-    }) 
-   const [piechart4e57f,setpiechart4e57f] = React.useState<any>({
-    isDisabled: false,
-    presetValues: '',
-    isHidden: false,
-    refetch:false,
-    refresh:false,
-    }) 
-   const [bartchart015eb,setbartchart015eb] = React.useState<any>({
+   const [names00fe1,setnames00fe1] = React.useState<any>({
     isDisabled: false,
     presetValues: '',
     isHidden: false,
@@ -404,41 +443,44 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
     refresh:false,
     }) 
     ///////////
-    const [refresh, setRefresh] = React.useState<any>({       buttonbutton6c543:false,
-       avataravatard99b3:false,
-       radiogroupradiogroupcf04e:false,
-       datepickerdatepickerbe7c3:false,
-       checkboxcheckbox2289f:false,
-       dropdowndropdown0e57d:false,
-       documentuploaderupload2cc02:false,
-       labellabel33b92:false,
-       imageimageeee6c:false,
-       textinputtextinput56a48:false,
-       iconicon0a30c:false,
-       cardcardaf24d:false,
-       listliste965e:false,
-       pininputpinInput92978:false,
-       progressprogress53986:false,
-       qrcodeqrcoded45d1:false,
-       radiobuttonradioButton92d8e:false,
-       radioradio65f38:false,
-       speech_to_textspeechtotextf8edf:false,
-       text_to_speechtexttospeech35a79:false,
-       texttextf0149:false,
-       switchswitch4a6e4:false,
-       textareatextareaa5a38:false,
-       timepickertimepicker8a8fa:false,
-       signaturesignature63e12:false,
-       slidersliderde96f:false,
-       linechartlinechart0ad1b:false,
-       piechartpiechart4e57f:false,
-       barchartbartchart015eb:false,
-       groupfirstgroupc08a7:false,
-       groupsecondgroup311a5:false,
+    const [refresh, setRefresh] = React.useState<any>({       qrcodeqrcode1c711:false,
+       slidersliderf7242:false,
+       progressprogress1c37ec:false,
+       treeviewertreeviewer4d8cf:false,
+       signaturesignatureb24c1:false,
+       pininputpininputd19b1:false,
+       listliste1b9e:false,
+       text_to_speechtext_to_speech7626c:false,
+       checkboxcheckbox0cfd1:false,
+       radiobuttonradiobutton81392:false,
+       radioradio54f01:false,
+       imageimage3343d:false,
+       buttonbuttonf8d11:false,
+       pivottablepivottable703fa:false,
+       columnide6871:false,
+       columnname15d49:false,
+       buttonshow8fe5a:false,
+       buttonapprove25433:false,
+       columnids51838:false,
+       columnnamesb9438:false,
+       buttonreject88458:false,
+       textinputnamef9057:false,
+       columnidb89e2:false,
+       columnnameffb02:false,
+       columnnames00fe1:false,
+       groupgroupbffe9:false,
+       tableusertable8d993:false,
+       tableusertable2b6e16:false,
+       groupgroupbf5ce:false,
+       tableuserTablee2c3b:false,
+       grouptablegroup1fc0b:false,
+       tabletexttablebadf1:false,
       })
 
   ////// screen states 
-   const [propscheck_v1Props,setpropscheck_v1Props] = React.useState<any>([])
+   const [progress_v1Props,setprogress_v1Props] = React.useState<any>([])
+   const [bindranscreen_v1Props,setbindranscreen_v1Props] = React.useState<any>([])
+   const [tablecheck_v1Props,settablecheck_v1Props] = React.useState<any>([])
 
 ///////// dfd
   const [dfd_mydfddata_v1Props,setdfd_mydfddata_v1Props] = React.useState<any>([])
@@ -468,75 +510,91 @@ const GlobalContext = ({children} : {children: React.ReactNode}) => {
       value={
       {
       //
-        firstgroupc08a7, 
-        setfirstgroupc08a7,
-        firstgroupc08a7Props, 
-        setfirstgroupc08a7Props,
-        secondgroup311a5, 
-        setsecondgroup311a5,
-        secondgroup311a5Props, 
-        setsecondgroup311a5Props,
-        button6c543,
-        setbutton6c543, 
-        avatard99b3,
-        setavatard99b3, 
-        radiogroupcf04e,
-        setradiogroupcf04e, 
-        datepickerbe7c3,
-        setdatepickerbe7c3, 
-        checkbox2289f,
-        setcheckbox2289f, 
-        dropdown0e57d,
-        setdropdown0e57d, 
-        upload2cc02,
-        setupload2cc02, 
-        label33b92,
-        setlabel33b92, 
-        imageeee6c,
-        setimageeee6c, 
-        textinput56a48,
-        settextinput56a48, 
-        icon0a30c,
-        seticon0a30c, 
-        cardaf24d,
-        setcardaf24d, 
-        liste965e,
-        setliste965e, 
-        pininput92978,
-        setpininput92978, 
-        progress53986,
-        setprogress53986, 
-        qrcoded45d1,
-        setqrcoded45d1, 
-        radiobutton92d8e,
-        setradiobutton92d8e, 
-        radio65f38,
-        setradio65f38, 
-        speechtotextf8edf,
-        setspeechtotextf8edf, 
-        texttospeech35a79,
-        settexttospeech35a79, 
-        textf0149,
-        settextf0149, 
-        switch4a6e4,
-        setswitch4a6e4, 
-        textareaa5a38,
-        settextareaa5a38, 
-        timepicker8a8fa,
-        settimepicker8a8fa, 
-        signature63e12,
-        setsignature63e12, 
-        sliderde96f,
-        setsliderde96f, 
-        linechart0ad1b,
-        setlinechart0ad1b, 
-        piechart4e57f,
-        setpiechart4e57f, 
-        bartchart015eb,
-        setbartchart015eb, 
+        groupbffe9, 
+        setgroupbffe9,
+        groupbffe9Props, 
+        setgroupbffe9Props,
+        usertable8d993, 
+        setusertable8d993,
+        usertable8d993Props, 
+        setusertable8d993Props,
+        usertable2b6e16, 
+        setusertable2b6e16,
+        usertable2b6e16Props, 
+        setusertable2b6e16Props,
+        groupbf5ce, 
+        setgroupbf5ce,
+        groupbf5ceProps, 
+        setgroupbf5ceProps,
+        usertablee2c3b, 
+        setusertablee2c3b,
+        usertablee2c3bProps, 
+        setusertablee2c3bProps,
+        tablegroup1fc0b, 
+        settablegroup1fc0b,
+        tablegroup1fc0bProps, 
+        settablegroup1fc0bProps,
+        texttablebadf1, 
+        settexttablebadf1,
+        texttablebadf1Props, 
+        settexttablebadf1Props,
+        qrcode1c711,
+        setqrcode1c711, 
+        sliderf7242,
+        setsliderf7242, 
+        progress1c37ec,
+        setprogress1c37ec, 
+        treeviewer4d8cf,
+        settreeviewer4d8cf, 
+        signatureb24c1,
+        setsignatureb24c1, 
+        pininputd19b1,
+        setpininputd19b1, 
+        liste1b9e,
+        setliste1b9e, 
+        text_to_speech7626c,
+        settext_to_speech7626c, 
+        checkbox0cfd1,
+        setcheckbox0cfd1, 
+        radiobutton81392,
+        setradiobutton81392, 
+        radio54f01,
+        setradio54f01, 
+        image3343d,
+        setimage3343d, 
+        buttonf8d11,
+        setbuttonf8d11, 
+        pivottable703fa,
+        setpivottable703fa, 
+        ide6871,
+        setide6871, 
+        name15d49,
+        setname15d49, 
+        show8fe5a,
+        setshow8fe5a, 
+        approve25433,
+        setapprove25433, 
+        ids51838,
+        setids51838, 
+        namesb9438,
+        setnamesb9438, 
+        reject88458,
+        setreject88458, 
+        namef9057,
+        setnamef9057, 
+        idb89e2,
+        setidb89e2, 
+        nameffb02,
+        setnameffb02, 
+        names00fe1,
+        setnames00fe1, 
         ////// screen states 
-          propscheck_v1Props,
-          setpropscheck_v1Props,
+          progress_v1Props,
+          setprogress_v1Props,
+          bindranscreen_v1Props,
+          setbindranscreen_v1Props,
+          tablecheck_v1Props,
+          settablecheck_v1Props,
         //////////
 
         ///////// dfd

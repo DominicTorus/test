@@ -95,7 +95,7 @@ export const Icon: React.FC<IconProps> = ({
       `}
       onClick={onClick}
     >
-      <IconComponent size={getIconSize()} className="w-full h-full"/>
+      <IconComponent size={size || getIconSize()} className="w-full h-full"/>
     </div>
   ) : (
     <div

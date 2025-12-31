@@ -17,12 +17,12 @@ const ParentComponent = () => {
   const [nodeData, setNodeData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [app, setApp] = useState({
-    code: 'TG1',
-    name: 'TG1'
+    code: 'A001',
+    name: 'application'
   })
   const [appGroup, setappGroup] = useState({
-    code: 'CG',
-    name: 'CG'
+    code: 'AG001',
+    name: 'appgroup'
   })
   const token: string = getCookie('token')
   const decodedToken: any = decodeToken(token)
@@ -47,7 +47,7 @@ const ParentComponent = () => {
   const [ fabrics , setFabrics ] = useState<Array<string>>([])
   const [jsonViewerData, setJsonViewerData] = useState({})
   const router = useRouter()
-  let landingScreen:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1';
+  let landingScreen:string = 'User Screen';
   const encryptionFlagApp: boolean = false;    
   const [jsonData, setJsonData] = useState({
     data: [],
@@ -72,7 +72,7 @@ const ParentComponent = () => {
   }
   let payload:any = useMemo(() => {
     return {
-      tenant: 'CT003',
+      tenant: 'CT309',
        fabric: fabrics.length > 0 ? fabrics.flatMap((prefix: any) =>
             suffixes[prefix]
               ? suffixes[prefix].map((suffix: any) => `${prefix}-${suffix}`)
@@ -271,7 +271,7 @@ const ParentComponent = () => {
   const securityCheck = async () => {
   try {
     const encryptionDpd: string =
-      'CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1'
+      'CK:CT309:FNGK:AF:FNK:CDF-DPD:CATK:AG001:AFGK:A001:AFK:mydpd:AFVK:v1'
     const encryptionMethod: string = ''
     let introspect: any
     if (encryptionFlagApp) {

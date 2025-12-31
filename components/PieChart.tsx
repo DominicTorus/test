@@ -141,7 +141,32 @@ export const PieChart: React.FC<PieChartProps> =({
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
-            <TooltipDisplay content={<CustomTooltip />} />
+            <TooltipDisplay
+              formatter={(value, name) => [`${showCurrencySign}${value}`, name]}
+              contentStyle={{
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                border: '1px solid',
+                borderColor: isDark ? '#374151' : '#d1d5db',
+                borderRadius: '6px',
+                padding: '8px 12px',
+                fontSize: '12px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}
+              wrapperStyle={{
+                outline: 'none'
+              }}
+              labelStyle={{
+                color: isDark ? '#e5e7eb' : '#374151',
+                fontWeight: '600',
+                fontSize: '12px',
+                marginBottom: '4px'
+              }}
+              itemStyle={{
+                color: isDark ? '#d1d5db' : '#6b7280',
+                fontSize: '11px',
+                padding: '2px 0'
+              }}
+            />
             <Legend
               verticalAlign="bottom"
               align="center"

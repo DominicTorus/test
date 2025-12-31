@@ -4,13 +4,18 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const path = request.nextUrl.pathname
   const isAuthRoute = ["/" , "/forgot-password"].includes(path);
-   let screenName:string = 'CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1';
+   let screenName:string = 'User Screen';
     let screenDetails: any = {
         keys:[
   {
-    "screenName": "menu",
-    "screensName": "menu-v1",
-    "ufKey": "CK:CT003:FNGK:AF:FNK:UF-UFW:CATK:CG:AFGK:TG1:AFK:propsCheck:AFVK:v1"
+    "screenName": "progress",
+    "screensName": "progress-v1",
+    "ufKey": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:progress:AFVK:v1"
+  },
+  {
+    "screenName": "tablecheck",
+    "screensName": "tablecheck-v1",
+    "ufKey": "CK:CT309:FNGK:AF:FNK:UF-UFW:CATK:AG001:AFGK:A001:AFK:tablecheck:AFVK:v1"
   }
 ]
     }
