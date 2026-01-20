@@ -1,0 +1,1532 @@
+
+import { BadGatewayException, BadRequestException, HttpStatus, Injectable,Logger } from "@nestjs/common";
+import axios from 'axios';
+import * as FormData from 'form-data';
+import { readAPIDTO,errorObj } from "./dto";
+import { RuleService } from "./ruleService";
+import { CodeService } from "./codeService";
+import { CustomException } from "./customException";
+import { JwtService } from "@nestjs/jwt";
+import { RedisService } from "./redisService";
+import { MongoService } from "./mongoService";
+import { format } from 'date-fns';
+import jsonata from "jsonata";
+const vault = require('node-vault');
+import * as crypto from 'crypto';
+import { publicEncrypt,privateDecrypt,generateKeyPairSync  } from 'crypto';
+import * as fs from 'fs';
+import * as stream from 'stream';
+import { Readable } from "stream";
+import path from "path";
+import { GridFSBucket } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
+import { ConfigService } from "@nestjs/config";
+const NodeRSA = require('node-rsa')
+import { Cron, CronExpression } from "@nestjs/schedule";
+
+export const client = new MongoClient(process.env.MONGODB_URL);
+  client.connect()
+    .then(() => {
+    console.log('Connected to the database successfully!');
+    })
+    .catch((err) => {
+    console.error('Error connecting to the database:', err);
+    });
+  var db= client.db(process.env.MONGODB_NAME)
+  type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+  type JsonObject = { [key: string]: JsonValue };
+  type JsonArray = JsonValue[];
+
+@Injectable()
+export class CommonService{
+
+  private readonly ftpOutputPath: string;
+  private readonly seaweedOutPutPath:string;
+  private vaultClient: ReturnType<typeof vault>;
+  private client: MongoClient;
+  private readonly encryptionKey =  process.env.VAULT_KEY;
+  private vaultAddr: string;
+  private vaultToken: string;
+  private vaultKey: string;
+  private bucket: GridFSBucket;
+  constructor(private readonly ruleEngine:RuleService,
+    private readonly codeService:CodeService,
+    private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
+    private readonly mongoService: MongoService,
+    private readonly configService: ConfigService
+  ) {  
+    this.ftpOutputPath = process.env.FTP_OUTPUT_HOST; 
+    this.seaweedOutPutPath = process.env.SEAWEED_OUTPUT_HOST;
+    this.vaultAddr = this.configService.get<string>('VAULT_URL',process.env.VAULT_URL);
+    this.vaultToken = this.configService.get<string>('VAULT_TOKEN',process.env.VAULT_TOKEN); // Store this in .env
+    this.vaultKey = this.configService.get<string>('VAULT_KEY',process.env.VAULT_KEY);
+    this.vaultClient = vault({
+          apiVersion: 'v1',
+          endpoint: process.env.VAULT_URL,
+          token: process.env.VAULT_TOKEN, //Use a service token with limited permissions
+        });
+  }
+
+  replaceKeysWithDollar(
+    obj: JsonValue,
+    replacement: string = ''
+  ): JsonValue {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.replaceKeysWithDollar(item, replacement));
+    }
+
+    const result: JsonObject = {};
+    
+    for (const key of Object.keys(obj)) {
+      const newKey = key.includes('$') ? key.replace(/\$/g, replacement) : key;
+      result[newKey] = this.replaceKeysWithDollar((obj as JsonObject)[key], replacement);
+    }
+
+    return result;
+  }
+
+  async onModuleInit() {
+    const collection = client.db("UploadFile")
+    this.bucket = new GridFSBucket(collection, { bucketName: 'CT003/CG/TG3/v4' });
+  }
+  private readonly logger = new Logger(CommonService.name) 
+
+    async encrypt(value: string,context:string): Promise<string> {
+        const result = await this.vaultClient.write(`transit/encrypt/${this.encryptionKey}`, {
+          plaintext: Buffer.from(value).toString('base64'),
+          context:Buffer.from(context).toString('base64')
+        });
+        return result.data.ciphertext;
+    }
+
+    async decrypt(ciphertext: string,context:string): Promise<string> {
+        const result = await this.vaultClient.write(`transit/decrypt/${this.encryptionKey}`, {
+          ciphertext,
+          context:Buffer.from(context).toString('base64')
+        });
+        return Buffer.from(result.data.plaintext, 'base64').toString('utf-8');
+    }    
+
+      async getEncryptionInfo(dpdKey,encMethod){
+      try {
+        if (dpdKey && await this.redisService.exist(dpdKey + ':NDP',process.env.CLIENTCODE)) {
+          let dpdData = JSON.parse(await this.redisService.getJsonData(dpdKey + ':NDP',process.env.CLIENTCODE))
+          if (!dpdData || Object.keys(dpdData).length == 0) throw `${dpdKey}:NDP value was empty`
+          let dpdNodeId = Object.keys(dpdData)[0]
+          let encryptData = dpdData[dpdNodeId]?.data?.encryption
+          if (encryptData && Object.keys(encryptData).length > 0) {
+            let encryptionInfo = encryptData?.encryptionInfo?.items
+            if(encryptionInfo && encryptionInfo.length > 0){
+              for(let e=0;e< encryptionInfo.length;e++){
+                if(encryptionInfo[e].type == encMethod){
+                  return {encMethod,encCredentials:encryptionInfo[e]}
+                }
+              }
+            }
+          }
+        } else {
+          throw `Key not found ${dpdKey}`
+        }
+
+      } catch (error) {
+        //console.log('ERROR',error);
+        throw error
+      }
+    }
+
+     async commonEncryption(dpdKey,Method,value,context:string): Promise<any> {
+      try {        
+        let getCredentials = await this.getEncryptionInfo(dpdKey,Method)
+        if(getCredentials){
+          let encryptCredentials = getCredentials?.encCredentials
+          let encMethod = getCredentials?.encMethod
+          
+          //console.log('encryptCredentials',encryptCredentials);
+
+          if(encMethod && encryptCredentials){
+            if(encMethod == 'vault'){
+              const vaultClient = vault({
+                apiVersion: 'v1',
+                endpoint: encryptCredentials.url,
+                token: encryptCredentials.token,
+              });
+              value = JSON.stringify(value)
+               const result = await vaultClient.write(`transit/encrypt/${encryptCredentials.key}`, {
+                plaintext: Buffer.from(value).toString('base64'),
+                context:Buffer.from(context).toString('base64')
+              });
+              return result.data.ciphertext;
+            }else if(encMethod == 'AESCTR'){
+             
+              const iv = Buffer.from(encryptCredentials.IVlength, 'base64')
+              const key = Buffer.from(encryptCredentials.Key, 'base64');        
+              const cipher = crypto.createCipheriv('aes-256-ctr', key, iv);        
+              let encrypted = cipher.update(JSON.stringify(value), 'utf8', 'base64');        
+              encrypted += cipher.final('base64');        
+             
+              return encrypted;
+    
+            }else if(encMethod == 'AESGCM'){    
+ 
+              const key = Buffer.from(encryptCredentials.Key, 'base64');
+              const iv = Buffer.from(encryptCredentials.IVlength, 'base64')
+ 
+              const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+              let encrypted = cipher.update(JSON.stringify(value), 'utf8', 'base64');
+              encrypted += cipher.final('base64');
+ 
+              const authTag = cipher.getAuthTag();
+             
+             return {encrypted,authTag:authTag.toString('base64')};
+            }else if (encMethod == 'RSA') {
+              const publicKey = encryptCredentials.publicKey
+              const encryptData = async (data: string) => {
+                const key = new NodeRSA(publicKey)
+                return key.encrypt(data, 'base64') // Encrypted data in base64
+              }
+
+              const sensitiveData = value
+              const encryptedData = await encryptData(
+                JSON.stringify(sensitiveData)
+              )
+              return encryptedData
+            }else{
+              throw 'Invalied Encryption Method'
+            }
+          }
+            
+        }
+      } catch (error) {
+        throw new BadGatewayException(error);
+      }
+    }
+
+    async commondecryption(dpdKey,Method,encryptedData: any,context): Promise<any> {
+      try {      
+        let getCredentials = await this.getEncryptionInfo(dpdKey,Method)
+        if(getCredentials){
+          let encryptCredentials = getCredentials.encCredentials
+          let encMethod = getCredentials.encMethod
+  
+         // console.log('encryptCredentials',encryptCredentials);  
+          if(encMethod && encryptCredentials){
+            if(encMethod == 'vault'){
+              const vaultClient = vault({
+                apiVersion: 'v1',
+                endpoint: encryptCredentials.url,
+                token: encryptCredentials.token,
+              });
+             
+               const result = await vaultClient.write(`transit/decrypt/${encryptCredentials.key}`, {
+                ciphertext:encryptedData.ciphertext,
+                context:Buffer.from(context).toString('base64')
+              });
+              return Buffer.from(result.data.plaintext, 'base64').toString('utf-8');
+            }else if(encMethod == 'AESCTR'){
+              
+              let key = Buffer.from(encryptCredentials.Key, 'base64'); 
+              let iv = Buffer.from(encryptCredentials.IVlength , 'base64');
+
+              const decipher = crypto.createDecipheriv('aes-256-ctr',key ,iv );
+              let decrypted = decipher.update(encryptedData.ciphertext, 'base64', 'utf8');
+              decrypted += decipher.final('utf8');
+              return decrypted;
+    
+            }else if(encMethod == 'AESGCM'){
+              let key = Buffer.from(encryptCredentials.Key, 'base64');
+              let iv = Buffer.from(encryptCredentials.IVlength, 'base64');
+ 
+              const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+              decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'base64'));
+             
+              let decrypted = decipher.update(encryptedData.ciphertext, 'base64', 'utf8');
+              decrypted += decipher.final('utf8');
+ 
+              return decrypted;
+             
+            }else if (encMethod == 'RSA') {
+              try{
+              const key = new NodeRSA(encryptCredentials.privateKey);
+              const decrypted = key.decrypt(encryptedData.ciphertext, 'utf8');
+
+              return decrypted
+              }catch (error) {
+              console.error('Decryption error:', error);
+              throw error
+              }
+            }else{
+              throw 'Invalied Encryption Method'
+            }
+          }
+        }
+      } catch (error) {
+        throw new BadGatewayException(error);
+      }
+    }
+
+    async aes256ctrEncrypt(buffer: Buffer): Promise<Buffer> {
+      try {
+        const key = Buffer.from(process.env.AES_KEY, 'base64');
+        const iv = Buffer.from(process.env.AES_IV, 'base64');
+
+        const cipher = crypto.createCipheriv('aes-256-ctr', key, iv);
+        const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
+        return encrypted;
+      } catch (error) {
+        throw error
+      }
+    }
+
+    async aes256ctrDecrypt(encryptedBuffer: Buffer): Promise<Buffer> {
+      try {
+      const key = Buffer.from(process.env.AES_KEY!, 'base64');
+      const iv = Buffer.from(process.env.AES_IV!, 'base64');
+
+      const decipher = crypto.createDecipheriv('aes-256-ctr', key, iv);
+      const decrypted = Buffer.concat([decipher.update(encryptedBuffer), decipher.final()]);
+
+      return decrypted
+      } catch (error) {
+        throw error
+      }
+    }
+
+    async encryptFile(buffer: Buffer,context:string): Promise<string> {
+      const base64Plaintext = buffer.toString('base64');
+      interface VaultEncryptResponse {
+        data: {
+          ciphertext: string,
+        };
+      }
+      const res = await axios.post<VaultEncryptResponse>(
+        `${this.vaultAddr}/v1/transit/encrypt/${this.vaultKey}`,
+        { plaintext: base64Plaintext,
+          context:Buffer.from(context).toString('base64')
+         },
+        {
+          headers: {
+            'X-Vault-Token': this.vaultToken,
+          },
+        }, 
+      );
+      return res.data.data.ciphertext;
+    }
+ 
+    async decryptFile(ciphertext: string,context:string): Promise<Buffer> {
+      interface VaultDecryptResponse {
+        data: {
+          plaintext: string;
+        };
+      }
+      const res = await axios.post<VaultDecryptResponse>(
+        `${this.vaultAddr}/v1/transit/decrypt/${this.vaultKey}`,
+        { ciphertext,context:Buffer.from(context).toString('base64') },
+        {
+          headers: {
+            'X-Vault-Token': this.vaultToken,
+          },
+        },
+      );
+      return Buffer.from(res.data.data.plaintext, 'base64');
+    }
+
+    async findFileById(id: string) {
+      const files = await this.bucket.find({ _id: new ObjectId(id) }).toArray();
+      return files[0];
+    }
+
+    async uploadFile(file: { buffer: Buffer; filename: string; mimetype: string; size: number },context: string, enableEncryption: string): Promise<any> {
+      //const encrypted = await this.encryptFile(file.buffer, context);
+      let encrypted:Buffer 
+      if(enableEncryption === "true" ){
+       encrypted = await this.aes256ctrEncrypt(file.buffer);
+      }else{
+         encrypted = file.buffer;
+      }
+      const uploadStream = this.bucket.openUploadStream(file.filename, {
+        metadata: { isEncrypted: enableEncryption },
+        contentType: file.mimetype,
+      });
+      uploadStream.end(encrypted);
+      return { message: 'Encrypted file uploaded successfully', fileId: uploadStream.id.toString() };
+    }
+   
+    async getFile(id: string, context: string,enableEncryption: Boolean) {
+      let decrypted:Buffer
+      const chunks: Buffer[] = [];
+      const downloadStream = this.bucket.openDownloadStream(new ObjectId(id));
+      return new Promise<Buffer>((resolve, reject) => {
+        downloadStream.on('data', (chunk) => chunks.push(chunk));
+        downloadStream.on('end', async () => {
+          const ciphertext = Buffer.concat(chunks)
+          try {
+            //const decrypted = await this.decryptFile(ciphertext,context);
+            if(enableEncryption){
+             decrypted = await this.aes256ctrDecrypt(ciphertext);
+            }else{
+               decrypted = ciphertext;
+            }
+            resolve(decrypted);
+          } catch (err) {
+            reject(err);
+          }
+        });
+        downloadStream.on('error', reject);
+      });
+    }
+    async eventFunction(eventProperty: any) {
+        let eventsDetails: any = [];
+        const eventDetailsArray: any[] = [];
+        let eventDetailsObj: any = {};
+        function addEventDetailsArray(data) {
+          if (data.length > 0) {
+            data.forEach((item) => {
+              eventDetailsArray.push({
+                id: item.id,
+                name: item.name,
+                type: item.type,
+                eventContext: item?.eventContext,
+                targetKey: item.targetKey,
+                sequence: item.sequence,
+                key: item.key,
+                url: item?.hlr?.params?.url,
+                status: item?.hlr?.params?.status,
+                primaryKey: item?.hlr?.params?.primaryKey,
+                tableName: item?.hlr?.params?.tableName,
+                hlr: item?.hlr,
+              });
+              if (item.children?.length > 0) {
+                addEventDetailsArray(item.children);
+              }
+            });
+          }
+        }
+        function addeventDetailsObj(data) {
+          if (data.length > 0) {
+            data.forEach((item) => {
+              eventDetailsObj = {
+                ...eventDetailsObj,
+                [`${item.id}`]: {
+                  id: item.id,
+                  name: item.name,
+                  type: item.type,
+                  sequence: item.sequence,
+                },
+              };
+              if (item.children?.length > 0) {
+                addeventDetailsObj(item.children);
+              }
+            });
+          }
+        }
+        addEventDetailsArray([{ ...eventProperty }]);
+        addeventDetailsObj([{ ...eventProperty }]);
+        eventsDetails.push(eventDetailsArray);
+        eventsDetails.push(eventDetailsObj);
+        return eventsDetails;
+      }
+
+      async errorLog(errGrp: string, fabric: string, errType: string, errCode: string,errorMessage: string,key: string, token: string, optnlParams?) {
+        let errorObj: errorObj = {
+          tname: 'TG',
+          errGrp: errGrp,
+          fabric: fabric,
+          errType: errType,
+          errCode: errCode,
+        };
+        const statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
+        let errObj: any = await this.commonErrorLogs(
+          errorObj,
+          token,
+          key,
+          errorMessage,
+          statusCode,
+          optnlParams
+        );
+        return errObj
+        //throw errObj;
+      }
+
+      async readMDK(readMDdto: any) {
+        try {
+          if (readMDdto.AFSK)
+            var key: any =
+              'CK:' +
+              readMDdto.CK +
+              ':FNGK:' +
+              readMDdto.FNGK +
+              ':FNK:' +
+              readMDdto.FNK +
+              ':CATK:' +
+              readMDdto.CATK +
+              ':AFGK:' +
+              readMDdto.AFGK +
+              ':AFK:' +
+              readMDdto.AFK +
+              ':AFVK:' +
+              readMDdto.AFVK +
+              ':' +
+              readMDdto.AFSK;
+          //var request: any = await redis.call('JSON.GET', key);
+          var request:any = await this.redisService.getJsonData(key,process.env.CLIENTCODE)
+          return request;
+        } catch (error) {
+          throw new BadGatewayException(error);
+        }
+      }
+    
+
+      async getFormat(finalArr, input): Promise<any> {
+        const output = { CKList: [] };
+    
+        finalArr.forEach((item) => {
+          const ck = item[1];
+          const fngk = item[3];
+          const fnk = item[5];
+          const catk = item[7];
+          const afgk = item[9];
+          const afk = item[11];
+          const afvk = item[13];
+          const afsk = item[14];
+    
+          let ckObj = output.CKList.find((obj) => obj.CK === ck);
+          if (!ckObj) {
+            ckObj = { CK: ck, FNGKList: [] };
+            output.CKList.push(ckObj);
+          }
+    
+          let fngkObj = ckObj.FNGKList.find((obj) => obj.FNGK === fngk);
+          if (!fngkObj) {
+            fngkObj = { FNGK: fngk, FNKList: [] };
+            ckObj.FNGKList.push(fngkObj);
+          }
+    
+          let fnkObj = fngkObj.FNKList.find((obj) => obj.FNK === fnk);
+          if (!fnkObj) {
+            fnkObj = { FNK: fnk, CATKList: [] };
+            fngkObj.FNKList.push(fnkObj);
+          }
+    
+          let catkObj = fnkObj.CATKList.find((obj) => obj.CATK === catk);
+          if (!catkObj) {
+            catkObj = { CATK: catk, AFGKList: [] };
+            fnkObj.CATKList.push(catkObj);
+          }
+    
+          let afgkObj = catkObj.AFGKList.find((obj) => obj.AFGK === afgk);
+          if (!afgkObj) {
+            afgkObj = { AFGK: afgk, AFKList: [] };
+            catkObj.AFGKList.push(afgkObj);
+          }
+    
+          let afkObj = afgkObj.AFKList.find((obj) => obj.AFK === afk);
+          if (!afkObj) {
+            afkObj = { AFK: afk, AFVKList: [] };
+            afgkObj.AFKList.push(afkObj);
+          }
+    
+          let afvkObj = afkObj.AFVKList.find((obj) => obj.AFVK === afvk);
+          if (!afvkObj) {
+            afvkObj = { AFVK: afvk, AFSKList: [] };
+            afkObj.AFVKList.push(afvkObj);
+          }
+          let afskObj = afvkObj.AFSKList.find((obj) => obj.AFSK === afsk);
+          if (!afskObj) {
+            afskObj = afsk;
+            afvkObj.AFSKList.push(afskObj);
+          }
+        });
+    
+        var jsonPath;
+        if (input.AFVK.length > 0) {
+          jsonPath = 'CKList.FNGKList.FNKList.CATKList.AFGKList.AFKList.AFVKList';
+        } else if (input.AFK.length > 0) {
+          jsonPath = 'CKList.FNGKList.FNKList.CATKList.AFGKList.AFKList';
+        } else if (input.AFGK.length > 0) {
+          jsonPath = 'CKList.FNGKList.FNKList.CATKList.AFGKList';
+        } else if (input.CATK.length > 0) {
+          jsonPath = 'CKList.FNGKList.FNKList.CATKList';
+        } else {
+          jsonPath = 'CKList.FNGKList.FNKList.CATKList';
+        }
+        const expression = jsonata(jsonPath);
+        var customresult = await expression.evaluate(output);
+        const removeKeys = (obj: any, keys: string[]): any => {
+          if (Array.isArray(obj)) return obj.map((item) => removeKeys(item, keys));
+          if (typeof obj === 'object' && obj !== null) {
+            return Object.keys(obj).reduce((previousValue: any, key: string) => {
+              return keys.includes(key)
+                ? previousValue
+                : { ...previousValue, [key]: removeKeys(obj[key], keys) };
+            }, {});
+          }
+          return obj;
+        };
+        var finalResponse;
+        if (input.stopsAt) {
+          if (input.stopsAt == 'AFVK') {
+            finalResponse = await removeKeys(customresult, ['AFSKList']);
+          } else if (input.stopsAt == 'AFK') {
+            finalResponse = await removeKeys(customresult, ['AFVKList']);
+          } else if (input.stopsAt == 'AFGK') {
+            finalResponse = await removeKeys(customresult, ['AFKList']);
+          } else if (input.stopsAt == 'CATK') {
+            finalResponse = await removeKeys(customresult, ['AFGKList']);
+          } else {
+            return customresult;
+          }
+          return finalResponse;
+        } else {
+          return customresult;
+        }
+      }
+
+  async readKeys(input) {
+      var response = [];
+      var keyArray = [];
+      var spiltArray = [];
+      var finalArr = [];
+  
+      if (input.AFSK && input.AFSK.length > 0) {
+        var res = await this.readMDK(input);
+        return res;
+      }
+      for (const catk of input.CATK.length ? input.CATK : ['*']) {
+        for (const afgk of input.AFGK.length ? input.AFGK : ['*']) {
+          for (const afk of input.AFK.length ? input.AFK : ['*']) {
+            for (const afvk of input.AFVK.length ? input.AFVK : ['*']) {
+              const key = `CK:${input.CK}:FNGK:${input.FNGK}:FNK:${input.FNK}:CATK:${catk}:AFGK:${afgk}:AFK:${afk}:AFVK:${afvk}`;
+              response.push(key);
+            }
+          }
+        }
+      }
+      const trimTrailingStars = (str: string): string => {
+        const parts = str.split(':');
+        while (parts.length > 0 && parts[parts.length - 1] === '*') {
+          parts.pop();
+        }
+        return parts.join(':');
+      };
+  
+      var finalkey = response.map(trimTrailingStars);
+      for (var i = 0; i < finalkey.length; i++) {
+        var getkeys = await this.redisService.getKeys(finalkey[i],process.env.CLIENTCODE);
+        keyArray.push(getkeys);
+      }
+      for (var j = 0; j < keyArray.length; j++) {
+        for (var k = 0; k < keyArray[j].length; k++) {
+          spiltArray.push(keyArray[j][k].split(':'));
+        }
+      }
+      for (let i = 0; i < spiltArray.length; i++) {
+        if (input.CATK.includes(spiltArray[i][7]) || input.CATK.length == 0) {
+          if (input.AFGK.includes(spiltArray[i][9]) || input.AFGK.length == 0) {
+            if (input.AFK.includes(spiltArray[i][11]) || input.AFK.length == 0) {
+              if (
+                input.AFVK.includes(spiltArray[i][13]) ||
+                input.AFVK.length == 0
+              ) {
+                finalArr.push(spiltArray[i]);
+              }
+            }
+          }
+        }
+      }
+  
+      var finalres: any = await this.getFormat(finalArr, input);
+    
+      return finalres;
+    }
+  async readAPI(keys: string, clientCode: string, token:string): Promise<any> {
+      try {      
+        let result:any = structuredClone(JSON.parse(await this.redisService.getJsonData(keys,clientCode)));
+        return result
+      } catch (error) {
+        await this.errorLog(
+            'Technical',
+            'AK',
+            'Fatal',
+            'TG002',
+            'Invalid assembler key',
+            keys,
+            token,
+          );
+      }
+    //   const keyParts = keys.split(':');
+    //   const catk: string[] = [];
+    //   const afgk: string[] = [];
+    //   const ak: string[] = [];
+    //   const afvk: string[] = [];
+    //   const afsk: string = keyParts[14];
+    //   const ck = keyParts[1];
+    //   const fngk = keyParts[3];
+    //   const fnk = keyParts[5];
+    //   catk.push(keyParts[7]);
+    //   afgk.push(keyParts[9]);
+    //   ak.push(keyParts[11]);
+    //   afvk.push(keyParts[13]);
+
+    //   let readAPIBody: readAPIDTO = {
+    //     SOURCE: source,
+    //     TARGET: target,
+    //     CK: ck,
+    //     FNGK: fngk,
+    //     FNK: fnk,
+    //     CATK: catk,
+    //     AFGK: afgk,
+    //     AFK: ak,
+    //     AFVK: afvk,
+    //     AFSK: afsk,
+    //   };
+
+    //   // const readKey = await axios.post(
+    //   //   process.env.TORUS_URL + '/api/readkey',
+    //   //   readAPIBody,
+    //   // );
+    //   let URL = process.env.TORUS_URL +'/readkey'
+    //   const readKey = await axios.post(
+    //    URL,
+    //      readAPIBody,
+    //      {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`
+    //   }
+    // }
+    //    );
+
+    //   return readKey.data;
+    }
+    
+    async postCall(url,body,headers?){ 
+      return await axios.post(url,body,headers)
+      .then((res) => this.responseData(res.status, res.data).then((res) => res))
+      .catch((err) => {throw err});  
+    }
+
+    async axiosPostCall(url,body,headers?){ 
+      let response = await axios.post(url,body,headers)
+      return response.data;
+    }  
+
+    
+    async responseData(statuscode:any, data: any,): Promise<any> {
+      try{
+         if(!statuscode)
+          statuscode = 201
+        var resobj = {} 
+      if(statuscode == 201 || statuscode == 200)   
+        resobj['status'] = 'Success'
+      else
+      resobj['status'] = 'Failure'
+      resobj['statusCode'] = statuscode,
+      resobj['result'] = data     
+      return resobj
+    }catch(err){
+      throw err
+    }
+    } 
+
+    async getCall(url,headers?){   
+      return await axios.get(url,headers)
+      .then((res) => this.responseData(res.status, res.data).then((res) => res))
+      .catch((err) => {throw err});  
+    } 
+    
+    
+      async getRuleCodeMapper(currentNode, inputparam,processedKey,fabric ,SessionInfo ){
+      try {       
+        let zenresult
+        var ResultObj = {}
+        let fieldarr = []
+        var rule = currentNode.rule
+        var customCode = currentNode.code   
+        //console.log("SessionInfo",SessionInfo);        
+        if(rule && Object.keys(rule).length > 0){
+          var nodes = rule.nodes     
+          if(nodes && nodes.length > 0){
+            for(var c=0;c < nodes.length;c++){
+              var content = nodes[c].content
+              if(content){
+                let inputs = content.inputs
+                if(inputs?.length > 0){
+                  for(let i=0;i < inputs.length;i++){
+                    fieldarr.push(content.inputs[i].field)
+                  }
+                }                
+                if(fieldarr?.length == 0)
+                  throw 'Field not found in rule'
+              }            
+            }           
+            var gparamreq = {}; 
+             let afpVal,data,sarr = []
+            for(let i=0;i < fieldarr.length;i++){ 
+              let connectedNodeName = fieldarr[i].split('.')[0]
+              let connectedField = fieldarr[i].split('.')[1]
+               if(connectedNodeName == 'session'){
+                if(SessionInfo[connectedField]){
+                  afpVal = SessionInfo                  
+                }
+                data = await this.getNestedValue(afpVal, connectedField)
+              } else {
+                afpVal = JSON.parse(await this.redisService.getJsonDataWithPath(processedKey + ':NPV:'+connectedNodeName+'.PRO','.response',process.env.CLIENTCODE))
+                connectedField = connectedField.toLowerCase()    
+              if(afpVal && Array.isArray(afpVal) && afpVal.length > 1 || typeof afpVal == 'string'){               
+                var codeVal = JSON.parse(await this.redisService.getJsonDataWithPath(processedKey + ':NPV:'+connectedNodeName+'.PRO','.code',process.env.CLIENTCODE))
+                var ifoVal = JSON.parse(await this.redisService.getJsonDataWithPath(processedKey + ':NPV:'+connectedNodeName+'.PRO','.ifo',process.env.CLIENTCODE))
+               if(codeVal[connectedField]){
+                 data = await this.getNestedValue(codeVal, connectedField) 
+              }
+              else if(ifoVal[connectedField])
+                  data = await this.getNestedValue(ifoVal, connectedField) 
+              else
+               throw 'Array of records found in Decision Node'
+              }else
+                 data = await this.getNestedValue(afpVal, connectedField) 
+              }
+                  if(data)               
+                  await this.setNestedValue(gparamreq, fieldarr[i], data) 
+                
+                // else{
+                //   throw `${fieldarr[i]} not found in given request to take decision`                    
+                // }  
+              // }
+              } 
+              var goruleres = await this.ruleEngine.goRule(rule, gparamreq)                  
+              if(Object.keys(goruleres.result).length > 0){                   
+                zenresult = goruleres.result.output
+              }else{
+                throw `Rule doesn't matched with this value ${data}`
+              }                         
+          }     
+        }   
+      
+        if (customCode ) {
+          var customcoderesult = await this.codeService.customCode(processedKey, customCode, inputparam,fabric,SessionInfo)
+          //console.log('customcoderesult',customcoderesult);        
+        }    
+      
+      if(zenresult)
+        ResultObj['rule'] = zenresult
+
+      if(customcoderesult)
+        ResultObj['code'] = customcoderesult
+
+      return ResultObj 
+      } catch (error) {
+        throw error
+      }          
+    }
+
+     getNestedValue(obj: any, path: string): any {           
+      let zenresultArr = []               
+      if (obj) {     
+        if(obj && Array.isArray(obj) && obj.length > 1)
+          throw 'Array of records found in Decision Node'
+      
+        if(obj && Array.isArray(obj) && obj.length == 1){           
+        return obj[0][path]
+
+        }else if(typeof obj == 'object' && Object.keys(obj).length>0){
+          if (obj[path]) {             
+            return obj[path]
+          }
+        }
+      }
+      return zenresultArr
+    }
+
+    //RollBack Check
+    async checkRollBack(Ndp,client,action,currentNode?){
+      try {       
+        for (let item in Ndp) {         
+          if(Ndp[item]?.rollback == "true"){          
+            if(action == 'check'){           
+              if(Ndp[item]?.savePoint){
+                if (!Ndp[item].data?.pro?.primaryKey) throw new CustomException(`PrimaryKey not found in ${Ndp[item].nodeName}`,404)
+                if(Ndp[item].nodeType == 'apinode') {        
+                  let apiKey = Ndp[item]?.apiKey
+                  if (!apiKey) throw new CustomException(`Reference not found in ${Ndp[item].nodeName}`,404)
+                  let apiNdp = JSON.parse(await this.redisService.getJsonData(apiKey, client))
+                  if (!apiNdp) throw new CustomException( `${apiKey} not found `,404)        
+                  let serverUrl: any = Object.values(apiNdp)[0]['data']['serverUrl']        
+                  let endPoint = Object.values(apiNdp)[0]['data']['apiEndpoint']        
+                  if (!serverUrl || !endPoint) throw new CustomException(`serverUrl/endPoint not found in ${apiKey}`,404)                    
+                }
+                else if(Ndp[item].nodeType == 'dbnode'){
+                  let tablename = Ndp[item].data?.pro?.tableName
+                  if(!tablename) throw new CustomException(`TableName not found in ${Ndp[item].nodeName}`,404)
+                }
+              }else{
+                throw new CustomException(`Savepoint not found in ${Ndp[item].nodeName}`,404)
+              }            
+            }else if(action == 'rollback'){                              
+              if(Ndp[item]?.savePoint == currentNode.savepoint){  
+                if (Ndp[item].nodeType == 'apinode') {                       
+                  let primaryKey = Ndp[item]?.data?.pro?.primaryKey
+                  let insertedData = JSON.parse(await this.redisService.getJsonDataWithPath(currentNode.key + ':NPV:' + Ndp[item].nodeName + '.PRO', '.response', client));
+                  if(!insertedData || (Object.keys(insertedData).length == 0) || insertedData.length == 0){
+                    insertedData = currentNode.data
+                  } 
+                  let apiKey = Ndp[item]?.apiKey                
+                  let apiNdp = JSON.parse(await this.redisService.getJsonData(apiKey, client))                     
+                  let serverUrl: any = Object.values(apiNdp)[0]['data']['serverUrl']        
+                  let endPoint = Object.values(apiNdp)[0]['data']['apiEndpoint']                 
+                  if(insertedData){                                   
+                    if(Array.isArray(insertedData) && insertedData.length > 0){
+                      for(let i=0;i< insertedData.length;i++){
+                        if(insertedData[i][primaryKey]){
+                          let rollBackurl = serverUrl + endPoint + '/' + insertedData[i][primaryKey]
+                          var deleteRes = await this.deleteCall(rollBackurl)
+                          console.log('deleteRes', deleteRes);
+                          if(deleteRes?.status == 'Success' && (deleteRes?.statusCode == 200 || deleteRes?.statusCode == 201) && deleteRes?.result){
+                            await this.redisService.deleteKey(currentNode.key + ':NPV:' + Ndp[item].nodeName + '.PRO',client)
+                            // let nodeRes = JSON.parse(await this.redisService.getJsonData(currentNode.key + ':nodeResponse', client));
+                            // if(nodeRes?.length > 0){
+                            //   nodeRes = nodeRes.filter(item => item.nodeId !== Ndp[item].nodeId);
+                            //   await this.redisService.setJsonData(currentNode.key + ':nodeResponse', JSON.stringify(nodeRes), client);
+                            // }
+                          }
+                        }
+                      }
+                    }else if(Object.keys(insertedData).length > 0){
+                      for(let item of insertedData){
+                        if(item[primaryKey]){
+                          let rollBackurl = serverUrl + endPoint + '/' + item[primaryKey]
+                          var deleteRes = await this.deleteCall(rollBackurl)
+                          console.log('deleteRes', deleteRes);
+                          if(deleteRes?.status == 'Success' && (deleteRes?.statusCode == 200 || deleteRes?.statusCode == 201) && deleteRes?.result){
+                            await this.redisService.deleteKey(currentNode.key + ':NPV:' + Ndp[item].nodeName + '.PRO',client)
+                            // let nodeRes = JSON.parse(await this.redisService.getJsonData(currentNode.key + ':nodeResponse', client));
+                            // if(nodeRes?.length > 0){
+                            //   nodeRes = nodeRes.filter(item => item.nodeId !== Ndp[item].nodeId);
+                            //   await this.redisService.setJsonData(currentNode.key + ':nodeResponse', JSON.stringify(nodeRes), client);
+                            // }
+                          }
+                        }
+                      }
+                    }
+                  }      
+                }   
+                // rollBackArr.push({
+                //   nodeName: Ndp[item].nodeName,
+                //   nodeId: Ndp[item].nodeId,
+                //   primaryKey: Ndp[item].data.pro.primaryKey,
+                //   savePoint:Ndp[item]?.savepoint
+                // })                                     
+              }
+            }
+          }
+        }
+        // return rollBackArr
+      } catch (error) {
+        throw error
+      }    
+    }
+
+    async deleteCall(url, headers?) {
+      return await axios.delete(url, headers)
+      .then((res) => this.responseData(res.status, res.data).then((res) => res))
+      .catch((err) => { return err });
+    }
+    
+      setNestedValue(obj: any, path: string, value: any): void {
+      const parts = path.split('.');
+      let current = obj;
+
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        const match = part.match(/(\w+)\[(\d+)\]/);
+
+        if (match) {
+          const [, key, indexStr] = match;
+          const index = parseInt(indexStr);
+          current[key] = current[key] || [];
+          current[key][index] = current[key][index] || {};
+          if (i === parts.length - 1) {
+            current[key][index] = value;
+          } else {
+            current = current[key][index];
+          }
+        } else {
+          if (i === parts.length - 1) {
+            current[part] = value;
+          } else {
+            current[part] = current[part] || {};
+            current = current[part];
+          }
+        }
+      }
+    }
+
+    async getTPL(key: any, upId: any,pfjson:any,status:string, targetQueue:string ,stoken:any,fabric:string,sourceStatus?:string,request?:any,response?:any){
+      // this.logger.log("TPL Log Started")     
+      var sessionInfo = {} 
+      var processInfo = {};
+      var tenant = await this.splitcommonkey(key,'CK')
+      var app = await this.splitcommonkey(key,'AFGK')
+      var token:any = this.jwtService.decode(stoken,{ json: true })
+      if(token){       
+        sessionInfo['user'] =  token.loginId     
+        sessionInfo['accessProfile'] =  token.accessProfile     
+      }        
+    
+        processInfo['key'] = key;
+        processInfo['upId'] = upId;
+        processInfo['status'] = status;
+        if(pfjson.nodeName)
+          processInfo['nodeName'] = pfjson.nodeName;
+        if(pfjson.nodeId)
+          processInfo['nodeId'] = pfjson.nodeId;
+        if(pfjson.nodeType)
+          processInfo['nodeType'] = pfjson.nodeType;  
+        if(sourceStatus){
+          processInfo['event'] = sourceStatus;
+        } 
+        if(targetQueue){
+          processInfo['queue'] = targetQueue;
+        }         
+        //processInfo['mode'] = mode;
+
+        if(status == 'Success'){
+          if(request)
+            processInfo['request'] = request;                     
+                 
+          if(response){
+            let childObj = {}
+            
+            if(response.upId){
+              childObj['subFlowKey'] = response.key
+              childObj['subFlowUpId'] = response.upId
+              if(response.eventError)
+                childObj['subFlowError'] = response.eventError
+              if(response.data)
+                childObj['subFlowResponse'] = response.data
+              processInfo['subFlowInfo'] = childObj;
+            }
+            processInfo['response'] = response;
+          }
+        }else{
+          var errdata = {}  
+          errdata['tname'] = 'TE'
+          if(response.status == 403){
+            errdata['errGrp'] = 'Security'
+          }else
+            errdata['errGrp'] = 'Technical'
+
+          errdata['fabric'] = fabric
+          errdata['errType'] = 'Fatal'
+          errdata['errCode'] = '001'
+          var errorDetails = await this.errorobj(errdata,response,status)
+        }   
+       var prclogdata:any
+        if(status == 'Success'){
+          prclogdata = {
+            sessionInfo,
+            processInfo
+          }
+        }else{
+          prclogdata = {
+            sessionInfo,
+            processInfo,
+            errorDetails
+          }
+        }       
+      
+        await this.redisService.setStreamData(tenant+'-'+app+'-TPL', key + upId, JSON.stringify(prclogdata));  
+        // this.logger.log("TPL Log completed")     
+        return prclogdata 
+    } 
+
+    async errorobj(errdata:any,error: any,status:any): Promise<any> {    
+      if(error.code){
+        if(error.code == 'ETIMEDOUT')
+          status=408
+      }
+      var errobj = {}
+        errobj['T_ErrorSource'] = errdata.tname
+        errobj['T_ErrorGroup'] = errdata.errGrp
+        errobj['T_ErrorCategory'] = errdata.fabric || 9999  // General - 9999
+        errobj['T_ErrorType'] = errdata.errType
+        errobj['T_ErrorCode'] = errdata.errCode
+        errobj['errorCode'] = status
+        errobj['errorDetail'] = error?error:''  
+      return errobj
+     }
+
+     async getTSL(skey:string,token:string,error:any,status:any,mode?:string){     
+      var errdata = {}             
+      let fabric = await this.splitcommonkey(skey,'FNK')
+      var tslkey:any = skey.split(':')      
+      if(tslkey[tslkey.length - 1] == '')
+        tslkey.pop();      
+      
+      let key = tslkey.join(':')
+     
+      errdata['tname'] = fabric
+      errdata['errGrp'] = 'Setup'
+      errdata['fabric'] = fabric
+      errdata['errType'] = 'Fatal'
+      errdata['errCode'] = '001'
+   
+      var processInfo = {
+        key: key,        
+        mode:mode    
+      }
+    
+      if(!status){
+        status = 400
+      }
+      var logs =  await this.commonErrorLogs(errdata,token,key,error,status,processInfo)    
+     return logs      
+    }   
+
+    async splitcommonkey(key, spliter){ 
+      const parts = key.split(':'); 
+      const index = parts.findIndex(part => part === spliter);
+     
+      if (index !== -1) {   
+        return parts[index+1]; 
+      }      
+    }
+
+    async patchCall(url,data,headers){
+      return await axios.patch(url,data,headers)
+      .then((res) => this.responseData(res.status, res.data).then((res) => res))
+      .catch((err) => {throw err}); 
+    }
+
+    async postCallwithDB(url,body,headers?){      
+      return await axios.post(url,body,headers)
+      .then((res) => !res.data.errorCode? this.responseData(res.status, res.data).then((res) => res): res.data)
+      .catch((err) => {throw err});  
+    }
+
+
+    async commonErrorLogs(errdata:any,stoken:any,key:any,error:any,status:any,optnlParams?:any){  
+      try{
+       let sessionInfo:any = {} 
+       let prcdet:any;
+       
+       let tenant,artifact,ag,app,afvk
+        tenant = process.env.TENANT
+        ag = process.env.APPGROUPCODE;
+        app = process.env.APPCODE;
+        afvk = process.env.VERSION 
+     
+        if(optnlParams){
+          artifact = optnlParams.artifact
+          sessionInfo['user'] =  optnlParams.users 
+          
+          key = optnlParams.key?optnlParams.key:`CK:${tenant}:FNGK:AF:FNK:UF-UFW:CATK:${ag}:AFGK:${app}:AFK:${artifact}:AFVK:${afvk}:`        
+        }        
+        else {          
+          artifact = key        
+        }
+
+       if(key){
+        let keyFlag = 0
+        const parts = key.split(":");
+        const requiredMarkers = ["CK", "FNGK", "FNK", "CATK", "AFGK", "AFK", "AFVK"];
+        requiredMarkers.forEach(marker => {
+          const idx = parts.indexOf(marker);
+          if (idx === -1 || !parts[idx + 1] || parts[idx + 1] === "undefined" || parts.length < 14) {
+            keyFlag++
+          }
+        });
+        if(keyFlag) { 
+          key = `CK:${tenant}:FNGK:AF:FNK:UF-UFW:CATK:${ag}:AFGK:${app}:AFK:${artifact}:AFVK:${afvk}:`        
+        }
+        tenant = await this.splitcommonkey(key,'CK')
+        app = await this.splitcommonkey(key,'AFGK')
+        var fabric = await this.splitcommonkey(key,'FNK')
+        sessionInfo['accessDetails'] = key;       
+       }
+      //  stoken = null
+       if(stoken){
+        let token:any = this.jwtService.decode(stoken,{ json: true })
+        //let token = await this.MyAccountForClient(stoken)
+        if(token){
+         
+        sessionInfo['user'] = token.loginId || 'user'    
+        sessionInfo['accessProfile'] = token.accessProfile 
+        sessionInfo['client'] = token.client   
+        }  
+        } 
+
+        let errorDetails = await this.errorobj(errdata,error,status)
+        let logs = {}
+        logs['sessionInfo'] = sessionInfo
+        if(key){
+          if(fabric == 'PF-PFD' || fabric == 'DF-DFD' || fabric == 'PF-SFD' || fabric == 'PF-SCDL')
+            logs['processInfo'] = prcdet
+          }
+        logs['errorDetails'] = errorDetails   
+        
+        if(typeof key != 'string')
+        key = 'commonError'
+        tenant=tenant || "CT003"
+        app=app ||  "TG3"
+        await this.redisService.setStreamData(tenant+'-'+app+'-TSL',key,JSON.stringify(logs))    
+        return logs
+
+      } catch(err){
+        throw err;
+      }
+    }
+
+   async MyAccountForClient(token: string) {
+      const ag = process.env.APPGROUPCODE;
+      const app = process.env.APPCODE;
+      try {
+        const payload: any = this.jwtService.decode(token);
+        if (!payload) {
+          throw new BadRequestException('Please provide valid token');
+        } else {
+          let userCachekey
+          if (payload.type === "c") {
+            userCachekey = `CK:TGA:FNGK:SETUP:FNK:SF:CATK:CLIENT:AFGK:${payload.client}:AFK:PROFILE:AFVK:v1:users`;
+          } else {
+            userCachekey = `CK:TGA:FNGK:SETUP:FNK:SF:CATK:${payload.client}:AFGK:${ag}:AFK:${app}:AFVK:v1:users`;
+          }
+         const responseFromRedis = await this.redisService.getJsonData(userCachekey,process.env.CLIENTCODE);
+          const userList = JSON.parse(responseFromRedis);
+          if(userList?.length>0){
+            const reqiredUser = userList.find(
+              (user) => user.loginId === payload.loginId,
+            );
+            delete reqiredUser.password;
+            return { ...reqiredUser, client: payload.client };
+          } 
+        }
+      } catch (error) {
+        throw new BadRequestException(error)
+      }
+    }
+
+
+
+    async getMongoProcessLogs(input, type): Promise<any> {
+      try {
+        this.logger.log('get MongoProcess started');
+
+        const {
+          tenant, user, FromDate, ToDate,
+          fabric, appgroup, app,
+          searchParam, page = 1, limit = 10,sortOrder
+        } = input;
+
+        if(!tenant) throw 'Invalid Payload'   
+       
+        let fileName = `${tenant}-${app?.code || ''}`;
+     
+        const filter: any = {
+          'CK': tenant,
+        };
+
+        if (user?.length >0 ) {
+          filter['USER'] = { $in: user };
+        }
+
+        if (fabric?.length >0 ) {
+          filter['FNK'] = { $in: fabric };
+        }
+
+        if (appgroup?.code) {
+          filter['CATK'] = appgroup.code;
+        }
+
+        if (app?.code) {
+          filter['AFGK'] = app.code;
+        }
+
+        if (FromDate || ToDate) {
+          filter['DATE'] = {
+            ...(FromDate && { $gte: FromDate }),
+            ...(ToDate && { $lte: ToDate }),
+          };
+        }
+
+        if (searchParam) {
+          const regex = { $regex: searchParam, $options: 'i' };
+          filter['$or'] = [
+            { 'CK': regex },
+            { 'FNGK': regex },
+            { 'FNK': regex },
+            { 'CATK': regex },
+            { 'AFGK': regex },
+            { 'AFK': regex },
+            { 'AFVK': regex },
+            { 'USER': regex },
+            { 'DATE': regex },
+            { 'UPID': regex },
+          ];
+        }
+
+        // console.log('filter', filter);
+        // console.log('fileName', fileName);
+              
+        const allCollections:any = await this.redisService.listCollections(fileName);
+      
+        if(!allCollections || !(Array.isArray(allCollections)) || allCollections?.length == 0) throw `Data not found in ${fileName}${type}`
+
+        const targetCollections = allCollections.filter(name => name.endsWith(type));
+
+        let sortingNum = (sortOrder === 'newest') ? -1 : (sortOrder === 'oldest') ? 1 : -1;
+
+        const countPromises = targetCollections.map(name =>
+          this.mongoService.countDocuments(name, filter)
+        );
+        console.log("countPromises",countPromises);
+        const counts = await Promise.all(countPromises);
+        const totalDocuments = counts.reduce((sum, c) => sum + c, 0);
+               
+        const documentPromises = targetCollections.map(name =>
+          this.mongoService.findDocument(name, filter, { _id: 0},{skip: (page - 1) * limit, limit, sortOrder:{DateAndTime:sortingNum}})//value: 1 
+        );
+        
+        const allDocs = (await Promise.all(documentPromises)).flat();       
+
+        //const paginatedData = allDocs.slice((page - 1) * limit, page * limit)//.map(d => d.value);
+
+        this.logger.log('get MongoProcess completed');
+
+        return {
+          data: allDocs,
+          page,
+          limit,
+          totalPages: Math.ceil(totalDocuments / limit),
+          totalDocuments,
+        };
+
+      } catch (error) {
+        console.error('ERROR', error);
+        const message = error?.message || error;
+        throw new BadRequestException(message);
+      }
+    }
+ 
+    async getSubFlowLog(SubFlowKey,subFlowUpId){
+      try {
+        if(!SubFlowKey || !subFlowUpId) throw 'Invalid Payload'
+
+        let tenant = await this.splitcommonkey(SubFlowKey,'CK')
+        let fabric = await this.splitcommonkey(SubFlowKey,'FNK')
+        let appgroupcode = await this.splitcommonkey(SubFlowKey,'CATK')
+        let appcode = await this.splitcommonkey(SubFlowKey,'AFGK')
+      
+        let subFlowResult:any = await this.getMongoProcessLogs({
+          tenant,
+          fabric:[fabric],
+          appgroup:{
+            code:appgroupcode
+          },
+          app:{
+            code:appcode
+          },
+          page: 1,
+          limit: 10,
+          searchParam: subFlowUpId
+        },'TPL')
+
+        if(subFlowResult?.data && Array.isArray(subFlowResult?.data) && subFlowResult?.data.length > 0){         
+          return Object.values(subFlowResult.data[0]['AFSK']).flat()
+        }else{
+          return []
+        }
+
+      } catch (error) {
+        //console.log('ERROR', error);        
+        throw error
+      }
+    }
+    
+    @Cron(process.env.MY_CRON)
+    async prcLog(): Promise<any> { //Default Mongo
+      try {       
+        //this.logger.log('ProcessLog start Listening')
+       
+        let tplstreamName = process.env.TENANT+'-'+ process.env.APPCODE+'-TPL'
+       let tslstreamName = process.env.TENANT+'-'+ process.env.APPCODE+'-TSL'
+       if (await this.redisService.exist(tplstreamName, process.env.CLIENTCODE)){
+         await this.structuredPrcLogs(tplstreamName) 
+       } 
+        if (await this.redisService.exist(tslstreamName, process.env.CLIENTCODE)){
+         await this.structuredPrcLogs(tslstreamName) 
+       } 
+        return 'success'
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async structuredPrcLogs(streamName) { //Default Mongo
+      try {         
+        if (await this.redisService.exist(streamName, process.env.CLIENTCODE)) {
+          let grpInfo = await this.redisService.getInfoGrp(streamName)
+          if (grpInfo.length == 0) {
+            await this.redisService.createConsumerGroup(streamName, 'ProcessLog')
+          } else if (!grpInfo[0].includes('ProcessLog')) {
+            await this.redisService.createConsumerGroup(streamName, 'ProcessLog')
+          }
+
+          let streamData: any = await this.redisService.readConsumerGroup(streamName, 'ProcessLog', 'TPL');
+          //console.log(streamData);
+          
+          if (streamData != 'No Data available to read' && streamData.length > 0) {
+            var msgid = []
+            var strmarr = []
+            for (let s = 0; s < streamData.length; s++) {
+              msgid.push(streamData[s].msgid)
+              strmarr.push(streamData[s].data)
+            }
+          }
+          if (msgid?.length > 0) {
+            var AfskValue = "logInfo"
+            let resultFlg = 0
+            for (var s = 0; s < msgid.length; s++) {
+              let streamKey = strmarr[s][0]
+              if(streamName.endsWith('-TPL')){              
+                var upidsplit = streamKey.split(':');
+                if (upidsplit.length > 14) {
+                  var upid = upidsplit[upidsplit.length - 1]
+                  AfskValue = upid
+                }
+              }
+    
+              var date = new Date(Number(msgid[s].split("-")[0]));
+              var entryId = format(date, 'yyyy-MM-dd')
+    
+              var afskvalue: any = JSON.parse(strmarr[s][1])
+              afskvalue['DateAndTime'] = format(date, 'yyyy-MM-dd HH:mm:ss:SSS')
+    
+              var user
+              if (afskvalue?.sessionInfo && Object.keys(afskvalue.sessionInfo).length > 0) {
+                user = afskvalue.sessionInfo.user
+              } 
+              // else {
+              //   user = 'user'
+              // }
+
+              let CK = await this.splitcommonkey(streamKey, 'CK')
+              let FNGK = await this.splitcommonkey(streamKey, 'FNGK')
+              let FNK = await this.splitcommonkey(streamKey, 'FNK')
+              let CATK = await this.splitcommonkey(streamKey, 'CATK')
+              let AFGK = await this.splitcommonkey(streamKey, 'AFGK')
+              let AFK = await this.splitcommonkey(streamKey, 'AFK')
+              let AFVK = await this.splitcommonkey(streamKey, 'AFVK')
+              
+              if(streamName.endsWith('-TPL')){
+                let isDocExist:any
+                let filter = {}               
+                filter['CK'] = CK
+                filter['FNGK'] = FNGK
+                filter['FNK'] = FNK
+                filter['CATK'] = CATK
+                filter['AFGK'] = AFGK
+                filter['AFK'] = AFK
+                filter['AFVK'] = AFVK
+                filter['DATE'] = entryId
+                if(user){
+                  filter['USER'] = user
+                }
+                if(AfskValue !=  "logInfo"){
+                  filter['UPID'] = AfskValue
+                }
+                isDocExist = await this.mongoService.existsDocument(streamName,'',filter)  
+                if(isDocExist && Object.keys(isDocExist).length > 0 && isDocExist._id){
+                  let appendRes:any = await this.mongoService.appendFileInToDocument(streamName,isDocExist._id,'AFSK.'+AfskValue,afskvalue);
+                            
+                  resultFlg++ 
+                   if(appendRes.modifiedCount){
+                     await this.redisService.ackMessage(streamName,'ProcessLog',msgid[s])   
+                     await this.redisService.deleteWithEntryId(streamName,msgid[s])    
+                     let isStreamExist = await this.redisService.getStreamRange(streamName)
+                     if(!isStreamExist || isStreamExist.length == 0){
+                       await this.redisService.deleteKey(streamName,process.env.CLIENTCODE)
+                     }                        
+                   }
+                }else{
+                  await db.collection(streamName).createIndex({ "CK": 1, "FNGK": 1, "FNK": 1, "CATK": 1, "AFGK": 1, "AFK": 1, "AFVK": 1, "DATE": 1, "USER": 1 });
+                  let insertRes:any = await this.mongoService.insertDocument(streamName,'',{
+                    CK,
+                    FNGK,
+                    FNK,
+                    CATK,
+                    AFGK,
+                    AFK,
+                    AFVK,
+                    UPID:AfskValue,
+                    DATE: entryId,
+                    USER: user,
+                    AFSK: 
+                      {[AfskValue]:[afskvalue]}
+                    
+                  })
+                
+                  resultFlg++ 
+                   if(insertRes.insertedId) {
+                     await this.redisService.ackMessage(streamName,'ProcessLog',msgid[s])    
+                     await this.redisService.deleteWithEntryId(streamName,msgid[s])   
+                     let isStreamExist = await this.redisService.getStreamRange(streamName)
+                     if(!isStreamExist || isStreamExist.length == 0){
+                       await this.redisService.deleteKey(streamName,process.env.CLIENTCODE)
+                     }                  
+                   }     
+                }
+              }else if(streamName.endsWith('-TSL')){              
+                await db.collection(streamName).createIndex({ "CK": 1, "FNGK": 1, "FNK": 1, "CATK": 1, "AFGK": 1, "AFK": 1, "AFVK": 1, "DATE": 1, "USER": 1 });
+                let insertRes:any = await this.mongoService.insertDocument(streamName,'',{
+                  CK,
+                  FNGK,
+                  FNK,
+                  CATK,
+                  AFGK,
+                  AFK,
+                  AFVK,
+                  // UPID:AfskValue,
+                  DATE: entryId,
+                  DateAndTime: format(date, 'yyyy-MM-dd HH:mm:ss:SSS'),
+                  USER: user,
+                  AFSK: afskvalue                                 
+                })
+              
+                resultFlg++ 
+                 if(insertRes.insertedId) {
+                   await this.redisService.ackMessage(streamName,'ProcessLog',msgid[s])    
+                   await this.redisService.deleteWithEntryId(streamName,msgid[s])   
+                   let isStreamExist = await this.redisService.getStreamRange(streamName)
+                   if(!isStreamExist || isStreamExist.length == 0){
+                     await this.redisService.deleteKey(streamName,process.env.CLIENTCODE)
+                   }                  
+                 }   
+              }                      
+            }
+          
+            if(resultFlg == msgid.length){           
+              return 'Success'
+            }
+          }  
+        } 
+      
+      } catch (error) {
+        this.logger.log('error',error)
+      }
+    }
+
+    async deleteLog(input){
+      try {
+        return await this.mongoService.deleteFileFromGridFs('LOGS',input.filename)
+      } catch (error) {
+        throw error
+      }
+    }
+
+   
+    
+}
