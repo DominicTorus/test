@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ct003-tg1-df-v10-ingress
+  namespace: ct003-tg1-df-v10
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - tgadev.toruslowcode.com
+      secretName: ct003-tg1-df-v10-tls
+  rules:
+    - host: tgadev.toruslowcode.com
+      http:
+        paths:
+          - path: /ct003/cg/tg1/v10/api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ct003-tg1-df-generator
+                port:
+                  number: 443
