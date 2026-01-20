@@ -1,0 +1,23 @@
+manoj:
+  name: Manoj Kumar
+  title: Front End Engineer @ Facebook
+  url: https://github.com/manoj
+  image_url: https://github.com/yangshun.png
+  page: true
+  socials:
+    x: manoj
+    github: manoj
+
+peer:
+  name: Peer Maideen
+  title: Next.js Developer
+  url: https://sebastienlorber.com
+  image_url: https://github.com/slorber.png
+  page:
+    # customize the url of the author page at /blog/authors/<permalink>
+    permalink: '/all-sebastien-lorber-articles'
+  socials:
+    x: sebastienlorber
+    linkedin: sebastienlorber
+    github: peer
+    newsletter: https://thisweekinreact.com

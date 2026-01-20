@@ -1,8 +1,0 @@
-import React from 'react'
-import ForgotPassword from './ForgotPassword'
-
-const Page = () => {
-  return <ForgotPassword logo="https://cdns3dfsdev.toruslowcode.com/torus/9.1/CT003/resources/images/ChatGPT Image Apr 4, 2025, 11_51_19 AM.png"  appName="TG1" />
-}
-
-export default Page
