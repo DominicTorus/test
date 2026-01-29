@@ -1,30 +1,30 @@
 
 /* {
-  "aKey": "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:CG:AFK:TG3:AFVK:v4:bldc",
-  "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:CG:AFGK:TG1:AFK:UpPostgres:AFVK:v1",
-  "appGroupDesc": "CG",
+  "aKey": "CK:TGA:FNGK:BLDC:FNK:DEV:CATK:CT003:AFGK:RD001:AFK:RDS001:AFVK:v2:bldc",
+  "deploymentArtifactKey": "CK:CT003:FNGK:AF:FNK:CDF-DPD:CATK:RD001:AFGK:RDS001:AFK:RDS_DPD:AFVK:v1",
+  "appGroupDesc": "RDS",
   "logType": "mongodb",
-  "appDesc": "TG3",
+  "appDesc": "Raffle Draw System",
   "isOld": true,
-  "clientCode": "CT300",
+  "clientCode": "CT005",
   "loginDetails": {
-    "loginId": "john",
-    "firstName": "Peruaml",
-    "lastName": "P",
-    "email": "perumalp@torus.tech",
-    "mobile": "2356895623",
+    "loginId": "guru",
+    "firstName": "Guru",
+    "lastName": "Krishnan",
+    "email": "cgkrishnan@gsstvl.com",
+    "mobile": "8190002700",
     "2FAFlag": "N",
     "scope": "client_admin",
     "status": "active",
     "accessProfile": [
       "admin"
     ],
-    "accessExpires": "2027-01-09",
-    "dateAdded": "2025-11-28T04:42:16.447Z",
+    "accessExpires": "",
+    "dateAdded": "2026-01-21T06:18:59.283Z",
     "isRestricted": false,
-    "userUniqueId": "7be843be-7d02-4dd3-80f3-083b5afb2ddc",
+    "userUniqueId": "60c8940f-8aa1-485d-9b53-dc20e43cc584",
     "touring": {
-      "isneedTouring": true,
+      "isneedTouring": false,
       "touringData": {
         "/control-center/storage-configuration": {
           "stepIndex": 0,
@@ -32,67 +32,7 @@
           "completed": false,
           "notVisited": []
         },
-        "/control-center/tenant": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/torus": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/company-profile": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/user-roles": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "build": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/user-management": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/account-profile": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/appearance": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/control-center/notifications": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/logs_hub": {
+        "/home": {
           "stepIndex": 0,
           "isSkipped": true,
           "completed": false,
@@ -103,38 +43,15 @@
           "isSkipped": true,
           "completed": false,
           "notVisited": []
-        },
-        "/logic-center": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "Security": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "/tenant-settings": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
-        },
-        "logs": {
-          "stepIndex": 0,
-          "isSkipped": true,
-          "completed": false,
-          "notVisited": []
         }
       }
     },
-    "lastActive": "2026-01-13T04:48:21.025Z",
-    "client": "CT300",
-    "users": "johnPeruaml P",
+    "lastActive": "2026-01-29T05:28:55.764Z",
+    "client": "CT005",
+    "users": "guruGuru Krishnan",
     "profile": "",
-    "edit": ""
+    "edit": "",
+    "noOfProductsService": 0
   }
 } */
 import { NestFactory } from '@nestjs/core';
@@ -194,14 +111,14 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Nest API')
     .setDescription('The Nestjs API documentation')
-    .setVersion('0.4')
+    .setVersion('0.2')
     .addTag('ERD API')
     .addTag('Torus API')
     .addBearerAuth(
     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 
     'JWT-auth',
     )
-    .addServer('http://192.168.2.57:3010','Production Server')
+    .addServer('https://tgadev.toruslowcode.com/ct003/rd001/rds001/v1/api','Production Server')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync('./swagger.json', JSON.stringify(document, null, 2));

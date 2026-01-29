@@ -54,7 +54,7 @@ export const connectToMongo = async (attemptCount = 0): Promise<Db> => {
     await client.connect();
     db = client.db(process.env.MONGODB_NAME);
     
-    logger.log('MongoDB connected successfully');
+    //logger.log('MongoDB connected successfully');
 
     // Setup event listeners for connection monitoring
     setupConnectionListeners();
@@ -156,20 +156,28 @@ export const connectToRedis = async () => {
   }
 };
 
+let lastHealthCheck = Date.now();
+const HEALTH_CHECK_INTERVAL = 30000; // Only ping every 30 seconds
+
 export const getDb = async (): Promise<Db> => {
   if (!db || !client) {
     logger.warn('Database not connected, attempting to connect...');
     return await connectToMongo();
   }
 
-  try {
-    // Verify connection is still alive
-    await client.db('admin').admin().ping();
-    return db;
-  } catch (error) {
-    logger.warn('Connection lost, reconnecting...');
-    return await connectToMongo();
+  // Only verify connection periodically to reduce overhead
+  const now = Date.now();
+  if (now - lastHealthCheck > HEALTH_CHECK_INTERVAL) {
+    try {
+      await client.db('admin').admin().ping();
+      lastHealthCheck = now;
+    } catch (error) {
+      logger.warn('Connection lost, reconnecting...');
+      return await connectToMongo();
+    }
   }
+
+  return db;
 };
 
 // export const getDb = (): Db => {

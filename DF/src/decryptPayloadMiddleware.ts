@@ -18,7 +18,7 @@ const DecryptPayloadMiddleware = (commonService: CommonService): FastifyPluginAs
 
       if (ciphertext) {
         try {
-          let decryptedData: any = await commonService.commondecryption(dpdKey, method, req.body, 'ct003_cg_tg3_v4');
+          let decryptedData: any = await commonService.commondecryption(dpdKey, method, req.body, 'ct003_rd001_rds001_v2');
           decryptedData = decryptedData.replace(/[\x00-\x1F\x7F]+/g, '').trim();
 
          

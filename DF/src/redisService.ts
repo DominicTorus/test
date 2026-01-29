@@ -173,6 +173,71 @@ export class RedisService {
       throw error;
     }
   }
+
+  async setJsonDataBatch(
+    operations: Array<{ key: string; value: any; path?: string }>,
+    collectionName: string
+  ): Promise<void> {
+    try {
+      if (!collectionName) throw new Error('client not found');
+      if (!operations || operations.length === 0) return;
+
+      // Validate all keys first
+      for (const op of operations) {
+        const parts = op.key.split(':');
+        const requiredMarkers = ['CK', 'FNGK', 'FNK', 'CATK', 'AFGK', 'AFK', 'AFVK'];
+        requiredMarkers.forEach(marker => {
+          const idx = parts.indexOf(marker);
+          if (idx === -1 || !parts[idx + 1] || parts[idx + 1] === 'undefined' || parts.length <= 14) {
+            throw new Error(`Invalid Redis key: ${op.key}`);
+          }
+        });
+      }
+
+      // Create Redis pipeline
+      const pipeline = redis.pipeline();
+
+      // Add all operations to pipeline
+      for (const op of operations) {
+        const defpath = op.path ? `.${op.path}` : '$';
+        pipeline.call('JSON.SET', op.key, defpath, op.value);
+      }
+
+      // Execute pipeline (single network round-trip)
+      const results = await pipeline.exec();
+
+      // Check for errors
+      if (results) {
+        for (let i = 0; i < results.length; i++) {
+          const [error, result] = results[i];
+          if (error) {
+            throw new Error(`Pipeline command ${i} failed: ${error.message}`);
+          }
+        }
+      }
+
+      // WRITE-BEHIND: Fire-and-forget MongoDB operations
+      // Don't await - let them process in background via batched queue
+      // Promise.all(
+      //   operations.map(op =>
+      //     this.writeBehindBuffer.addOperation({
+      //       type: 'SET_DOCUMENT',
+      //       collectionName,
+      //       key: op.key,
+      //       value: JSON.parse(op.value),
+      //       path: op.path,
+      //     })
+      //   )
+      // ).catch(err => {
+      //   console.error('Batch write-behind queue error:', err.message);
+      // });
+
+    } catch (error) {
+      console.error('Batch setJsonData error:', error);
+      throw error;
+    }
+  }
+
   //To store Stream data in redis
  /**
    * Stores stream data in Redis.
@@ -499,40 +564,35 @@ export class RedisService {
         });
 
         let keys = await redis.keys(redisKey);
-        const arrID: string[] = [];
-        const requiredMarkers = ["CK", "FNGK", "FNK", "CATK", "AFGK", "AFK", "AFVK"];
-        for (const item of keys) {
-          const _id = item
-          const parts = _id.split(":").map(p => p.trim());
-            let isValid = true;
-            for (const marker of requiredMarkers) {
-              const idx = parts.indexOf(marker);
-
-              const next = parts[idx + 1];
-              if (idx === -1 ||next === undefined ||next === null ||next.trim?.() === "" ||next.toLowerCase?.() === "undefined" || parts.length <= 14) {
-                isValid = false;
-                await this.deleteKey(_id,collectionName)
-                break;
+        if(keys?.length == 0) {
+          const arrID: string[] = [];
+          const requiredMarkers = ["CK", "FNGK", "FNK", "CATK", "AFGK", "AFK", "AFVK"];
+          for (const item of keys) {
+            const _id = item
+            const parts = _id.split(":").map(p => p.trim());
+              let isValid = true;
+              for (const marker of requiredMarkers) {
+                const idx = parts.indexOf(marker);
+  
+                const next = parts[idx + 1];
+                if (idx === -1 ||next === undefined ||next === null ||next.trim?.() === "" ||next.toLowerCase?.() === "undefined" || parts.length <= 14) {
+                  isValid = false;
+                  await this.deleteKey(_id,collectionName)
+                  break;
+                }
               }
-            }
-            if (isValid && !arrID.includes(_id)) {
-              arrID.push(_id);
-            }
+              if (isValid && !arrID.includes(_id)) {
+                arrID.push(_id);
+              }
+          }
+          if(arrID.length>0)  keys = arrID
+          // Queue MongoDB operation
+          keys = await queueMongoOperation(
+            () => this.getDocumentKeys(collectionName, key),
+            `getDocumentKeys:${key}`
+          );   
         }
-        if(arrID.length>0)  keys = arrID
-        // Queue MongoDB operation
-        let mkeys = await queueMongoOperation(
-          () => this.getDocumentKeys(collectionName, key),
-          `getDocumentKeys:${key}`
-        );
-        if(keys?.length == mkeys?.length){
-          return keys
-        }else{
-         if(mkeys?.length > keys?.length)
-          return mkeys;
-         else
-          return keys;
-       }
+        return keys;
       }else{
         throw 'client not found'
       }

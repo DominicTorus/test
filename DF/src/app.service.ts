@@ -5,7 +5,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import axios from 'axios';
 import * as fs from 'fs';
-import { UfService } from './Torus/v4/uf/uf.service';
+import { UfService } from './Torus/v2/uf/uf.service';
 import { CommonService } from './common.Service';
 
 @Injectable()
@@ -17,7 +17,8 @@ export class AppService implements OnModuleInit{
 
   async onModuleInit() {
     console.log('Application started, calling API...');
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoiam9obiIsImNsaWVudCI6IkNUMzAwIiwidHlwZSI6ImMiLCJsb2dUeXBlIjoibW9uZ29kYiIsInNpZCI6ImI2MjE4ZjY0LTcyZjItNGE3ZS05ZWI2LTE5NjdlZWRiY2M2MCIsImlhdCI6MTc2ODE5NjE2NCwiZXhwIjoxNzY4MTk3MzY0fQ.DSo56A1SRkLPw9uklh4Zsq-720NaJ1qKpKlwio_RpMQ';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbklkIjoiZ3VydSIsImNsaWVudCI6IkNUMDA1IiwidHlwZSI6ImMiLCJsb2dUeXBlIjoibW9uZ29kYiIsInNpZCI6IjNlMjc0MDhmLTRkNTYtNDM1NC05MjUxLWJlMmRmMzgwNTA3MiIsImlhdCI6MTc2OTQ4NTc2NSwiZXhwIjoxNzY5NDg2OTY1fQ.PgiZCgD2f-KGRRSfvo6-T_QUKux_U2hsxvlgNXj-qLY';
+    return
     let preParedData:any=await this.dataPrep(JSON.parse(fs.readFileSync('./swagger.json', 'utf-8')))
     if(Object.keys(preParedData).includes('erdWithData'))
       {
@@ -33,11 +34,11 @@ export class AppService implements OnModuleInit{
       //});
       erdDatas.endpoint = res;
       erdDatas.tenant =  "CT003";
-      erdDatas.domain = "CG";
-      erdDatas.collection = "TG3";
+      erdDatas.domain = "RDS";
+      erdDatas.collection = "Raffle Draw System";
       erdDatas.data = preParedData?.erdWithData||{}
       erdDatas.fabric = 'API-APIPD';
-      erdDatas.loginId = "john";    
+      erdDatas.loginId = "guru";    
       erdDatas.erdFlag = true;  
       await this.ufservice.createApiCollection(erdDatas,this.clientcode);
       //await axios.post(this.apiUrl+'/createApiCollection', erdDatas,{
@@ -55,11 +56,11 @@ export class AppService implements OnModuleInit{
       //let res =  await axios.post(this.apiUrl+'/getEndPoints', endPointData);
       //torusData.endpoint = res.data;
       torusData.tenant =  "CT003";
-      torusData.domain = "CG"; 
-      torusData.collection = "TG3";
+      torusData.domain = "RDS"; 
+      torusData.collection = "Raffle Draw System";
       torusData.fabric = 'API-APIPD-TORUS';
       torusData.data = preParedData?.torusApis||{}
-      torusData.loginId = "john";    
+      torusData.loginId = "guru";    
       //await axios.post(this.apiUrl, torusData);
     }
   }
