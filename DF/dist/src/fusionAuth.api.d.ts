@@ -1,0 +1,13 @@
+export declare const FusionAuthTenantCreation: (tenantId: string, tenantName: string) => Promise<void>;
+export declare const FusionAuthTenantDeletion: (tenantId: string) => Promise<void>;
+export declare const FusionAuthApplicationCreationWithRole: (applicationId: string, tenantId: string, roles: any[], applicationName: string) => Promise<any>;
+export declare const FusionAuthApplicationDeletion: (applicationId: string) => Promise<void>;
+export declare const FusionAutRoleCRUDAlongWithApp: (applicationId: string, roleId: string, roleName: string, methodName: "POST" | "DELETE") => Promise<void>;
+export declare const FusionAuthUserCreationWithAppAndRole: (tenantId: string, userId: string, applicationId: string, firstName: string, lastName: string, userName: string, email: string, password: string, roles?: any[], mobile?: string | number) => Promise<void>;
+export declare const FusionAuthUserDeletion: (userId: string) => Promise<void>;
+export declare const FusionAuthUserCreation: (tenantId: string, userId: string, firstName: string, lastName: string, userName: string, email: string, password: string, methjodName: "POST" | "PUT" | "PATCH" | "DELETE", mobile?: string | number) => Promise<void>;
+export declare const FusionAuthUserApplicatonGet: (tenantId: string, userId: string, applicationId: string) => Promise<any>;
+export declare const FusionAuthApplicatonAssign: (tenantId: string, userId: string, applicationId: string, firstName: string, lastName: string, userName: string, email: string, methodName: "POST" | "PUT" | "PATCH" | "DELETE", roles?: any[], mobile?: string | number) => Promise<void>;
+export declare const FusionAuthUserRoleCreation: (tenantId: string, userId: string, applicationId: string, methodName: "POST" | "PUT" | "PATCH" | "DELETE", roles?: any[]) => Promise<void>;
+export declare const FusionAuthUserEdition: (userId: string, firstName: string, lastName: string) => Promise<void>;
+export declare const FusionAuthUserGet: (userId: string) => Promise<any>;

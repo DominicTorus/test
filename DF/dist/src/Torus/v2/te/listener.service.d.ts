@@ -1,0 +1,53 @@
+import { OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { pfDto } from "src/dto";
+import { RedisService } from "src/redisService";
+import { CommonService } from "src/common.Service";
+import { JwtService } from "@nestjs/jwt";
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Queue, JobsOptions } from 'bullmq';
+import { EventEmitterProcessor } from "./event-emitter.processor";
+import { TeService } from "./te.service";
+import { Producer, Consumer } from 'kafkajs';
+export declare class ListenerService implements OnModuleInit, OnModuleDestroy {
+    private readonly redisService;
+    private readonly jwtService;
+    private schedulerRegistry;
+    private readonly CommonService;
+    private readonly teService;
+    private readonly processor;
+    private isRunning;
+    private abortController;
+    private intervals;
+    private queues;
+    private intervalJobs;
+    private kafka;
+    private producer;
+    private consumers;
+    constructor(redisService: RedisService, jwtService: JwtService, schedulerRegistry: SchedulerRegistry, CommonService: CommonService, teService: TeService, processor: EventEmitterProcessor);
+    private readonly logger;
+    onModuleInit(): Promise<void>;
+    onModuleDestroy(): Promise<void>;
+    getProducer(): Promise<Producer>;
+    getConsumer(groupId: string): Promise<Consumer>;
+    startListening(): Promise<void>;
+    listenToKey(key: string, artifactToken: any): Promise<void>;
+    private sleep;
+    stop(): Promise<void>;
+    startCronJob(name: string, interval: any, pfdto: any, client: any, token: any): Promise<void>;
+    startInterval(jobname: any, interval: any, pfdto: any, client: any, token: any): Promise<void>;
+    addEventEmitterJob(queueName: string, pfdto: pfDto, jobName: string, processedKey: any, pfs: any, currentFabric: any, options?: JobsOptions): Promise<void>;
+    getQueue(queueName: string): Queue;
+    stopCron(jobname: any): Promise<void>;
+    stopInterval(jobname: any): Promise<string>;
+    stopIntervalJob(jobName: string): {
+        jobName: string;
+        status: string;
+        message: string;
+    };
+    firstProcessor(pfdto: any, event: any, pfjson: any, poJson: any, pfo: any, ndp: any, currentFabric: any, flag: any, page: any, count: any, filterData: any, lockDetails: any, childtable: any, logicCenter: any, semarc: any): Promise<{
+        status: number;
+        targetStatus: any;
+        data: any;
+    }>;
+    keysToLowerCaseOnly(obj: any): any;
+}
