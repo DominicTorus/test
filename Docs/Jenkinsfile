@@ -8,7 +8,7 @@ pipeline {
     }
     environment {
         DOCKERHUB_USERNAME = "192.168.2.164:5000"
-        APP_NAME = "tg3-docs-v4"
+        APP_NAME = "a001-docs-v1"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}/${APP_NAME}"
         BUILD_NUMBER = "${BUILD_NUMBER}"
         GITHUB_CREDENTIALS = "GIT_HUB_PAT"  // Ensure this matches the actual Jenkins credentials ID
@@ -58,12 +58,12 @@ pipeline {
             steps {
                 script {
                     def diff = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim()
-                    if (diff.split('\n').any { it.startsWith('apps/CT003/CG/TG3/v4/Docs/') }) {
+                    if (diff.split('\n').any { it.startsWith('apps/CT007/AG001/A001/v1/Docs/') }) {
                         env.DOCS_CHANGED = "true"
-                        echo "Changes detected in apps/CT003/CG/TG3/v4/Docs"
+                        echo "Changes detected in apps/CT007/AG001/A001/v1/Docs"
                     } else {
                         env.DOCS_CHANGED = "false"
-                        echo "No changes in apps/CT003/CG/TG3/v4/Docs. Skipping build and deployment stages."
+                        echo "No changes in apps/CT007/AG001/A001/v1/Docs. Skipping build and deployment stages."
                     }
                 }
             }
@@ -112,7 +112,7 @@ pipeline {
                 script {
                     docker.withRegistry("http://${DOCKERHUB_USERNAME}", '') {
                         sh """
-                        docker build -t ${DOCKERHUB_USERNAME}/${APP_NAME}:${IMAGE_TAG} -f apps/CT003/CG/TG3/v4/Docs/Dockerfile apps/CT003/CG/TG3/v4/Docs
+                        docker build -t ${DOCKERHUB_USERNAME}/${APP_NAME}:${IMAGE_TAG} -f apps/CT007/AG001/A001/v1/Docs/Dockerfile apps/CT007/AG001/A001/v1/Docs
                         docker push ${DOCKERHUB_USERNAME}/${APP_NAME}:${IMAGE_TAG}
                         """
                     }
@@ -142,7 +142,7 @@ pipeline {
                     def final_tag = "${IMAGE_TAG}".trim()
                     echo "${final_tag} test" // Optional debug output
                     sh """
-                        sed -i 's/docker_tag/${final_tag}/g' apps/CT003/CG/TG3/v4/Docs/kubernetes/deploymentservice.yaml
+                        sed -i 's/docker_tag/${final_tag}/g' apps/CT007/AG001/A001/v1/Docs/kubernetes/deploymentservice.yaml
                     """
                 }
             }
@@ -156,9 +156,9 @@ pipeline {
                 script {
                     withKubeConfig(credentialsId: 'kubernetes-224', serverUrl: 'https://lb.kubesphere.local:6443') {
                         sh """
-                            kubectl get ns tg3-docs-v4 || kubectl create ns tg3-docs-v4
-                            kubectl apply -f apps/CT003/CG/TG3/v4/Docs/kubernetes/deploymentservice.yaml
-                            kubectl apply -f apps/CT003/CG/TG3/v4/Docs/kubernetes/docs-ingress.yaml
+                            kubectl get ns a001-docs-v1 || kubectl create ns a001-docs-v1
+                            kubectl apply -f apps/CT007/AG001/A001/v1/Docs/kubernetes/deploymentservice.yaml
+                            kubectl apply -f apps/CT007/AG001/A001/v1/Docs/kubernetes/docs-ingress.yaml
                         """
                     }
                 }

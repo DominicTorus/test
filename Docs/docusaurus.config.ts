@@ -9,7 +9,7 @@ const config: Config = {
   favicon: "img/favicon.ico",
 
   url: "https://your-docusaurus-site.example.com",
-  baseUrl: "/ct003/cg/tg3/v4/docs",
+  baseUrl: "/ct007/ag001/a001/v1/docs",
 
   organizationName: "facebook",
   projectName: "docusaurus",
@@ -68,19 +68,9 @@ const config: Config = {
       items: [
       {
         type: 'docSidebar',
-        sidebarId: 'TG3Sidebar',
-        label: 'TG3',
+        sidebarId: 'applicationSidebar',
+        label: 'application',
       },
-        {
-          type: 'docSidebar',
-          sidebarId: 'reactCompSidebar',
-          label: 'reactcompcheck',
-        },
-        {
-          type: 'docSidebar',
-          sidebarId: 'DynamicInputsSidebar',
-          label: 'dynamicinputs',
-        },
       
         { type: "search", position: "right" },
       ],
